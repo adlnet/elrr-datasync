@@ -16,16 +16,16 @@ import lombok.Setter;
 
  
 @Entity
-@Table(name = "IMPORTS")
+@Table(name = "IMPORT")
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Imports  extends Auditable<String> {
+public class Import  extends Auditable<String> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long importid;
+	private long importId;
 	
 	@Column(name = "IMPORTNAME")
 	private String importName;

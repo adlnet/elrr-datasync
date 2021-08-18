@@ -15,19 +15,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "IMPORTSDETAILS")
+@Table(name = "IMPORTDETAILS")
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class ImportsDetails {
+public class ImportDetail {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long importdetailsid;
+	private long importdetailId;
 	
 	@Column(name = "IMPORTID")
-	private long importsId;
+	private long importId;
 
 	@Column(name = "IMPORTBEGINTIME")
 	private Timestamp importBeginTime;

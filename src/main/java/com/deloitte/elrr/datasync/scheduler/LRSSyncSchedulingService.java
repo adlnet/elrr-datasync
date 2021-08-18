@@ -11,22 +11,20 @@ import org.springframework.stereotype.Service;
 import com.deloitte.elrr.datasync.dto.ElrrStatement;
 import com.deloitte.elrr.datasync.dto.LearnerChange;
 import com.deloitte.elrr.datasync.dto.UserCourse;
-import com.deloitte.elrr.datasync.entity.Imports;
-import com.deloitte.elrr.datasync.entity.ImportsDetails;
+import com.deloitte.elrr.datasync.entity.Import;
+import com.deloitte.elrr.datasync.entity.ImportDetail;
 import com.deloitte.elrr.datasync.entity.SyncRecord;
-import com.deloitte.elrr.datasync.entity.SyncRecordDetails;
-import com.deloitte.elrr.datasync.jpa.service.ImportsDetailsService;
-import com.deloitte.elrr.datasync.jpa.service.ImportsService;
-import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailsService;
-import com.deloitte.elrr.datasync.jpa.service.SyncService;
+import com.deloitte.elrr.datasync.entity.SyncRecordDetail;
+import com.deloitte.elrr.datasync.jpa.service.ImportDetailService;
+import com.deloitte.elrr.datasync.jpa.service.ImportService;
+import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
+import com.deloitte.elrr.datasync.jpa.service.SyncRecordService;
 import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.adlnet.xapi.model.Activity;
-import gov.adlnet.xapi.model.Statement;
-import gov.adlnet.xapi.model.StatementResult;
+
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -43,17 +41,17 @@ public class LRSSyncSchedulingService {
 	NewDataService newDataService;
 	
 	@Autowired
-	ImportsService importsService;
+	ImportService importService;
 	
 
 	@Autowired
-	ImportsDetailsService importsDetailsService;
+	ImportDetailService importDetailService;
 	
 	@Autowired
-	SyncService syncService;
+	SyncRecordService syncService;
 
 	@Autowired
-	SyncRecordDetailsService syncRecordDetailsService;
+	SyncRecordDetailService syncRecordDetailService;
 	
 	ObjectMapper mapper = new ObjectMapper();
 	
@@ -70,20 +68,20 @@ public class LRSSyncSchedulingService {
 	public void run() {
 		
 		log.info("**inside schedule method");
-		Imports imports = getLRSImports();
+		Import importRecord = getLRSImport();
 		
 		//StatementResult result = lrsService.process(imports.getImportStartDate(),imports.getImportEndDate());
 	
- 		if (imports != null) {
+ 		if (importRecord != null) {
  			try {
- 				updateImportsInProcess(imports);
- 				ElrrStatement[] result = lrsService.process(imports.getImportStartDate(),imports.getImportEndDate());
+ 				updateImportInProcess(importRecord);
+ 				ElrrStatement[] result = lrsService.process(importRecord.getImportStartDate(),importRecord.getImportEndDate());
  				if (result != null && result.length > 0) {
- 					insertSyncRecords(result,imports);
+ 					insertSyncRecords(result,importRecord);
  				}
  			} catch (Exception e) {
  				log.error("LRS Sync failed "+e.getMessage());
- 				updateImportsFailed(imports);
+ 				updateImportFailed(importRecord);
  			}
 			//Reason this is out of try catch is
  			// even if the LRS sync is failed but if any of the unprocessed messages sitting in DB 
@@ -95,60 +93,60 @@ public class LRSSyncSchedulingService {
 
 	}
  
-	private void insertSyncRecords(ElrrStatement[] list, Imports imports) {
+	private void insertSyncRecords(ElrrStatement[] list, Import importRecord) {
 		int success = 0;
 		int failed = 0;
 		int total = list.length;
-		ImportsDetails importDetails = insertImportsDetails(total, success,failed, imports);
+		ImportDetail importDetail = insertImportDetail(total, success,failed, importRecord);
 		for (ElrrStatement statement: list) {
 			try {
 				String key = statement.getActor();
 				SyncRecord sync = syncService.findExistingRecord(key);
 				if (sync == null) {
-					sync = syncService.createSyncRecord(key,importDetails.getImportdetailsid());
+					sync = syncService.createSyncRecord(key,importDetail.getImportdetailId());
 				}
-				createSyncRecordDetails(sync, statement);
+				createSyncRecordDetail(sync, statement);
 				success++;
 			} catch(Exception e) {
 				log.error("Exception in processing "+e.getMessage());
 				failed++;
 			}
 		}
-		updateImportsDetails(total, success,failed, importDetails);
-		updateImportsSuccess(imports);
+		updateImportDetail(total, success,failed, importDetail);
+		updateImportSuccess(importRecord);
 	}
 
 
-	private void updateImportsDetails(int total, int success, int failed, ImportsDetails importDetails) {
-		importDetails.setFailedRecords(failed);
-		importDetails.setTotalRecords(total);
-		importDetails.setSuccessRecords(success);
-		importDetails.setImportStatus("SUCCESS");
-		importsDetailsService.save(importDetails);
+	private void updateImportDetail(int total, int success, int failed, ImportDetail importDetail) {
+		importDetail.setFailedRecords(failed);
+		importDetail.setTotalRecords(total);
+		importDetail.setSuccessRecords(success);
+		importDetail.setImportStatus("SUCCESS");
+		importDetailService.save(importDetail);
 	}
 
-	private void createSyncRecordDetails(SyncRecord syncRecord, ElrrStatement statement) throws JsonProcessingException {
+	private void createSyncRecordDetail(SyncRecord syncRecord, ElrrStatement statement) throws JsonProcessingException {
 		
-		SyncRecordDetails syncRecordDetails = new SyncRecordDetails();
-		syncRecordDetails.setSyncRecordId(syncRecord.getSyncRecordId());
+		SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
+		syncRecordDetail.setSyncRecordId(syncRecord.getSyncRecordId());
 		LearnerChange learnerChange = getLearnerChange(statement);
-		syncRecordDetails.setPayload(getJson(statement));
-		syncRecordDetails.setLearner(getJson(learnerChange));
-		syncRecordDetails.setSyncDetailsStatus("INSERTED");
-		syncRecordDetailsService.save(syncRecordDetails);
+		syncRecordDetail.setPayload(getJson(statement));
+		syncRecordDetail.setLearner(getJson(learnerChange));
+		syncRecordDetail.setRecordStatus("INSERTED");
+		syncRecordDetailService.save(syncRecordDetail);
 	}
 	
-	private ImportsDetails insertImportsDetails(int total, int success, int failed, Imports imports) {
-		ImportsDetails importDetails = new ImportsDetails();
-		importDetails.setImportsId(imports.getImportid());
-		importDetails.setImportBeginTime(imports.getImportStartDate());
-		importDetails.setImportEndTime(imports.getImportEndDate());
-		importDetails.setFailedRecords(failed);
-		importDetails.setTotalRecords(total);
-		importDetails.setSuccessRecords(success);
-		importDetails.setImportStatus("INPROCESS");
-		importsDetailsService.save(importDetails);
-		return importDetails;
+	private ImportDetail insertImportDetail(int total, int success, int failed, Import importRecord) {
+		ImportDetail importDetail = new ImportDetail();
+		importDetail.setImportId(importRecord.getImportId());
+		importDetail.setImportBeginTime(importRecord.getImportStartDate());
+		importDetail.setImportEndTime(importRecord.getImportEndDate());
+		importDetail.setFailedRecords(failed);
+		importDetail.setTotalRecords(total);
+		importDetail.setSuccessRecords(success);
+		importDetail.setImportStatus("INPROCESS");
+		importDetailService.save(importDetail);
+		return importDetail;
 	}
 	
 	private String getJson(Object object) throws JsonProcessingException {
@@ -161,10 +159,6 @@ public class LRSSyncSchedulingService {
 		learnerChange.setContactEmailAddress(statement.getActor());
 		learnerChange.setName(statement.getActorName());
 		UserCourse course = new UserCourse();
-		//Activity act = (Activity) statement.getObject();
-		//course.setCourseId(act.getId());
-		//course.setCourseName(act.getDefinition().getName().get("en-US"));
-		//course.setUserCourseStatus(statement.getVerb().getDisplay().get("en-US"));
 		course.setCourseId(statement.getActivity());
 		course.setCourseName(statement.getCourseName());
 		course.setUserCourseStatus(statement.getVerb());
@@ -175,7 +169,7 @@ public class LRSSyncSchedulingService {
 	}
 
 
-	private void updateImportsInProcess(Imports imports) {
+	private void updateImportInProcess(Import imports) {
 		//if previous run was success, we will update the dates
 		//if not, we just re run again with same old dates
 		if (imports.getRecordStatus().equals("SUCCESS")) {
@@ -183,18 +177,18 @@ public class LRSSyncSchedulingService {
 	 		imports.setImportEndDate(getEndDate());
 	 	}
  		imports.setRecordStatus("INPROCESS");
- 		importsService.save(imports);
+ 		importService.save(imports);
 	}
 
-	private void updateImportsSuccess(Imports imports) {
+	private void updateImportSuccess(Import imports) {
 		imports.setRecordStatus("SUCCESS");
- 		importsService.save(imports);
+ 		importService.save(imports);
 		
 	}
 	
-	private void updateImportsFailed(Imports imports) {
-		imports.setRecordStatus("FAILED");
- 		importsService.save(imports);
+	private void updateImportFailed(Import importRecord) {
+		importRecord.setRecordStatus("FAILED");
+ 		importService.save(importRecord);
 		
 	}
 
@@ -203,8 +197,7 @@ public class LRSSyncSchedulingService {
 		return timestamp;
 	}
 	
-	private Imports getLRSImports() {
-		Imports imports = importsService.findByName(LRS_NAME);
-		return imports;
+	private Import getLRSImport() {
+		return importService.findByName(LRS_NAME);
 	}
 }

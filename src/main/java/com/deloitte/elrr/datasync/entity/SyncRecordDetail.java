@@ -19,7 +19,7 @@ import lombok.Setter;
  
  
 @Entity
-@Table(name = "SYNCRECORDDETAILS")
+@Table(name = "SYNCRECORDDETAIL")
 @TypeDef(
 	    name = "json",
 	    typeClass = JsonType.class)
@@ -27,11 +27,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class SyncRecordDetails  extends Auditable<String> {
+public class SyncRecordDetail  extends Auditable<String> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long syncRecordDetailsId;
+	private Long syncRecordDetailId;
 	
 	@Column(name = "SYNCRECORDID")
 	private long syncRecordId;
@@ -44,7 +44,7 @@ public class SyncRecordDetails  extends Auditable<String> {
     @Column(columnDefinition = "jsonb")
 	private String   learner;
 	
-	@Column(name = "SYNCDETAILSSTATUS")
-	private String syncDetailsStatus;
+	@Column(name = "RECORDSTATUS")
+	private String recordStatus;
 
  }

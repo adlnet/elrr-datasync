@@ -12,10 +12,10 @@ import com.deloitte.elrr.datasync.entity.SyncRecord;
 @Repository
 public interface SyncRecordRepository extends JpaRepository<SyncRecord, Long>{
     
-	@Query("SELECT s FROM SyncRecord s WHERE LOWER(s.syncRecordStatus) = LOWER(:syncRecordStatus)")
-    public List<SyncRecord> findUnprocessed(@Param("syncRecordStatus") String syncRecordStatus);
+	@Query("SELECT s FROM SyncRecord s WHERE LOWER(s.recordStatus) = LOWER(:recordStatus)")
+    public List<SyncRecord> findUnprocessed(@Param("recordStatus") String recordStatus);
 	
-	@Query("SELECT s FROM SyncRecord s WHERE LOWER(s.syncRecordStatus) = LOWER(:syncRecordStatus) and LOWER(s.syncKey) = LOWER(:synckey)")
-    public SyncRecord findExisting(@Param("syncRecordStatus") String syncRecordStatus, @Param("synckey") String synckey);
+	@Query("SELECT s FROM SyncRecord s WHERE LOWER(s.recordStatus) = LOWER(:recordStatus) and LOWER(s.syncKey) = LOWER(:synckey)")
+    public SyncRecord findExisting(@Param("recordStatus") String syncRecordStatus, @Param("synckey") String synckey);
 	
 }

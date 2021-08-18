@@ -11,9 +11,9 @@ import com.deloitte.elrr.datasync.dto.LearnerChange;
 import com.deloitte.elrr.datasync.dto.MessageVO;
 import com.deloitte.elrr.datasync.dto.UserCourse;
 import com.deloitte.elrr.datasync.entity.SyncRecord;
-import com.deloitte.elrr.datasync.entity.SyncRecordDetails;
-import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailsService;
-import com.deloitte.elrr.datasync.jpa.service.SyncService;
+import com.deloitte.elrr.datasync.entity.SyncRecordDetail;
+import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
+import com.deloitte.elrr.datasync.jpa.service.SyncRecordService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -29,10 +29,10 @@ public class NewDataService {
 	KafkaProducer kafkaProducer;
 	
 	@Autowired
-	SyncService syncService;
+	SyncRecordService syncRecordService;
 	
 	@Autowired
-	SyncRecordDetailsService syncRecordDetailsService;
+	SyncRecordDetailService syncRecordDetailService;
 	
 	ObjectMapper mapper = new ObjectMapper();
 	
@@ -49,25 +49,25 @@ public class NewDataService {
 		List<SyncRecord> syncList = getUnprocessedRecords();
 		log.info("inside getNewData1 "+syncList.size());
 		for (SyncRecord syncRecord: syncList) {
-			List<SyncRecordDetails> details = null;
+			List<SyncRecordDetail> details = null;
 			try {
-				details = syncRecordDetailsService.findBySyncRecordId(syncRecord.getSyncRecordId());
+				details = syncRecordDetailService.findBySyncRecordId(syncRecord.getSyncRecordId());
 				MessageVO kakfaMessage = createKafkaJsonMessage(details);
 				sendToKafka(kakfaMessage);
-				syncRecord.setSyncRecordStatus("SUCCESS");
-				syncService.save(syncRecord);
-				for (SyncRecordDetails syncRecordDetails:details) {
-					syncRecordDetails.setSyncDetailsStatus("SUCCESS");
-					syncRecordDetailsService.save(syncRecordDetails);
+				syncRecord.setRecordStatus("SUCCESS");
+				syncRecordService.save(syncRecord);
+				for (SyncRecordDetail syncRecordDetails:details) {
+					syncRecordDetails.setRecordStatus("SUCCESS");
+					syncRecordDetailService.save(syncRecordDetails);
 				}
 			} catch(Exception e) {
 				//In case of exception change status back to inserted so that 
 				// they will be picked again next time and processed
-				syncRecord.setSyncRecordStatus("INSERTED");
-				syncService.save(syncRecord);
-				for (SyncRecordDetails syncRecordDetails:details) {
-					syncRecordDetails.setSyncDetailsStatus("INSERTED");
-					syncRecordDetailsService.save(syncRecordDetails);
+				syncRecord.setRecordStatus("INSERTED");
+				syncRecordService.save(syncRecord);
+				for (SyncRecordDetail syncRecordDetail:details) {
+					syncRecordDetail.setRecordStatus("INSERTED");
+					syncRecordDetailService.save(syncRecordDetail);
 				}
 			}
 			
@@ -78,18 +78,18 @@ public class NewDataService {
  		kafkaProducer.sendMessage(message);
 	}
 	
-	private MessageVO createKafkaJsonMessage(List<SyncRecordDetails> details) throws JsonMappingException, JsonProcessingException {
+	private MessageVO createKafkaJsonMessage(List<SyncRecordDetail> details) throws JsonMappingException, JsonProcessingException {
 		LearnerChange learnerChange = new LearnerChange();
 		List<UserCourse> userCourses = new ArrayList<>();
 		AuditRecord auditRecord = new AuditRecord();
 		List<Long> detailIds = new ArrayList<>();
-		for (SyncRecordDetails detail: details) {
+		for (SyncRecordDetail detail: details) {
 			LearnerChange temp = getLearner(detail);
 			learnerChange.setContactEmailAddress(temp.getContactEmailAddress());
 			learnerChange.setName(temp.getName());
 			//there will be only one course for each SyncRecordDetails
 			userCourses.add(temp.getCourses().get(0));
-			detailIds.add(detail.getSyncRecordDetailsId());
+			detailIds.add(detail.getSyncRecordDetailId());
 			auditRecord.setAuditId(detail.getSyncRecordId());
 		}
 		
@@ -102,12 +102,12 @@ public class NewDataService {
 		return vo;
 	}
 	
-	private LearnerChange getLearner(SyncRecordDetails  detail) throws JsonMappingException, JsonProcessingException {
+	private LearnerChange getLearner(SyncRecordDetail  detail) throws JsonMappingException, JsonProcessingException {
 		return mapper.readValue(detail.getLearner(), LearnerChange.class);
 	}
 
 	private List<SyncRecord> getUnprocessedRecords() {
-		List<SyncRecord> syncList = syncService.findUnprocessed();
+		List<SyncRecord> syncList = syncRecordService.findUnprocessed();
 		log.info("unprocessed list "+syncList.size());
 		return syncList;
 	}

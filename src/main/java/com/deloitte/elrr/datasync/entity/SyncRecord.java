@@ -31,7 +31,7 @@ public class SyncRecord  extends Auditable<String> {
 	@Column(name = "SYNCKEY")
 	private String syncKey;
 
-	@Column(name = "SYNCRECORDSTATUS")
-	private String syncRecordStatus;
+	@Column(name = "RECORDSTATUS")
+	private String recordStatus;
 
  }

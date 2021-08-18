@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,8 @@ public class LRSService {
 	@Autowired
 	RestTemplate restTemplate;
 	
-
+	@Value("${lrsservice.url}")
+	private String lrsURL;
 	/*
 	 * This process is to get the deltas 
 	 */
@@ -50,7 +52,8 @@ public class LRSService {
 	private ElrrStatement[] invokeLRS() {
 		ElrrStatement[] statements = null;
 		String json = restTemplate.getForObject(
-				"http://ec2-13-59-16-179.us-east-2.compute.amazonaws.com:8088/api/lrsdata?lastReadDate=2021-05-04T00:00:00Z", String.class);
+				lrsURL+"/api/lrsdata?lastReadDate=2021-05-04T00:00:00Z",String.class);
+				//"http://ec2-13-59-16-179.us-east-2.compute.amazonaws.com:8088/api/lrsdata?lastReadDate=2021-05-04T00:00:00Z", String.class);
 		log.info("number of statements received "+json);
 		ObjectMapper mapper = new ObjectMapper();
 		try {

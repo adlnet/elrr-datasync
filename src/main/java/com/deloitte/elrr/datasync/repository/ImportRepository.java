@@ -5,12 +5,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.deloitte.elrr.datasync.entity.Imports;
+import com.deloitte.elrr.datasync.entity.Import;
 
 @Repository
-public interface ImportsRepository extends JpaRepository<Imports, Long>{
+public interface ImportRepository extends JpaRepository<Import, Long>{
     
-	@Query("SELECT i FROM Imports i WHERE LOWER(i.importName) = LOWER(:importName)")
-    public Imports findByName(@Param("importName") String importName);
+	@Query("SELECT i FROM Import i WHERE LOWER(i.importName) = LOWER(:importName)")
+    public Import findByName(@Param("importName") String importName);
 	
 }

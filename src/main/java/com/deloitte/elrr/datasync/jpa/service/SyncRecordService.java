@@ -7,14 +7,14 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import com.deloitte.elrr.datasync.entity.SyncRecord;
-import com.deloitte.elrr.datasync.repository.SyncRecordDetailsRepository;
+import com.deloitte.elrr.datasync.repository.SyncRecordDetailRepository;
 import com.deloitte.elrr.datasync.repository.SyncRecordRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class SyncService implements CommonSvc<SyncRecord, Long>{
+public class SyncRecordService implements CommonSvc<SyncRecord, Long>{
 
 	static String INSERTED = "INSERTED";
 	
@@ -22,7 +22,7 @@ public class SyncService implements CommonSvc<SyncRecord, Long>{
 	SyncRecordRepository syncRecordRepository;
 	
 	@Autowired
-	SyncRecordDetailsRepository syncRecordDetailsRepository;
+	SyncRecordDetailRepository syncRecordDetailsRepository;
 	
 	public List<SyncRecord> findUnprocessed() {
 		return syncRecordRepository.findUnprocessed("inserted");
@@ -31,7 +31,7 @@ public class SyncService implements CommonSvc<SyncRecord, Long>{
 	public SyncRecord createSyncRecord(String key, long importDetailsId) {
 		SyncRecord syncRecord = new SyncRecord();
 		syncRecord.setSyncKey(key);
-		syncRecord.setSyncRecordStatus(INSERTED);
+		syncRecord.setRecordStatus(INSERTED);
 		syncRecord.setImportdetailsid(importDetailsId);
 		syncRecordRepository.save(syncRecord);
 		return syncRecord;
