@@ -76,9 +76,12 @@ public class LRSSyncSchedulingService {
  			try {
  				updateImportInProcess(importRecord);
  				ElrrStatement[] result = lrsService.process(importRecord.getImportStartDate(),importRecord.getImportEndDate());
+ 				ImportDetail importDetail = insertImportDetail(result.length, 0,0, importRecord);
  				if (result != null && result.length > 0) {
- 					insertSyncRecords(result,importRecord);
+ 					insertSyncRecords(result,importRecord,importDetail);
  				}
+ 				updateImportDetailSuccess(importDetail);
+ 				updateImportSuccess(importRecord);
  			} catch (Exception e) {
  				log.error("LRS Sync failed "+e.getMessage());
  				updateImportFailed(importRecord);
@@ -93,11 +96,11 @@ public class LRSSyncSchedulingService {
 
 	}
  
-	private void insertSyncRecords(ElrrStatement[] list, Import importRecord) {
+	private void insertSyncRecords(ElrrStatement[] list, Import importRecord,ImportDetail importDetail) {
 		int success = 0;
 		int failed = 0;
 		int total = list.length;
-		ImportDetail importDetail = insertImportDetail(total, success,failed, importRecord);
+		
 		for (ElrrStatement statement: list) {
 			try {
 				String key = statement.getActor();
@@ -113,7 +116,7 @@ public class LRSSyncSchedulingService {
 			}
 		}
 		updateImportDetail(total, success,failed, importDetail);
-		updateImportSuccess(importRecord);
+		
 	}
 
 
@@ -121,7 +124,6 @@ public class LRSSyncSchedulingService {
 		importDetail.setFailedRecords(failed);
 		importDetail.setTotalRecords(total);
 		importDetail.setSuccessRecords(success);
-		importDetail.setImportStatus("SUCCESS");
 		importDetailService.save(importDetail);
 	}
 
@@ -144,7 +146,7 @@ public class LRSSyncSchedulingService {
 		importDetail.setFailedRecords(failed);
 		importDetail.setTotalRecords(total);
 		importDetail.setSuccessRecords(success);
-		importDetail.setImportStatus("INPROCESS");
+		importDetail.setRecordStatus("INPROCESS");
 		importDetailService.save(importDetail);
 		return importDetail;
 	}
@@ -185,6 +187,14 @@ public class LRSSyncSchedulingService {
  		importService.save(imports);
 		
 	}
+	
+	private void updateImportDetailSuccess(ImportDetail importDetail) {
+		importDetail.setRecordStatus("SUCCESS");
+ 		importDetailService.save(importDetail);
+		
+	}
+	
+	
 	
 	private void updateImportFailed(Import importRecord) {
 		importRecord.setRecordStatus("FAILED");

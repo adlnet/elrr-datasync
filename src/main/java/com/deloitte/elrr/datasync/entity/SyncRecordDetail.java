@@ -31,6 +31,7 @@ public class SyncRecordDetail  extends Auditable<String> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "SYNCRECORDDETAILID")
 	private Long syncRecordDetailId;
 	
 	@Column(name = "SYNCRECORDID")

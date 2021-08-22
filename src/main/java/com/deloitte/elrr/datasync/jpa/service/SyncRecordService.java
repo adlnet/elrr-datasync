@@ -32,7 +32,7 @@ public class SyncRecordService implements CommonSvc<SyncRecord, Long>{
 		SyncRecord syncRecord = new SyncRecord();
 		syncRecord.setSyncKey(key);
 		syncRecord.setRecordStatus(INSERTED);
-		syncRecord.setImportdetailsid(importDetailsId);
+		syncRecord.setImportdetailId(importDetailsId);
 		syncRecordRepository.save(syncRecord);
 		return syncRecord;
 	}

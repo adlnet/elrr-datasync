@@ -25,6 +25,7 @@ public class Import  extends Auditable<String> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "IMPORTID")
 	private long importId;
 	
 	@Column(name = "IMPORTNAME")

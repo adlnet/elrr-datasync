@@ -24,9 +24,11 @@ public class SyncRecord  extends Auditable<String> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "SYNCRECORDID")
 	private long syncRecordId;
 
-	private long importdetailsid;
+	@Column(name = "IMPORTDETAILID")
+	private long importdetailId;
 	
 	@Column(name = "SYNCKEY")
 	private String syncKey;

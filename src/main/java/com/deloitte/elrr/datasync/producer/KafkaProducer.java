@@ -1,6 +1,7 @@
 package com.deloitte.elrr.datasync.producer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class KafkaProducer {
 	
+	@Value("${kafka.topic}")
+	String kafkatopic;
 	
 	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;
@@ -20,14 +23,19 @@ public class KafkaProducer {
 	private ObjectMapper mapper = new ObjectMapper();
 
 	public void sendMessage(Object msg) {
-	   String payload = "";
-	   if (msg instanceof String) {
-		   payload = (String) msg;
-	   } else {
-		   payload = writeValueAsString(msg);
-	   }
-	   log.info("payload send to Kafka"+payload);
-	   kafkaTemplate.send("test", payload);
+	   try {
+		   String payload = "";
+		   if (msg instanceof String) {
+			   payload = (String) msg;
+		   } else {
+			   payload = writeValueAsString(msg);
+		   }
+		   log.info("payload sent messsage to Kafka"+payload);
+		   kafkaTemplate.send(kafkatopic, payload);
+		   log.info("payload sent to kafka successfully to kafka topic "+kafkatopic);
+	   	} catch (Exception e) {
+			log.error("Exception whille sending message to Kafka "+e.getMessage());
+		}
 	}   
 
 	private String writeValueAsString(Object data) {

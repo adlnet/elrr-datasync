@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "IMPORTDETAILS")
+@Table(name = "IMPORTDETAIL")
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -23,9 +23,10 @@ import lombok.Setter;
 public class ImportDetail {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "IMPORTDETAILID")
 	private long importdetailId;
-	
+
 	@Column(name = "IMPORTID")
 	private long importId;
 
@@ -34,18 +35,17 @@ public class ImportDetail {
 
 	@Column(name = "IMPORTENDTIME")
 	private Timestamp importEndTime;
-	
+
 	@Column(name = "TOTALRECORDS")
 	private int totalRecords;
-	
+
 	@Column(name = "SUCCESSRECORDS")
 	private int successRecords;
-	
+
 	@Column(name = "FAILEDRECORDS")
 	private int failedRecords;
-	
-	@Column(name = "IMPORTSTATUS")
-	private String importStatus;
-	
- 
+
+	@Column(name = "RECORDSTATUS")
+	private String recordStatus;
+
 }

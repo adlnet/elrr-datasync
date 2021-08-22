@@ -18,6 +18,9 @@ public class KafkaProducerConfig {
 	@Value("${brokerUrl}")
 	String brokerUrl;
 
+	@Value("${sasl.jaas.config}")
+	String jaasConfig;
+	
     @Bean
     public ProducerFactory<String, String> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
@@ -33,8 +36,8 @@ public class KafkaProducerConfig {
         configProps.put("security.protocol", "SASL_PLAINTEXT");
         configProps.put("sasl.mechanism", "PLAIN");
 
-        configProps.put("sasl.jaas.config", "org.apache.kafka.common.security.plain.PlainLoginModule   required username='kafka-user'   password='TS@%zugQ=8TY$a2_q8W2A!c7V^NC95';");
-
+        //configProps.put("sasl.jaas.config", "org.apache.kafka.common.security.plain.PlainLoginModule   required username='kafka-user'   password='TS@%zugQ=8TY$a2_q8W2A!c7V^NC95';");
+        configProps.put("sasl.jaas.config", jaasConfig);
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
