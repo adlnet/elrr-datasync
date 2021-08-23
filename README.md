@@ -13,7 +13,7 @@ The easiest way to deploy the sample application to Docker is to follow below st
 - docker build --build-arg JAR_FILE="./target/elrrdatasync-0.0.1-SNAPSHOT.jar" --file Dockerfile -t <docker_hub>/test:elrrdatasync-dck-img .
 - docker run -p Port:Port -t <docker_hub>/test:elrrdatasync-dck-img
 # Running the application locally
-There are several ways to run a Spring Boot application on your local machine. One way is to execute the main method in the com.deloitte.elrr.Application class from your IDE
+There are several ways to run a Spring Boot application on your local machine. One way is to execute the main method in the com.deloitte.elrr.datasync.DatasyncApplication class from your IDE
 # Alternatively you can use the Spring Boot Maven plugin: 
 - mvn spring-boot:run
 # Optional step 
