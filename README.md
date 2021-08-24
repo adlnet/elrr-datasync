@@ -1,5 +1,5 @@
 # elrrdatasync
-Services for integrating elrrdatasync
+ELRR services which aid in the streaming (Kafka streams) of data from the staging database to the ELRR database.
 
 # Requirements
 For building and running the elrrdatasync you need:
