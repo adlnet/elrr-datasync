@@ -64,9 +64,7 @@ public List<ImportDTO> getAllImports() {
 		dto.setImportsName(imports.getImportName());
 		dto.setDetailsList(detailsDTOList);
 		log.info("adding Dto for "+imports.getImportName());
-		if (detailsDTOList.size() > 0) {
-			list.add(dto);
-		}
+		list.add(dto);
 	}
 	return list;
 	

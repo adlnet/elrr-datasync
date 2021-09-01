@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null 
+  name: elrrdatasync-k8s
+  labels:
+    app: elrrdatasync-k8s
+spec:
+  selector:
+    matchLabels:
+      app: elrrdatasync-k8s
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      creationTimestamp: null  
+      labels:
+        app: elrrdatasync-k8s
+    spec:
+      containers:
+        - name: elrrdatasync-dck-cont
+          image: docker.io/arundar/test:elrrdatasync-dck-img
+          env:
+            - name: "ENV"
+              value: "dev"
+          ports:
+            - containerPort: 8085
