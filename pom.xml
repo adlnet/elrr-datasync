@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.deloitte.elrr</groupId>
-	<artifactId>datasync</artifactId>
+	<artifactId>elrrdatasync</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>datasync</name>
 	<description>ELRR Datasync Proeject</description>
