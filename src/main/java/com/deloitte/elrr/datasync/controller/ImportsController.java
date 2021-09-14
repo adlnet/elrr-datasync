@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.deloitte.elrr.datasync.dto.ImportDTO;
 import com.deloitte.elrr.datasync.svc.ImportsCreatorSvc;
 
-//@CrossOrigin(origins =  {"http://ec2-18-217-104-36.us-east-2.compute.amazonaws.com:3001/", "http://ec2-18-217-104-36.us-east-2.compute.amazonaws.com:5000/"})
+//@CrossOrigin(origins =  {{"http://ec2-18-116-20-188.us-east-2.compute.amazonaws.com:3001", "http://ec2-18-116-20-188.us-east-2.compute.amazonaws.com:5000"})
 
 @RestController
 @RequestMapping("api")
