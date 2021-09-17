@@ -1,5 +1,8 @@
 package com.deloitte.elrr.datasync.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import gov.adlnet.xapi.model.Account;
 import gov.adlnet.xapi.model.Activity;
 import gov.adlnet.xapi.model.ActivityDefinition;
@@ -11,9 +14,6 @@ import gov.adlnet.xapi.model.Statement;
 import gov.adlnet.xapi.model.StatementResult;
 import gov.adlnet.xapi.model.Verb;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.HashMap;
  
  
 @Slf4j
@@ -25,7 +25,7 @@ public class MockLRSData {
 	}
 
 	private static StatementResult getStatements() {
-		System.out.println("inside test");
+		log.info("inside test");
  	     StatementResult statements = new StatementResult();
  	     ArrayList<Statement> list = new ArrayList<>();
  	     list.add(getStatement1());
@@ -101,7 +101,6 @@ public class MockLRSData {
 	}
 
 	private static Agent getAgentActor(String name, String email) {
-		// TODO Auto-generated method stub
 		Agent actor = new Agent();
 		actor.setAccount(null);
 		actor.setMbox(email);

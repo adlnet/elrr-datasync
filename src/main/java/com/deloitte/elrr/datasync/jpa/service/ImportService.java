@@ -25,7 +25,6 @@ public class ImportService implements CommonSvc<Import, Long>{
 
   	@Override
 	public Long getId(Import entity) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

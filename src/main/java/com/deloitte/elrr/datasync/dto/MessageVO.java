@@ -1,7 +1,5 @@
 package com.deloitte.elrr.datasync.dto;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -17,5 +15,5 @@ public class MessageVO {
 
 	AuditRecord auditRecord;
 	LearnerChange learnerChange;
-	
+
 }

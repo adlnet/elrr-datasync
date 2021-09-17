@@ -18,12 +18,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 public class DatasyncApplication {
 
 	@Autowired
-    private Environment env;
-	
+	private Environment env;
+
 	public static void main(String[] args) {
 		SpringApplication.run(DatasyncApplication.class, args);
 	}
-	
+
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
 		return builder.build();
@@ -31,17 +31,18 @@ public class DatasyncApplication {
 
 	@SuppressWarnings("deprecation")
 	@Bean
-	    public WebMvcConfigurer corsConfigurer() {
-	        return new WebMvcConfigurerAdapter() {
-	            @Override
-	            public void addCorsMappings(CorsRegistry registry) {
-	                String urls = env.getProperty("cors.urls");
-	                CorsRegistration reg = registry.addMapping("/api/**");
-	                for(String url: urls.split(",")) {
-	                    reg.allowedOrigins(url);
-	                }
-	            }
-	        };
-	}    
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurerAdapter() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				String urls = env.getProperty("cors.urls");
+				CorsRegistration reg = registry.addMapping("/api/**");
+				if (urls != null) {
+					for (String url : urls.split(",")) {
+						reg.allowedOrigins(url);
+					}
+				}
+			}
+		};
+	}
 }
-

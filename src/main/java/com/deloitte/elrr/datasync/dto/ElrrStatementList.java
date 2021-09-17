@@ -17,6 +17,6 @@ import lombok.Setter;
 
 public class ElrrStatementList implements Serializable{
 
-	List<ElrrStatement> elrrStatements;
+	private transient List<ElrrStatement> elrrStatements;
 	
 }

@@ -14,33 +14,33 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class SyncRecordService implements CommonSvc<SyncRecord, Long>{
+public class SyncRecordService implements CommonSvc<SyncRecord, Long> {
 
-	static String INSERTED = "INSERTED";
-	
+	private static String inserted = "INSERTED";
+
 	@Autowired
 	SyncRecordRepository syncRecordRepository;
-	
+
 	@Autowired
 	SyncRecordDetailRepository syncRecordDetailsRepository;
-	
+
 	public List<SyncRecord> findUnprocessed() {
 		return syncRecordRepository.findUnprocessed("inserted");
 	}
-	
+
 	public SyncRecord createSyncRecord(String key, long importDetailsId) {
 		SyncRecord syncRecord = new SyncRecord();
 		syncRecord.setSyncKey(key);
-		syncRecord.setRecordStatus(INSERTED);
+		syncRecord.setRecordStatus(inserted);
 		syncRecord.setImportdetailId(importDetailsId);
 		syncRecordRepository.save(syncRecord);
 		return syncRecord;
 	}
-	
+
 	public SyncRecord findExistingRecord(String key) {
-		return syncRecordRepository.findExisting(INSERTED, key);
+		return syncRecordRepository.findExisting(inserted, key);
 	}
-	
+
 	@Override
 	public Long getId(SyncRecord entity) {
 		return entity.getSyncRecordId();
@@ -50,5 +50,5 @@ public class SyncRecordService implements CommonSvc<SyncRecord, Long>{
 	public CrudRepository<SyncRecord, Long> getRepository() {
 		return this.syncRecordRepository;
 	}
-	
+
 }

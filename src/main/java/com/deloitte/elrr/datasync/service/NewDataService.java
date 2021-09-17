@@ -78,7 +78,7 @@ public class NewDataService {
  		kafkaProducer.sendMessage(message);
 	}
 	
-	private MessageVO createKafkaJsonMessage(List<SyncRecordDetail> details) throws JsonMappingException, JsonProcessingException {
+	private MessageVO createKafkaJsonMessage(List<SyncRecordDetail> details) throws JsonProcessingException {
 		LearnerChange learnerChange = new LearnerChange();
 		List<UserCourse> userCourses = new ArrayList<>();
 		AuditRecord auditRecord = new AuditRecord();
@@ -102,7 +102,7 @@ public class NewDataService {
 		return vo;
 	}
 	
-	private LearnerChange getLearner(SyncRecordDetail  detail) throws JsonMappingException, JsonProcessingException {
+	private LearnerChange getLearner(SyncRecordDetail  detail) throws JsonProcessingException {
 		return mapper.readValue(detail.getLearner(), LearnerChange.class);
 	}
 

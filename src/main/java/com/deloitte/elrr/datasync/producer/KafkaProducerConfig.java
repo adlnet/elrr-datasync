@@ -26,7 +26,6 @@ public class KafkaProducerConfig {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(
           ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerUrl);
-//          "PLAINTEXT_HOST://localhost:29092");
         configProps.put(
           ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, 
           StringSerializer.class);
@@ -36,7 +35,6 @@ public class KafkaProducerConfig {
         configProps.put("security.protocol", "SASL_PLAINTEXT");
         configProps.put("sasl.mechanism", "PLAIN");
 
-        //configProps.put("sasl.jaas.config", "org.apache.kafka.common.security.plain.PlainLoginModule   required username='kafka-user'   password='TS@%zugQ=8TY$a2_q8W2A!c7V^NC95';");
         configProps.put("sasl.jaas.config", jaasConfig);
         return new DefaultKafkaProducerFactory<>(configProps);
     }
