@@ -102,12 +102,14 @@ public class LRSSyncSchedulingService {
 		for (ElrrStatement statement : list) {
 			try {
 				String key = statement.getActor();
-				SyncRecord sync = syncService.findExistingRecord(key);
-				if (sync == null) {
-					sync = syncService.createSyncRecord(key, importDetail.getImportdetailId());
-				}
-				createSyncRecordDetail(sync, statement);
-				successCount++;
+				if(key!=null&&!"".equals(key.trim())) {
+    				SyncRecord sync = syncService.findExistingRecord(key);
+    				if (sync == null) {
+    					sync = syncService.createSyncRecord(key, importDetail.getImportdetailId());
+    				}
+    				createSyncRecordDetail(sync, statement);
+    				successCount++;
+				}	
 			} catch (Exception e) {
 				log.error("Exception in processing " + e.getMessage());
 				failedCount++;
