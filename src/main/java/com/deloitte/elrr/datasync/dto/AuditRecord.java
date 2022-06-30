@@ -1,7 +1,6 @@
 package com.deloitte.elrr.datasync.dto;
 
 import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -15,6 +14,13 @@ import lombok.Setter;
 @Setter
 public class AuditRecord {
 
-	Long auditId;
-	List<Long> auditDeailIds;
+  /**
+   *
+   */
+  private Long auditId;
+
+  /**
+   *
+   */
+  private List<Long> auditDeailIds;
 }

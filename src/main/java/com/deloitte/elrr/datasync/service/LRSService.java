@@ -18,47 +18,63 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class LRSService {
+   /**
+    *
+    */
+  @Autowired
+  private RestTemplate restTemplate;
+  /**
+   *
+   */
+  @Value("${lrsservice.url}")
+  private String lrsURL;
 
-	@Autowired
-	RestTemplate restTemplate;
+  /*
+   * This process is to get the deltas
+   */
+  // 06/01 -- 06/22
+  /**
+   *
+   * @param startDate
+   * @return ElrrStatement[]
+   */
+  public ElrrStatement[] process(final Timestamp startDate) {
+    return invokeLRS(startDate);
+  }
 
-	@Value("${lrsservice.url}")
-	private String lrsURL;
+  // @Bean
+  /**
+   *
+   * @param startDate
+   * @return ElrrStatement[]
+   */
+  private ElrrStatement[] invokeLRS(final Timestamp startDate) {
+    ElrrStatement[] statements = null;
+    try {
+      String lastReadDate = formatDate(startDate) + "T00:00:00Z";
+      log.info("lastReadDate " + lastReadDate);
+      String json = restTemplate.getForObject(
+        lrsURL + "/api/lrsdata?lastReadDate=" + lastReadDate,
+        String.class
+      );
+      log.info("number of statements received " + json);
+      ObjectMapper mapper = new ObjectMapper();
+      statements = mapper.readValue(json, ElrrStatement[].class);
+      log.info("parsed successfully " + statements.length);
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+    }
 
-	/*
-	 * This process is to get the deltas
-	 */
-	// 06/01 -- 06/22
-	public ElrrStatement[] process(Timestamp startDate) {
+    return statements;
+  }
+  /**
+   *
+   * @param timestamp
+   * @return String
+   */
+  private String formatDate(final Timestamp timestamp) {
+    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-		return invokeLRS(startDate);
-
-	}
-
-	// @Bean
-	private ElrrStatement[] invokeLRS(Timestamp startDate) {
-		ElrrStatement[] statements = null;
-		try {
-			String lastReadDate = formatDate(startDate) + "T00:00:00Z";
-			log.info("lastReadDate " + lastReadDate);
-			String json = restTemplate.getForObject(lrsURL + "/api/lrsdata?lastReadDate=" + lastReadDate, String.class);
-			log.info("number of statements received " + json);
-			ObjectMapper mapper = new ObjectMapper();
-			statements = mapper.readValue(json, ElrrStatement[].class);
-			log.info("parsed successfully " + statements.length);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-
-		return statements;
-
-	}
-
-	private String formatDate(Timestamp timestamp) {
-
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-
-		return formatter.format(timestamp);
-	}
-
+    return formatter.format(timestamp);
+  }
 }
