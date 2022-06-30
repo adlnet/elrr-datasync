@@ -2,7 +2,6 @@ package com.deloitte.elrr.datasync.dto;
 
 import java.io.Serializable;
 import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -15,11 +14,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ImportDTO implements Serializable {
-
-	String importsName;
-	/*
-	 * String importsEndPoint; Timestamp importsDate; int totalRecords; int
-	 * failedRecords; int successRecords; String status;
-	 */
-	private transient List<ImportDetailDTO> detailsList;
+  /**
+   *
+   */
+  private String importsName;
+  /**
+   *
+   * String importsEndPoint; Timestamp importsDate; int totalRecords; int.
+   * failedRecords; int successRecords; String status;
+   * @return transient
+   */
+  private transient List<ImportDetailDTO> detailsList;
 }

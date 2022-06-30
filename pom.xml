@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.5.1</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<version>2.7.1</version>
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.deloitte.elrr</groupId>
 	<artifactId>elrrdatasync</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>datasync</name>
-	<description>ELRR Datasync Proeject</description>
+	<description>ELRR Datasync Project</description>
 	<properties>
-		<java.version>8</java.version>
+		<java.version>11</java.version>
+		<docker.image.prefix>elrrdatasync</docker.image.prefix>
 		<jacoco.version>0.8.6</jacoco.version>
+		<start-class>com.deloitte.elrr.datasync.DatasyncApplication</start-class>
+		<jacoco.reportPath>${project.basedir}/../target/jacoco.exec</jacoco.reportPath>
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.dynamicAnalysis>resuseReports</sonar.dynamicAnalysis>
+		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
+		<sona.lauguage>java</sona.lauguage>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -41,13 +49,23 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-      		<groupId>org.springframework.kafka</groupId>
-      		<artifactId>spring-kafka</artifactId>
-    	</dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+        		<exclusion>  
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk16</artifactId>
+	    		</exclusion>
+	    		<exclusion>  
+					<groupId>commons-io</groupId>
+					<artifactId>commons-io</artifactId>
+	    		</exclusion>
+      		</exclusions>					
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -61,16 +79,26 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
+			<exclusions>
+        		<exclusion>  
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk16</artifactId>
+	    		</exclusion>
+	    		<exclusion>  
+					<groupId>commons-io</groupId>
+					<artifactId>commons-io</artifactId>
+	    		</exclusion>	    		
+      		</exclusions>
 		</dependency>
-		<dependency>
+		<!-- dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-boot-starter</artifactId>
 			<version>3.0.0</version>
-		</dependency>
+		</dependency-->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20200518</version>
+			<version>20220320</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
@@ -80,70 +108,42 @@
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
 			<scope>runtime</scope>
+		    <exclusions>
+        		<exclusion>  
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk16</artifactId>
+	    		</exclusion>
+	    		<exclusion>  
+					<groupId>commons-io</groupId>
+					<artifactId>commons-io</artifactId>
+	    		</exclusion>	    		
+      		</exclusions>			
 		</dependency>
-		<dependency> 
-			<groupId>com.h2database</groupId> 
-			<artifactId>h2</artifactId> 
-			<scope>runtime</scope> 
-		</dependency> 
-
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
 		<dependency>
-		    <groupId>com.github.ulisesbocchio</groupId>
-		    <artifactId>jasypt-spring-boot-starter</artifactId>
-		    <version>3.0.3</version>
+			<groupId>com.github.ulisesbocchio</groupId>
+			<artifactId>jasypt-spring-boot-starter</artifactId>
+			<version>3.0.4</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
-			<version>3.23.1-GA</version>
+			<version>3.29.0-GA</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.modelmapper</groupId>
-		    <artifactId>modelmapper</artifactId>
-		    <version>2.4.1</version>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>3.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-joda</artifactId>
 		</dependency>
-  		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<scope>provided</scope>
-			<version>1.18.20</version>
-		</dependency>
-		
-		<dependency>
-    <groupId>com.google.code.gson</groupId>
-    <artifactId>gson</artifactId>
-    <version>2.8.5</version>
-</dependency>
-		
-
-      <!--dependency>
-                      
-         <groupId>org.springframework.boot</groupId>
-                      
-         <artifactId>spring-boot-starter-quartz</artifactId>
-                  
-      </dependency>
-                
-      <dependency>
-                      
-         <groupId>org.quartz-scheduler</groupId>
-                      
-         <artifactId>quartz</artifactId>
-                  
-      </dependency-->
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -153,14 +153,29 @@
 			<groupId>gov.adlnet</groupId>
 			<artifactId>jxapi</artifactId>
 			<version>2.0.1</version>
-		</dependency>		
+		    <exclusions>
+        		<exclusion>  
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk16</artifactId>
+	    		</exclusion>
+	    		<exclusion>  
+					<groupId>commons-io</groupId>
+					<artifactId>commons-io</artifactId>
+	    		</exclusion>	    		
+      		</exclusions>				
+		</dependency>
 		<dependency>
-    <groupId>com.vladmihalcea</groupId>
-    <artifactId>hibernate-types-55</artifactId>
-    <version>2.12.0</version>
-</dependency>
+			<groupId>com.vladmihalcea</groupId>
+			<artifactId>hibernate-types-55</artifactId>
+			<version>2.16.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.openpojo</groupId>
+			<artifactId>openpojo</artifactId>
+			<version>0.9.1</version>
+		</dependency>		
 	</dependencies>
-	
+
 	<build>
 		<resources>
 			<resource>
@@ -169,61 +184,51 @@
 			</resource>
 		</resources>
 		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<image>
-						<builder>paketobuildpacks/builder:tiny</builder>
-						<env>
-							<BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
-						</env>
-					</image>
-				</configuration>
-			</plugin>
-			
-			<plugin>
-   				<groupId>com.github.ulisesbocchio</groupId>
-   				<artifactId>jasypt-maven-plugin</artifactId>
-   				<version>3.0.4</version>
-			</plugin>
-
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>${jacoco.version}</version>
-				<configuration>
-					<destFile>jacoco-unit.exec</destFile>
-					<dataFile>jacoco-unit.exec</dataFile>
-					<output>file</output>
-					<append>false</append>
-					<excludes>
-						<exclude>**/service/*</exclude>
-						<exclude>**/model/*</exclude>
-						<exclude>**/dto/*</exclude>
-						<exclude>**/jpa/**/*</exclude>
-						<exclude>**/entity/*</exclude>
-						<exclude>**/exception/*</exclude>
-						<exclude>**/util/*</exclude>
-						<exclude>**/test/**/*</exclude>
-						<exclude>**/elrr/*.class</exclude>
-						<exclude>**/elrr/*.java</exclude>
-					</excludes>
-
-				</configuration>
-
-			</plugin>
-
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.8</version>      
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                      <goals><goal>prepare-agent</goal></goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals><goal>report</goal></goals>
+                   </execution>
+               </executions>
+               <configuration>
+	               <rules>
+					     <rule>
+					     <element>BUNDLE</element>
+					     <limits>
+					     <limit>
+					     <counter>COMPLEXITY</counter>
+					     <value>COVEREDRATIO</value>
+					     <minimum>0.01</minimum>
+					     </limit>
+					     </limits>
+					     </rule>
+				     </rules>
+			  </configuration>   
+          </plugin>
+		  <plugin>
+			 <groupId>com.github.ulisesbocchio</groupId>
+			 <artifactId>jasypt-maven-plugin</artifactId>
+			 <version>3.0.4</version>
+		  </plugin>
 		</plugins>
 	</build>
-
 	<profiles>
-		
+
 		<profile>
 			<id>local</id>
 			<activation>
@@ -239,7 +244,7 @@
 				<activatedProperties>dev</activatedProperties>
 			</properties>
 		</profile>
-		
+
 		<profile>
 			<id>qa</id>
 			<properties>

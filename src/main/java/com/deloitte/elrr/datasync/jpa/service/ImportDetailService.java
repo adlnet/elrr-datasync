@@ -1,35 +1,55 @@
 package com.deloitte.elrr.datasync.jpa.service;
 
+import com.deloitte.elrr.datasync.entity.ImportDetail;
+import com.deloitte.elrr.datasync.repository.ImportDetailRepository;
 import java.util.List;
-
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
-import com.deloitte.elrr.datasync.entity.ImportDetail;
-import com.deloitte.elrr.datasync.repository.ImportDetailRepository;
-
 @Service
 public class ImportDetailService implements CommonSvc<ImportDetail, Long> {
+    /**
+     *
+     */
+    private final ImportDetailRepository importDetailRepository;
 
-	private final ImportDetailRepository importsDetailsRepository;
+    /**
+     *
+     * @param newimportDetailRepository
+     */
+    public ImportDetailService(
+            final ImportDetailRepository newimportDetailRepository) {
+        this.importDetailRepository = newimportDetailRepository;
+    }
 
-	public ImportDetailService(final ImportDetailRepository importsDetailsRepository) {
-		this.importsDetailsRepository = importsDetailsRepository;
-	}
+    /**
+     *
+     * @param id
+     * @return List<ImportDetail>
+     */
+    public List<ImportDetail> findByImportId(final long id) {
+        return importDetailRepository.findByImportId(id);
+    }
 
-	public List<ImportDetail> findByImportId(long id) {
-		return importsDetailsRepository.findByImportId(id);
-	}
+    /**
+     *
+     * @return CrudRepository<ImportDetail, Long>
+     */
+    @Override
+    public CrudRepository<ImportDetail, Long> getRepository() {
+        return this.importDetailRepository;
+    }
 
-	@Override
-	public CrudRepository<ImportDetail, Long> getRepository() {
-		return this.importsDetailsRepository;
-	}
+    /**
+     *
+     */
+    @Override
+    public Long getId(final ImportDetail entity) {
 
-	@Override
-	public Long getId(ImportDetail entity) {
-
-		return null;
-	}
-
+        if (entity != null) {
+            return entity.getImportdetailId();
+        } else {
+            return null;
+        }
+    }
 }

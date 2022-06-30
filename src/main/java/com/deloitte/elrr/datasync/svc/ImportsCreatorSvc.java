@@ -1,15 +1,20 @@
 package com.deloitte.elrr.datasync.svc;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.deloitte.elrr.datasync.dto.ImportDTO;
+import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public interface ImportsCreatorSvc {
-
-	public ImportDTO  getImports(String name);
-	public List<ImportDTO> getAllImports();
+  /**
+   *
+   * @param name
+   * @return ImportDTO
+   */
+  ImportDTO getImports(String name);
+  /**
+   *
+   * @return List<ImportDTO>
+   */
+  List<ImportDTO> getAllImports();
 }
-

@@ -11,10 +11,17 @@ import lombok.Setter;
 @Data
 @Getter
 @Setter
-
 public class UserCourse {
-
-	String courseId;
-	String courseName;
-	String userCourseStatus;
+  /**
+   *
+   */
+  private String courseId;
+  /**
+   *
+   */
+  private String courseName;
+  /**
+   *
+   */
+  private String userCourseStatus;
 }
