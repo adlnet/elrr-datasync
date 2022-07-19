@@ -23,10 +23,16 @@ jobs:
       run: |
        echo "Authenticate to Docker"
        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+    - name: Maven build
+      run: |
+       echo "maven build - Clean install"
+       mvn clean install -Dmaven.test.skip=true
+       mkdir -p target/dependency && (cd target/dependency; jar -xf ../elrrdatasync-0.0.1-SNAPSHOT.jar)
     - name: Docker build
       run: |
        echo "Start docker build"
-       docker build . -t openlxp/elrr-datasync
+       #docker build . -t openlxp/elrr-datasync
+       docker build --build-arg JAR_FILE="./target/elrrdatasync-0.0.1-SNAPSHOT.jar" --file Dockerfile -t openlxp/elrr-datasync .
     - name: Push Image
       run: |
        echo "Push new image to the Dockerhub repository"
