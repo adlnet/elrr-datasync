@@ -18,11 +18,7 @@ public class KafkaProducerConfig {
    */
   @Value("${brokerUrl}")
   private String brokerUrl;
-  /**
-   *
-   */
-  @Value("${sasl.jaas.config}")
-  private String jaasConfig;
+
   /**
    *
    * @return ProducerFactory<String, String>
@@ -39,10 +35,6 @@ public class KafkaProducerConfig {
       ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
       StringSerializer.class
     );
-    configProps.put("security.protocol", "SASL_PLAINTEXT");
-    configProps.put("sasl.mechanism", "PLAIN");
-
-    configProps.put("sasl.jaas.config", jaasConfig);
     return new DefaultKafkaProducerFactory<>(configProps);
   }
   /**
