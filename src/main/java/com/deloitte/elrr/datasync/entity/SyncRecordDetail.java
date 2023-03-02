@@ -1,5 +1,6 @@
 package com.deloitte.elrr.datasync.entity;
 
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Convert;
@@ -14,7 +15,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "SYNCRECORDDETAIL")
-@Convert(converter  = com.vladmihalcea.hibernate.type.json.JsonType.class)
+@Convert(converter  = JsonType.class)
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -35,13 +36,13 @@ public class SyncRecordDetail extends Auditable<String> {
   /**
    *
    */
-  @Convert(converter  = com.vladmihalcea.hibernate.type.json.JsonType.class)
+  @Convert(converter  = JsonType.class)
   @Column(columnDefinition = "jsonb")
   private String payload;
   /**
    *
    */
-  @Convert(converter  = com.vladmihalcea.hibernate.type.json.JsonType.class)
+  @Convert(converter  = JsonType.class)
   @Column(columnDefinition = "jsonb")
   private String learner;
   /**
