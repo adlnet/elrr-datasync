@@ -42,6 +42,13 @@ public class ImportsController {
   @GetMapping("/getImports")
   public ImportDTO getImports(
     @RequestParam(value = "name", required = true) final String importsName) {
+
+    String regex = "^[a-zA-Z0-9-]+$";
+    if (!importsName.matches(regex))
+    {
+      return null;
+    }
+
     return svc.getImports(importsName);
   }
 
