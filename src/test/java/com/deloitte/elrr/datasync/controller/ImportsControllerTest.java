@@ -17,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
 
@@ -111,7 +112,11 @@ class ImportsControllerTest {
    @Test
    void getImportsTest() throws Exception {
        ImportDTO importDTO = new ImportDTO();
-       mockMvc.perform(get("/api/getImports/{id}", 1L))
+      HttpHeaders headers = new HttpHeaders();
+      headers.set("Content-Type", " */*");
+      headers.set("X-Forwarded-Proto", "https");
+       mockMvc.perform(get("/api/getImports/{id}", 1L)
+                       .headers(headers))
               .andExpect(status().isNotFound());
    }
 
