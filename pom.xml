@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.3</version>
+		<version>3.0.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.deloitte.elrr</groupId>
@@ -23,6 +23,7 @@
 		<sonar.dynamicAnalysis>resuseReports</sonar.dynamicAnalysis>
 		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
 		<sona.lauguage>java</sona.lauguage>
+		<spring-security.version>6.1.4</spring-security.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -76,6 +77,19 @@
     				<artifactId>jackson-core</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-saml2-service-provider</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
       		<groupId>org.springframework.kafka</groupId>
@@ -312,12 +326,32 @@
 			<name>Spring Milestones</name>
 			<url>https://repo.spring.io/milestone</url>
 		</repository>
+		<repository>
+			<id>shibboleth_repository</id>
+			<name>Shibboleth Maven Repository</name>
+			<url>https://build.shibboleth.net/nexus/content/repositories/releases/</url>
+		</repository>
+		<repository>
+			<id>shibboleth_repository_2</id>
+			<name>Shibboleth Maven Repository (https://mvnrepository.com/artifact/org.opensaml/opensaml-core/4.1.1)</name>
+			<url>https://build.shibboleth.net/maven/releases/</url>
+		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
 			<id>spring-milestones</id>
 			<name>Spring Milestones</name>
 			<url>https://repo.spring.io/milestone</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>shibboleth_repository</id>
+			<name>Shibboleth Maven Repository</name>
+			<url>https://build.shibboleth.net/nexus/content/repositories/releases/</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>shibboleth_repository_2</id>
+			<name>Shibboleth Maven Repository (https://mvnrepository.com/artifact/org.opensaml/opensaml-core/4.1.1)</name>
+			<url>https://build.shibboleth.net/maven/releases/</url>
 		</pluginRepository>
 	</pluginRepositories>
 </project>
