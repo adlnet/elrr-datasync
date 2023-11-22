@@ -3,9 +3,15 @@ package com.deloitte.elrr.datasync.service;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,6 +34,9 @@ public class LRSService {
    */
   @Value("${lrsservice.url}")
   private String lrsURL;
+
+  @Value("${lrsservice.cookie}")
+  private String lrsCookie;
 
   /*
    * This process is to get the deltas
@@ -53,15 +62,21 @@ public class LRSService {
     try {
       String lastReadDate = formatDate(startDate) + "T00:00:00Z";
       log.info("lastReadDate " + lastReadDate);
-      String json = restTemplate.getForObject(
-        lrsURL + "/api/lrsdata?lastReadDate=" + lastReadDate,
-        String.class
-      );
-      log.info("number of statements received " + json);
+
+      HttpHeaders httpHeaders = new HttpHeaders();
+      httpHeaders.add("Cookie",lrsCookie);
+      httpHeaders.add("X-Forwarded-Proto", "https");
+      httpHeaders.add("Content-Type", "application/json");
+
+      String completeURL = lrsURL + "/api/lrsdata?lastReadDate=" + lastReadDate;
+
+      HttpEntity<String> entity = new HttpEntity<>("body", httpHeaders);
+      ResponseEntity<String> json = restTemplate.exchange(completeURL, HttpMethod.GET, entity, String.class);
+
       ObjectMapper mapper = new ObjectMapper();
-      statements = mapper.readValue(json, ElrrStatement[].class);
-      log.info("parsed successfully " + statements.length);
-    } catch (JsonProcessingException e) {
+      statements = mapper.readValue(json.getBody(), ElrrStatement[].class);
+      log.info("number of statements received " + statements);
+    } catch (Exception e) {
       e.printStackTrace();
     }
 
