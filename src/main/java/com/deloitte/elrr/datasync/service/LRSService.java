@@ -71,11 +71,11 @@ public class LRSService {
       String completeURL = lrsURL + "/api/lrsdata?lastReadDate=" + lastReadDate;
 
       HttpEntity<String> entity = new HttpEntity<>("body", httpHeaders);
-      ResponseEntity<List<ElrrStatement>> json = restTemplate.exchange(completeURL, HttpMethod.GET, entity, new ParameterizedTypeReference<List<ElrrStatement>>() {});
+      ResponseEntity<String> json = restTemplate.exchange(completeURL, HttpMethod.GET, entity, String.class);
 
-      log.info("number of statements received " + json);
-      statements = (ElrrStatement[]) json.getBody().toArray();
-      log.info("parsed successfully " + json.getBody().size());
+      ObjectMapper mapper = new ObjectMapper();
+      statements = mapper.readValue(json.getBody(), ElrrStatement[].class);
+      log.info("number of statements received " + statements);
     } catch (Exception e) {
       e.printStackTrace();
     }
