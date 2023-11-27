@@ -46,6 +46,7 @@ public class ImportsController {
     String regex = "^[a-zA-Z0-9-]+$";
     if (!importsName.matches(regex))
     {
+      log.info("Invalid imports name.");
       return null;
     }
 

@@ -43,7 +43,7 @@ public class KafkaProducer {
         "payload sent to kafka successfully to kafka topic " + kafkatopic
       );
     } catch (Exception e) {
-      log.error("Exception whille sending message to Kafka " + e.getMessage());
+      log.error("Exception while sending message to Kafka " + e.getMessage());
     }
   }
   /**
