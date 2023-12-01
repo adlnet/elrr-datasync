@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - pomchanges
   pull_request:
     branches:
       - main
