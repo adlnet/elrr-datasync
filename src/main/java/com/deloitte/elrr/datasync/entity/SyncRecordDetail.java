@@ -15,7 +15,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "SYNCRECORDDETAIL")
-@Convert(converter  = JsonType.class)
+//@Convert(converter  = JsonType.class)
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -36,13 +36,13 @@ public class SyncRecordDetail extends Auditable<String> {
   /**
    *
    */
-  @Convert(converter  = JsonType.class)
+//  @Convert(converter  = JsonType.class)
   @Column(columnDefinition = "jsonb")
   private String payload;
   /**
    *
    */
-  @Convert(converter  = JsonType.class)
+//  @Convert(converter  = JsonType.class)
   @Column(columnDefinition = "jsonb")
   private String learner;
   /**
@@ -51,3 +51,4 @@ public class SyncRecordDetail extends Auditable<String> {
   @Column(name = "RECORDSTATUS")
   private String recordStatus;
 }
+
