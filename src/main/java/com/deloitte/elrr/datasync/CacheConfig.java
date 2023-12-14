@@ -21,25 +21,25 @@ public class CacheConfig {
     private String samlid;
     @Value("${lrs.samlurl}")
     private String samlurl;
-    @Bean
-    public RelyingPartyRegistrationRepository relyingPartyRegistrations() throws Exception {
-        RelyingPartyRegistration relyingPartyRegistration = RelyingPartyRegistrations
-                .fromMetadataLocation(samlurl).registrationId(samlid).build();
+    // @Bean
+    // public RelyingPartyRegistrationRepository relyingPartyRegistrations() throws Exception {
+    //     RelyingPartyRegistration relyingPartyRegistration = RelyingPartyRegistrations
+    //             .fromMetadataLocation(samlurl).registrationId(samlid).build();
 
-        return new InMemoryRelyingPartyRegistrationRepository(relyingPartyRegistration);
-    }
+    //     return new InMemoryRelyingPartyRegistrationRepository(relyingPartyRegistration);
+    // }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated()).saml2Metadata(withDefaults())
-                .saml2Login(saml2 -> {
-                    try {
-                        saml2.relyingPartyRegistrationRepository(relyingPartyRegistrations());
-                    } catch (Exception e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                });
+        // http.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated()).saml2Metadata(withDefaults())
+        //         .saml2Login(saml2 -> {
+        //             try {
+        //                 saml2.relyingPartyRegistrationRepository(relyingPartyRegistrations());
+        //             } catch (Exception e) {
+        //                 // TODO Auto-generated catch block
+        //                 e.printStackTrace();
+        //             }
+        //         });
 
         return http.build();
     }
