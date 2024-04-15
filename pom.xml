@@ -23,7 +23,7 @@
 		<sonar.dynamicAnalysis>resuseReports</sonar.dynamicAnalysis>
 		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
 		<sona.lauguage>java</sona.lauguage>
-		<spring-security.version>6.1.4</spring-security.version>
+		<spring-security.version>6.2.3</spring-security.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -60,7 +60,7 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20210307</version>
+			<version>20240303</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -158,7 +158,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.5.1</version>				
+			<version>42.7.3</version>				
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -277,12 +277,17 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>6.0.14</version>				
+			<version>6.1.5</version>				
 		</dependency>
 		<dependency>
     		<groupId>org.apache.tomcat.embed</groupId>
     		<artifactId>tomcat-embed-core</artifactId>
     		<version>11.0.0-M18</version>
+		</dependency>
+		<dependency>
+    		<groupId>com.jayway.jsonpath</groupId>
+    		<artifactId>json-path</artifactId>
+    		<version>2.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
