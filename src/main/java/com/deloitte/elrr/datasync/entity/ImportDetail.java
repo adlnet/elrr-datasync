@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +24,8 @@ public class ImportDetail {
    *
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "importdetail_SEQ")
+  @SequenceGenerator(name = "importdetail_SEQ", sequenceName = "importdetail_SEQ", allocationSize = 1)
   @Column(name = "IMPORTDETAILID")
   private long importdetailId;
   /**

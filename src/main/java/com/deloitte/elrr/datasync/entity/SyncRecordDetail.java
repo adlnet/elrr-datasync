@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
@@ -25,7 +26,8 @@ public class SyncRecordDetail extends Auditable<String> {
    *
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "syncrecorddetail_SEQ")
+  @SequenceGenerator(name = "syncrecorddetail_SEQ", sequenceName = "syncrecorddetail_SEQ", allocationSize = 1)
   @Column(name = "SYNCRECORDDETAILID")
   private Long syncRecordDetailId;
   /**
