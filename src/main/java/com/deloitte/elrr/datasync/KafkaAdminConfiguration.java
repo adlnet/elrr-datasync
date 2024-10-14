@@ -14,12 +14,14 @@ public class KafkaAdminConfiguration {
     /**
      *
      */
-    private static final int KAFKA_PARTITIONS = 6;
+    //private static final int KAFKA_PARTITIONS = 6; // PHL
+    private static final int KAFKA_PARTITIONS = 1;   // PHL
 
     /**
      *
      */
-    private static final int KAFKA_RIPLICAS = 6;
+    //private static final int KAFKA_RIPLICAS = 6; // PHL
+    private static final int KAFKA_RIPLICAS = 1;   // PHL
 
     /**
      *
