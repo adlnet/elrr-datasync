@@ -12,10 +12,10 @@ import org.springframework.kafka.config.TopicBuilder;
 @Configuration
 public class KafkaAdminConfiguration {
 
-	@Value("${kafka.partitions}")
+    @Value("${kafka.partitions}")
     private static int kafkaPartitions;
 
-	@Value("${kafka.replicas}")
+    @Value("${kafka.replicas}")
     private static int kafkaReplicas;
 
     private static final int KAFKA_PARTITIONS = kafkaPartitions;
