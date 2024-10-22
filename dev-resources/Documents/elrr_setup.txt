@@ -1,0 +1,233 @@
+elrr
+
+
+Use Java 17
+Install Dependencies
+Clone Remote Git Repository
+Create a new Eclipse Workspace
+Import Project Into Eclipse
+Create Docker Containers (Docker compose)
+Create and populate PostgreSQL staging schema
+Run elrrexternalservices
+Application UI
+Run elrrexternalservices
+Run elrrdatasynch
+Run elrraggregation
+Run Postman to populate lrs-db
+Remove Application from Docker
+View runnung Docker containers
+View Kafka topics
+View Kafka topic messages
+KafkaMagic
+
+
+
+Use Java 17:
+   c. java -version
+   d. echo $JAVA_HOME
+
+
+
+Install Dependencies:
+1. Install git
+2. Install Maven
+3. Install Docker Desktop
+
+
+
+Clone elrraggregator Remote Git Repository (NOT USED):
+1. Open terminal
+   a. md C:\Dev\elrraggrigator
+   b. cd C:\Dev\elrraggrigator
+   c. git clone -b agg-update https://github.com/US-ELRR/elrraggregator.git
+
+
+
+Create a new Eclipse Workspace:
+1. Open Eclipse
+   a. Set Java version in Eclipse
+      1. Eclipse --> Preferences --> Java --> Installed JREs
+         a. Check Java SE 17
+
+         b. Right click on ellraggrigator --> Properties --> Project Facets
+            1. Java = 17 --> Apply and Close
+
+   b. Import Project into Eclipse
+      1. File --> Import --> Git --> Projects from Git --> Clone URI
+         a. URI = https://github.com/US-ELRR/elrraggregator.git
+         b. Select agg-update branch, deselect all other branches
+         c. Local Destination = C:\Users\phleven\git\ellr\elrraggregator
+        
+      2. Eclipse --> Show View --> Git Repositories -->Right click on ellaggrigator [agg-update] C:\Users\phleven\git\elrraggregator\.git 
+	--> Working Tree - C:\Users\phleven\git\elrraggregator\.git --> Import Projects 
+         a. Import source = C:\Users\phleven\git\elrraggregator
+         b. Check all folders
+        
+
+      3. File --> Import --> Git --> Projects from Git --> Clone URI
+         a. URI = https://github.com/US-ELRR/elrrexternalservices.git
+         b. Select ext-update branch, deselect all other branches
+         c. Local Destination = C:\Users\phleven\git\elrrexternalservices
+        
+      4. Eclipse --> Show View --> Git Repositories -->Right click on ellrexternalservices [ext-update] C:\Users\phleven\git\elrrexternalservices\.git 
+	--> Working Tree - C:\Users\phleven\git\elrraggregator\.git --> Import Projects 
+         a. Import source = C:\Users\phleven\git\elrrexternalservices
+         b. Check all folders
+
+
+      5. File --> Import --> Git --> Projects from Git --> Clone URI
+         a. URI = https://github.com/US-ELRR/elrrdatasync.git
+         b. Select pom-update branch, deselect all other branches
+         c. Local Destination = C:\Users\phleven\git\elrrdtatsynch
+        
+      6. Eclipse --> Show View --> Git Repositories -->Right click on ellrdatasynch [pom-update] C:\Users\phleven\git\elrrdatasynch\.git 
+	--> Working Tree - C:\Users\phleven\git\elrrdatasynch\.git --> Import Projects 
+         a. Import source = C:\Users\phleven\git\elrrdatasynch
+         b. Check all folders
+
+
+      7. File --> Import --> Git --> Projects from Git --> Clone URI
+         a. URI = https://github.com/US-ELRR/elrrservices.git
+         b. Select svc-update branch, deselect all other branches
+         c. Local Destination = C:\Users\phleven\git\elrrservices
+        
+      8. Eclipse --> Show View --> Git Repositories -->Right click on ellrservices [ext-update] C:\Users\phleven\git\elrrservices\.git 
+	--> Working Tree - C:\Users\phleven\git\elrrservices\.git --> Import Projects 
+         a. Import source = C:\Users\phleven\git\elrrservices
+         b. Check all folders
+
+   
+
+Create Docker Containers:
+1. Start Docker Desktop
+2. Open terminal
+   a. cd cd C:\Dev\elrrdockercompose
+   b. docker compose up
+   c. docker compose logs
+   c. Check for new containers in Docker Desktop
+      1. elrr_docker_resources
+         a. sync-db-1
+         b. lrs-db-1
+         c. zookeeper-1
+         d. services-db-1
+         e. lrs-1
+         f. kalfka-1
+
+
+
+Create and populate PostgreSQL staging schema:
+1. Open DBeaver
+2. Run "C:\Dev\elrrSQL\Create_sync_db.sql"
+3. Run "C:\Dev\elrrSQL\sync_db_insert.sql"
+4. Run "C:\Dev\elrrSQL\Create_service_db.sql"
+5. Run "C:\Dev\elrrSQL\service_db_insert.sql"
+
+
+
+Run elrrexternalservices:
+1. Run elrrexternalservices
+   a. Open terminal
+      1. cd C:\Users\phleven\git\elrrexternalservices
+      2. git switch dev-ext-update-local-fixes-and-docs-1
+      3. mvn clean
+      4. mvn spring-boot:run -D"spring-boot.run.profiles"=local -e
+      5. Ctrl+C to end --> Terminate batch job = Y 
+
+2. Run elrrdatasynch:
+   a. Open terminal
+      1. cd C:\Users\phleven\git\elrrdatasync
+      2. git switch dev-pom-update-local-fixes-and-docs-1
+      3. mvn clean
+      4. mvn spring-boot:run -D"spring-boot.run.profiles"=local -e
+      5. Ctrl+C to end --> Terminate batch job = Y 
+
+
+
+Run elrraggregation:
+    1. Open terminal
+      a. cd C:\Users\phleven\git\elrraggregator
+      b. git switch dev-agg-update-local-fixes-and-docs-1
+      c. mvn clean
+      d. mvn spring-boot:run -D"spring-boot.run.profiles"=local -e
+      e. Ctrl+C to end --> Terminate batch job = Y 
+
+
+
+Run elrrservices:
+    1. Open terminal
+      a. cd C:\Users\phleven\git\elrrservices
+      b. mvn clean
+      c. mvn spring-boot:run -D"spring-boot.run.profiles"=local -e
+      d. Ctrl+C to end --> Terminate batch job = Y 
+
+
+
+
+Application UI:
+1. http://localhost:8088/api/lrsdata
+
+2. Yet (lrs) 
+   a. http://localhost:8083
+      user = my_username
+      password = my_password
+
+   b. STATEMENT BROWSER
+      1. Credentiails to use = my_key
+
+
+
+Run Postman to populate lrs-db:
+1. Postman
+   a. POST http://localhost:8083/xapi/statements
+   b. Headers
+      1. key = X-Experience-API-Version
+      2. value = 1.0.3
+   c. Body raw, JSON
+[
+  {"actor":{"name":"Sophia Lewis","mbox":"mailto:sophia.lewis@us.navy.mil"},"verb":{"id":"https://adlnet.gov/expapi/verbs/achieved","display":{"en-us":"Achieved"}},"object":{"id":"https://w3id.org/xapi/credential/GIAC%20Security%20Essentials%20Certification%20%28GSEC%29","objectType":"Activity","definition":{"name":{"en-us":"GIAC Security Essentials Certification (GSEC)"},"type":"https://yetanalytics.com/deloitte-edlm/demo-profile/certificate"}},"stored":"2024-09-20T21:37:23.835000000Z","authority":{"account":{"homePage":"http://example.org","name":"0192115b-03d0-849f-8a65-f217ffbe2207"},"objectType":"Agent"},"id":"d9f1328b-bcc2-4b9c-b954-03cb88a240c8","timestamp":"2024-09-20T21:37:23.835000000Z","version":"1.0.0"}
+]
+
+
+
+Remove Application from Docker:
+1. Docker Desktop --> Containers
+   a. Check elrr_docker_resources --> Delete
+
+2. 1. Docker Desktop --> Volumes
+   a. Check elrr_docker_resources_db_data_lrs --> Delete
+   b. Check elrr_docker_resources_db_data_service --> Delete
+   c. Check elrr_docker_resources_db_data_sync --> Delete
+   d. Check elrr_docker_resources_db_Kalfka_storage --> Delete
+
+
+
+View runnung Docker containers:
+1. Open terminal
+   a. docker ps
+
+
+
+View Kafka topics
+1. Open terminal
+   a. Get hash for kafka-1 from Docker --> Containers
+   b. docker exec -t -i 25b1e4809004594d65fc1dfad0834d6528cc5162b2cb76e5de99db26ecbfaed9 /bin/bash
+   c. ./kafka-topics.sh --bootstrap-server localhost:9092 --list
+
+
+
+View Kafka topic messages:
+1. Open terminal
+   a. Get hash for kafka-1 from Docker --> Containers
+   b. docker exec -t -i 25b1e4809004594d65fc1dfad0834d6528cc5162b2cb76e5de99db26ecbfaed9 /bin/bash
+   c. cd /opt/bitnami/kafka/bin
+   d. ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-1 --from-beginning
+   e. Ctrl+C to end
+   f. exit
+
+
+KafkaMagic:
+1. Start Docker
+2. Run "C:\Dev\KafkaMagic_win-x64\KafkaMagic.exe"
+3. Register New
+   a. Name = Kafka
+   b. Bootstrap Server = localhost:9092

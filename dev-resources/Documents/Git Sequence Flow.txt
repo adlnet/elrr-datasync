@@ -1,0 +1,12 @@
+Git Sequence Flow:
+
+1. Make changes in local feature branch (dev-pom-update-local-fixes-and-docs-1).
+
+2. Commit changes to local feature branch (dev-pom-update-local-fixes-and-docs-1).
+
+3. Push changes to remote feature branch (dev-pom-update-local-fixes-and-docs-1).
+
+4. Pull request to merge changes from remote feature branch (dev-pom-update-local-fixes-and-docs-1)
+   to remote base branch (dev-update-base).
+
+5. Pull remote base branch (dev-update-base) to local base branch (dev-update-base).
