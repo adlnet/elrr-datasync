@@ -1,0 +1,88 @@
+volumes:
+  db_data_service:
+  db_data_sync:
+  db_data_lrs:
+  kafka_storage:
+
+services:
+
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka:
+    image: 'bitnami/kafka:latest'
+    user: root
+    ports:
+      - '9092:9092'
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - kafka_storage:/bitnami/kafka
+    depends_on:
+      - zookeeper
+
+  # this DB is for Aggregator and Sync
+  services-db:
+    image: postgres:14
+    volumes:
+      - db_data_service:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: service_user
+      POSTGRES_PASSWORD: service_password
+      POSTGRES_DB: service_db
+    ports:
+      - "5432:5432" # Useful if we only want to run the DB w/o other services
+
+  # this DB is for Datasync
+  sync-db:
+    image: postgres:14
+    volumes:
+      - db_data_sync:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: sync_user
+      POSTGRES_PASSWORD: sync_password
+      POSTGRES_DB: sync_db
+    ports:
+      - "5431:5432" # Useful if we only want to run the DB w/o other services
+
+  lrs-db:
+    image: postgres:latest
+    volumes:
+      - db_data_lrs:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: lrsql_db
+    ports:
+      - "5433:5432" # Useful if we only want to run the DB w/o other services
+  lrs:
+    #build: . # switch to this for active dev
+    image: yetanalytics/lrsql:latest
+    command:
+      - /lrsql/bin/run_postgres.sh
+    ports:
+      - "8083:8080"
+    depends_on:
+      - lrs-db
+    environment:
+      LRSQL_API_KEY_DEFAULT: my_key
+      LRSQL_API_SECRET_DEFAULT: my_secret
+      LRSQL_ADMIN_USER_DEFAULT: my_username
+      LRSQL_ADMIN_PASS_DEFAULT: my_password
+      LRSQL_DB_HOST: lrs-db
+      LRSQL_DB_NAME: lrsql_db
+      LRSQL_DB_USER: username
+      LRSQL_DB_PASSWORD: password
+      # If Postgres is too slow to start, increase this
+      LRSQL_POOL_INITIALIZATION_FAIL_TIMEOUT: 10000
+      # Set to true if using dev UI, domain name, proxy server, etc.
+      LRSQL_ALLOW_ALL_ORIGINS: true
+      LRSQL_ENABLE_STMT_HTML: false
