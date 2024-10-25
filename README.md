@@ -8,7 +8,9 @@ Setup elrrdatasync first.
 - git
 - Maven 3
 - Docker Desktop
-- DBeaver
+
+# Tools
+- DBeaver 
 - Postman
 
 # Create Docker Containers
