@@ -1,15 +1,21 @@
 # elrrdatasync
 ELRR services which aid in the streaming (Kafka streams) of data from the staging database to the ELRR database.
 
-# Dependencies
-- Java JDK 17
-- git
-- Maven 3
-- Docker Desktop
+There are database and kafka dependencies, but there's a repo with a docker-compose that resolves them locally.
+[.yaml](https://github.com/US-ELRR/elrrdatasync/tree/dev-pom-update-local-fixes-and-docs-1/dev-resources/docker-compose)
+
+Setup elrrdatasync first [README](https://github.com/US-ELRR/elrrdatasync/blob/dev-pom-update-local-fixes-and-docs-1/README.md)
+
+- Java JDK 1.8 [JDK](https://www.oracle.com/java/technologies/downloads/)
+- git [Git](https://git-scm.com/downloads)
+- Maven 3 [Maven](https://maven.apache.org/)
+- Docker Desktop [Docker](https://www.docker.com/products/docker-desktop/)
+- PostgreSQL [PostgreSQL](https://www.postgresql.org/download/)
 
 # Tools
-- DBeaver 
-- Eclipse or other IDE
+- SQL client or Terminal
+- Postman [Postman](https://www.postman.com/downloads/)
+- Eclipse or other IDE [Eclipse](https://www.eclipse.org/downloads/packages/)
 
 # Create Docker Containers
 - Start Docker Desktop
