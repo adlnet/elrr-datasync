@@ -95,8 +95,8 @@ public class LRSSyncSchedulingService {
         if (result != null && result.length > 0) {
           importDetail = insertImportDetail(result.length, 0, 0, importRecord);
           insertSyncRecords(result, importDetail);
+          updateImportDetailSuccess(importDetail); // PHL
         }
-        updateImportDetailSuccess(importDetail);
         updateImportSuccess(importRecord);
       } catch (Exception e) {
         log.error("LRS Sync failed " + e.getMessage());
