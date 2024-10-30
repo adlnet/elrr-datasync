@@ -1,7 +1,7 @@
 # elrrdatasync
 ELRR services which aid in the streaming (Kafka streams) of data from the staging database to the ELRR database.
 
-There are database and kafka dependencies, but there's a [repo with a docker-compose](https://github.com/US-ELRR/elrrdatasync/) that resolves them locally.
+There are database and kafka dependencies, but there's a [repo with a docker-compose](https://github.com/US-ELRR/elrrdockercompose/) that resolves them locally.
 
 # Dependencies
 - [Java JDK 1.8](https://www.oracle.com/java/technologies/downloads/)
