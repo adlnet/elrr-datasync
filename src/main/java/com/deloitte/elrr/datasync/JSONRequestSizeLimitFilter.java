@@ -20,11 +20,11 @@ import java.io.IOException;
 public class JSONRequestSizeLimitFilter extends OncePerRequestFilter {
     
     @Value("${json.max.size.limit}")
-    private static long maxSizeLimit;
-    private static final long MAX_SIZE_LIMIT = maxSizeLimit;
+    private long maxSizeLimit;
+    private long MAX_SIZE_LIMIT = maxSizeLimit;
 
-    @Value("${environment}")
-    private static String environment;
+    @Value("${mediaType.json}")
+    private String mediaTypeJson;
     
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -40,8 +40,7 @@ public class JSONRequestSizeLimitFilter extends OncePerRequestFilter {
 
     private boolean isApplicationJson(HttpServletRequest httpRequest) {
         
-        // If Deloitte sandbox don't check if is JSON
-        if (StringUtils.equals(environment, "sandbox")) {
+        if (StringUtils.equals(mediaTypeJson, "off")) {
             return true;
         } else {
             return (MediaType.APPLICATION_JSON.isCompatibleWith(MediaType

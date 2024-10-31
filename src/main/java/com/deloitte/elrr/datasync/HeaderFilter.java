@@ -15,8 +15,8 @@ import java.io.IOException;
 @Slf4j
 public class HeaderFilter implements Filter {
     
-    @Value("${environment}")
-    private static String environment;
+    @Value("${http.header}")
+    private String httpHeader;
     
     @Override
     public
@@ -24,8 +24,7 @@ public class HeaderFilter implements Filter {
 
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
-        // If Deloitte sandbox don't check X-Forwarded-Proto
-        if (StringUtils.equals(environment, "sandbox")) {
+        if (StringUtils.equals(httpHeader, "off")) {
             chain.doFilter(request, response);
         } else {
             if("https".equalsIgnoreCase(httpServletRequest.getHeader("X-Forwarded-Proto"))) {
