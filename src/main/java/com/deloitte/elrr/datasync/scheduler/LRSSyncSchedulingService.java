@@ -73,12 +73,17 @@ public class LRSSyncSchedulingService {
    */
   @Scheduled(cron = "${cronExpression}")
   /*
-   * 1. connect to db and get Last sync date 2. Update the last sync record
-   * with the status INPROCESS and update to current time 3. make a call
-   * to LRS and get the data 4. insert Sync Records and Sync record
-   * details table with INSERTED status 5. updated Import table and insert
-   * to Imports detail table with SUCCESS/FAILED status 6. Invoke
-   * New Processor to processed unprocessedrecords
+   * 1. Connect to db and get Last sync date. 
+   * 
+   * 2. Update the last sync record with the status INPROCESS and update to current time.
+   * 
+   * 3. Make a call to LRS and get the data.
+   * 
+   * 4. insert Sync Records and Sync record details table with INSERTED status. 
+   * 
+   * 5. Updated Import table and insert to Imports detail table with SUCCESS/FAILED status.
+   * 
+   * 6. Invoke New Processor to process unprocessed records.
    *
    */
   public void run() {
@@ -117,10 +122,7 @@ public class LRSSyncSchedulingService {
    * @param list
    * @param importDetail
    */
-  private void insertSyncRecords(
-    final ElrrStatement[] list,
-    final ImportDetail importDetail
-  ) {
+  private void insertSyncRecords(final ElrrStatement[] list, final ImportDetail importDetail) {
     int successCount = 0;
     int failedCount = 0;
     int total = list.length;
@@ -168,11 +170,9 @@ public class LRSSyncSchedulingService {
    * @param statement
    * @throws JsonProcessingException
    */
-  private void createSyncRecordDetail(
-    final SyncRecord syncRecord,
-    final ElrrStatement statement
-  )
-    throws JsonProcessingException {
+  private void createSyncRecordDetail (final SyncRecord syncRecord,final ElrrStatement statement)
+          throws JsonProcessingException {
+      
     SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
     syncRecordDetail.setSyncRecordId(syncRecord.getSyncRecordId());
     LearnerChange learnerChange = getLearnerChange(statement);
@@ -180,6 +180,7 @@ public class LRSSyncSchedulingService {
     syncRecordDetail.setLearner(getJson(learnerChange));
     syncRecordDetail.setRecordStatus("INSERTED");
     syncRecordDetailService.save(syncRecordDetail);
+    
   }
 
   /**
@@ -190,12 +191,9 @@ public class LRSSyncSchedulingService {
    * @param importRecord
    * @return ImportDetail
    */
-  private ImportDetail insertImportDetail(
-    final int total,
-    final int newsuccess,
-    final int failed,
-    final Import importRecord
-  ) {
+  private ImportDetail insertImportDetail(final int total, final int newsuccess, final int failed,
+          final Import importRecord) {
+      
     ImportDetail importDetail = new ImportDetail();
     importDetail.setImportId(importRecord.getImportId());
     importDetail.setImportBeginTime(importRecord.getImportStartDate());
@@ -206,6 +204,7 @@ public class LRSSyncSchedulingService {
     importDetail.setRecordStatus("INPROCESS");
     importDetailService.save(importDetail);
     return importDetail;
+    
   }
 
   /**
@@ -215,6 +214,7 @@ public class LRSSyncSchedulingService {
    * @throws JsonProcessingException
    */
   private String getJson(final Object object) throws JsonProcessingException {
+    log.info("==> json= " + mapper.writeValueAsString(object)); // 
     return mapper.writeValueAsString(object);
   }
 

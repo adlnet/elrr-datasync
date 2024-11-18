@@ -75,7 +75,6 @@ public class LRSService {
 
       ObjectMapper mapper = new ObjectMapper();
       statements = mapper.readValue(json.getBody(), ElrrStatement[].class);
-      log.info("number of statements received " + statements);
     } catch (Exception e) {
       e.printStackTrace();
     }

@@ -8,7 +8,7 @@ CREATE DATABASE [IF NOT EXISTS] service_db;
 CREATE SCHEMA [IF NOT EXISTS] elrr;
 
 -- Navigate to elrr area 
-SET search_path = elrr;
+SET search_path TO elrr;
 
 -- Create elrr tables 
 CREATE TABLE IF NOT EXISTS CONFIGURATION (
@@ -99,6 +99,15 @@ CREATE TABLE IF NOT EXISTS ELRRAUDITLOG (
 	lastmodified timestamp NULL,
 	CONSTRAINT elrrauditlog_pk PRIMARY KEY (elrrauditlogid)
 );
+
+CREATE SEQUENCE elrrauditlog_seq
+   START WITH 1
+   INCREMENT BY 1
+   NO MINVALUE
+   NO MAXVALUE
+   CACHE 1;
+
+ALTER SEQUENCE elrrauditlog_seq OWNED BY elrrauditlog.elrrauditlogid;
 
 
 CREATE TABLE IF NOT EXISTS EMPLOYMENT (

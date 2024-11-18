@@ -4,7 +4,7 @@ CREATE DATABASE [IF NOT EXISTS] synch_db;
 CREATE SCHEMA [IF NOT EXISTS] staging;
 
 -- Navigate to elrr area 
-SET search_path = staging;
+SET search_path TO staging;
 
 CREATE TABLE staging."import" (
 	importid int4 NOT NULL,

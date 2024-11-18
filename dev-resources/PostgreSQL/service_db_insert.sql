@@ -46,12 +46,13 @@ VALUES
   (108, 'Requirements Executive Overview Workshop', NULL, NULL, 'RQM 403', NULL, '403', 'Web', '2021-03-03', '2021-03-20', '2021-02-27', NULL, 'DAU', 'Defense Acquisition University', NULL, NULL, NULL, NULL, 'ACTIVE', NULL, '2021-06-29', NULL),
   (109, 'Department of Defense (DoD) Cyber Awareness Challenge 2021 (1 hr) ', NULL, NULL, 'DOD-US1364-21', NULL, '21', 'Web', '2021-03-03', '2021-03-20', '2021-02-27', NULL, 'JKO', 'Joint Knowledge Online', NULL, NULL, NULL, NULL, 'ACTIVE', NULL, '2021-06-29', NULL),
   (110, 'HH-60 AIRCRAFT MAINTENANCE OFFICER/SUPERVISOR FAMILIARIZATION', NULL, NULL, 'J4OMP21A3  A30A', NULL, '30', 'Web', '2021-03-03', '2021-03-20', '2021-02-27', NULL, 'AETC', 'Air Education and Training Command', NULL, NULL, NULL, NULL, 'ACTIVE', NULL, '2021-06-29', NULL);
+  (120, 'GIAC Security Essentials Certification', NULL, NULL, 'https://w3id.org/xapi/credential/GIAC Security Essentials Certification %28GSEC%29', NULL, '35', 'Web', '2021-03-03', '2021-03-20', '2021-02-27', NULL, 'AETC', 'Air Education and Training Command', NULL, NULL, NULL, NULL, 'ACTIVE', NULL, '2021-06-29', NULL);
 
 COMMIT;
 
 
 INSERT INTO employment
-  (employmentid, employername, employerdepartment, hiredate, employmentstartdate, employmentenddate,            joblevel, occupation, employed, primarycareercategory, recordstatus, updatedby, inserteddate, lastmodified)
+  (employmentid, employername, employerdepartment, hiredate, employmentstartdate, employmentenddate, joblevel, occupation, employed, primarycareercategory, recordstatus, updatedby, inserteddate, lastmodified)
 VALUES
   (100, 'NAVY', '', '2012-06-30', '2012-07-07', NULL, 'Petty Officer Third Class', 'Mass Communications Specialist', 'Y', NULL, 'ACTIVE', NULL, '2021-06-29', NULL),
   (101, 'NAVY', '', '2012-06-30', '2012-07-07', NULL, 'Petty Officer First Class', 'Navy Counselor', 'Y',
