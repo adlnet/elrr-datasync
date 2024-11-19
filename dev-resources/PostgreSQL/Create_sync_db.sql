@@ -1,12 +1,15 @@
-
 CREATE DATABASE [IF NOT EXISTS] synch_db;
+
+
 
 CREATE SCHEMA [IF NOT EXISTS] staging;
 
--- Navigate to elrr area 
+
+
+-- Navigate to elrr schema 
 SET search_path TO staging;
 
-CREATE TABLE staging."import" (
+CREATE TABLE IF NOT EXISTS staging."import" (
 	importid int4 NOT NULL,
 	importname varchar NULL,
 	importstartdate timestamp NULL,
@@ -18,7 +21,7 @@ CREATE TABLE staging."import" (
 	CONSTRAINT import_pk PRIMARY KEY (importid)
 );
 
-CREATE SEQUENCE staging.import_seq
+CREATE SEQUENCE IF NOT EXISTS staging.import_seq
    START WITH 1
    INCREMENT BY 50
    NO MINVALUE
@@ -29,7 +32,7 @@ ALTER SEQUENCE staging.import_seq OWNED BY staging.import.importid;
 
 
 
-CREATE TABLE staging.importdetail (
+CREATE TABLE IF NOT EXISTS staging.importdetail (
 	importdetailid int4 NOT NULL,
 	importid int4 NULL,
 	importbegintime timestamp NULL,
@@ -38,13 +41,11 @@ CREATE TABLE staging.importdetail (
 	successrecords int4 NULL,
 	failedrecords int4 NULL,
 	recordstatus varchar NULL,
-	CONSTRAINT importdetail_pk PRIMARY KEY (importdetailid)
+	CONSTRAINT importdetail_pk PRIMARY KEY (importdetailid),
+	CONSTRAINT importdetail_fk FOREIGN KEY (importid) REFERENCES staging."import"(importid)
 );
 
--- staging.importdetail foreign keys
-ALTER TABLE staging.importdetail ADD CONSTRAINT importdetail_fk FOREIGN KEY (importid) REFERENCES staging."import"(importid);
-
-CREATE SEQUENCE staging.importdetail_seq
+CREATE SEQUENCE IF NOT EXISTS staging.importdetail_seq
    START WITH 1
    INCREMENT BY 50
    NO MINVALUE
@@ -55,7 +56,7 @@ ALTER SEQUENCE staging.importdetail_seq OWNED BY staging.importdetail.importdeta
 
 
 
-CREATE TABLE staging.syncrecord (
+CREATE TABLE IF NOT EXISTS staging.syncrecord (
 	inserteddate timestamp NULL,
 	updatedby varchar NULL,
 	lastmodified timestamp NULL,
@@ -63,13 +64,11 @@ CREATE TABLE staging.syncrecord (
 	importdetailid int4 NULL,
 	synckey varchar NULL,
 	recordstatus varchar NULL,
-	CONSTRAINT syncrecord_pk PRIMARY KEY (syncrecordid)
+	CONSTRAINT syncrecord_pk PRIMARY KEY (syncrecordid),
+	CONSTRAINT syncrecord_fk FOREIGN KEY (importdetailid) REFERENCES staging.importdetail(importdetailid)
 );
 
--- staging.syncrecord foreign keys
-ALTER TABLE staging.syncrecord ADD CONSTRAINT syncrecord_fk FOREIGN KEY (importdetailid) REFERENCES staging.importdetail(importdetailid);
-
-CREATE SEQUENCE staging.syncrecord_seq
+CREATE SEQUENCE IF NOT EXISTS staging.syncrecord_seq
    START WITH 1
    INCREMENT BY 50
    NO MINVALUE
@@ -80,7 +79,7 @@ ALTER SEQUENCE staging.syncrecord_seq OWNED BY staging.syncrecord.syncrecordid;
 
 
 
-CREATE TABLE staging.syncrecorddetail (
+CREATE TABLE IF NOT EXISTS staging.syncrecorddetail (
 	syncrecorddetailid int4 NOT NULL,
 	syncrecordid int4 NULL,
 	"jsonb" varchar NULL,
@@ -90,13 +89,11 @@ CREATE TABLE staging.syncrecorddetail (
 	lastmodified timestamp NULL,
 	payload varchar NULL,
 	learner varchar NULL,
-	CONSTRAINT syncrecorddetail_pk PRIMARY KEY (syncrecorddetailid)
+	CONSTRAINT syncrecorddetail_pk PRIMARY KEY (syncrecorddetailid),
+	CONSTRAINT syncrecorddetail_fk FOREIGN KEY (syncrecordid) REFERENCES staging.syncrecord(syncrecordid)
 );
 
--- staging.syncrecorddetail foreign keys
-ALTER TABLE staging.syncrecorddetail ADD CONSTRAINT syncrecorddetail_fk FOREIGN KEY (syncrecordid) REFERENCES staging.syncrecord(syncrecordid);
-
-CREATE SEQUENCE staging.syncrecorddetail_seq
+CREATE SEQUENCE IF NOT EXISTS staging.syncrecorddetail_seq
    START WITH 1
    INCREMENT BY 50
    NO MINVALUE
