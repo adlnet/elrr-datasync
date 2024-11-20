@@ -1,6 +1,7 @@
 SET search_path TO staging;
 
 
+-- Turncate tables
 TRUNCATE staging.importdetail cascade;
 TRUNCATE staging."import" cascade;
 TRUNCATE staging.syncrecorddetail cascade;
@@ -9,6 +10,16 @@ COMMIT;
 
 
 
+-- Restart sequences
+ALTER SEQUENCE staging.import_importid_seq RESTART;
+ALTER SEQUENCE staging.importdetail_importdetailid_seq RESTART;
+ALTER SEQUENCE staging.syncrecord_syncrecordid_seq RESTART;
+ALTER SEQUENCE staging.syncrecorddetail_syncrecorddetailid_seq RESTART;
+COMMIT;
+
+
+
+-- Insert data
 INSERT INTO staging."import" (recordstatus , importname, importstartdate, importenddate)
 VALUES ('SUCCESS', 'Deloitte LRS', '2000-12-30 13:08:54.193', '2000-12-30 13:08:54.193');
 COMMIT;
