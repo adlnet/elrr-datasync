@@ -9,39 +9,28 @@ COMMIT;
 
 
 
--- RESET sequences
-ALTER SEQUENCE staging.import_seq RESTART WITH 1;
-ALTER SEQUENCE staging.importdetail_seq RESTART WITH 1;
-ALTER SEQUENCE staging.syncrecord_seq RESTART WITH 1;
-ALTER SEQUENCE staging.syncrecorddetail_seq RESTART WITH 1;
+INSERT INTO staging."import" (recordstatus , importname, importstartdate, importenddate)
+VALUES ('SUCCESS', 'Deloitte LRS', '2000-12-30 13:08:54.193', '2000-12-30 13:08:54.193');
 COMMIT;
 
 
 
-INSERT INTO staging."import" (importid , recordstatus , importname, importstartdate, importenddate)
-VALUES (1, 'SUCCESS', 'Deloitte LRS', '2000-12-30 13:08:54.193', '2000-12-30 13:08:54.193');
+INSERT INTO staging.importdetail (recordstatus, importid, importbegintime, importendtime, totalrecords, successrecords, failedrecords)
+VALUES ('SUCCESS', 1, '2000-12-30 13:08:54.193', '2000-12-30 13:08:54.193',1,1,0);
 COMMIT;
 
 
 
-INSERT INTO staging.importdetail  (importdetailid , recordstatus, importid, importbegintime, importendtime, totalrecords, successrecords, failedrecords)
-VALUES (1, 'SUCCESS', 1, '2000-12-30 13:08:54.193', '2000-12-30 13:08:54.193',1,1,0);
+INSERT INTO staging.syncrecord (recordstatus , synckey, importdetailid)
+VALUES ('inserted', 'Deloitte LRS',1 );
 COMMIT;
 
 
 
-INSERT INTO staging.syncrecord  (syncrecordid , recordstatus , synckey, importdetailid)
-VALUES (1, 'inserted', 'Deloitte LRS',1 );
+INSERT INTO staging.syncrecorddetail (syncrecordid, recordstatus)
+VALUES (1, 'inserted');
 COMMIT;
 
--- update staging.syncrecord set recordstatus ='inserted' where staging.syncrecordid=1;
-
-
-
-INSERT INTO staging.syncrecorddetail  (syncrecorddetailid, syncrecordid, recordstatus)
-VALUES (1, 1, 'inserted');
-COMMIT;
-
-update staging.syncrecorddetail set learner = '{"contactEmailAddress":"test@deloitte.com","name":"test","courses":[{"courseId":"5","courseName":"coursename","userCourseStatus":"inserted"}]}'
- where syncrecorddetailid  = 1;
+UPDATE staging.syncrecorddetail set learner = '{"contactEmailAddress":"test@deloitte.com","name":"test","courses":[{"courseId":"5","courseName":"coursename","userCourseStatus":"inserted"}]}'
+ WHERE syncrecorddetailid  = 1;
 COMMIT;
