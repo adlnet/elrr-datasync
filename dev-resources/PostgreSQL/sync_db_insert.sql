@@ -1,23 +1,20 @@
 SET search_path TO staging;
 
-
+-- Truncate tables
 TRUNCATE staging.importdetail cascade;
 TRUNCATE staging."import" cascade;
 TRUNCATE staging.syncrecorddetail cascade;
 TRUNCATE staging.syncrecord cascade;
 COMMIT;
 
-
-
--- RESET sequences
+-- Reset sequences
 ALTER SEQUENCE staging.import_seq RESTART;
 ALTER SEQUENCE staging.importdetail_seq RESTART;
 ALTER SEQUENCE staging.syncrecord_seq RESTART;
 ALTER SEQUENCE staging.syncrecorddetail_seq RESTART;
 COMMIT;
 
-
-
+-- Insert data
 INSERT INTO staging."import" (importid , recordstatus , importname, importstartdate, importenddate)
 VALUES (1, 'SUCCESS', 'Deloitte LRS', '2000-12-30 13:08:54.193', '2000-12-30 13:08:54.193');
 COMMIT;
@@ -48,6 +45,6 @@ COMMIT;
 
 SELECT setval('staging.syncrecorddetail_seq', 1, true);
 
-update staging.syncrecorddetail set learner = '{"contactEmailAddress":"test@deloitte.com","name":"test","courses":[{"courseId":"5","courseName":"coursename","userCourseStatus":"inserted"}]}'
- where syncrecorddetailid  = 1;
+UPDATE staging.syncrecorddetail SET learner = '{"contactEmailAddress":"test@deloitte.com","name":"test","courses":[{"courseId":"5","courseName":"coursename","userCourseStatus":"inserted"}]}'
+ WHERE syncrecorddetailid = 1;
 COMMIT;
