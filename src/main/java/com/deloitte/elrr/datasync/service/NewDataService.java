@@ -72,6 +72,7 @@ public class NewDataService {
       } catch (Exception e) {
         // In case of exception change status back to inserted so that
         // they will be picked again next time and processed
+        log.info("Error in NewDataService.process(). " + e.getMessage().toString());  // PHL
         syncRecord.setRecordStatus("INSERTED");
         syncRecordService.save(syncRecord);
         for (SyncRecordDetail syncRecordDetail : details) {

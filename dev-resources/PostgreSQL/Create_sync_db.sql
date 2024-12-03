@@ -1,10 +1,6 @@
-CREATE DATABASE [IF NOT EXISTS] synch_db;
+-- CREATE DATABASE synch_db;
 
-
-
-CREATE SCHEMA [IF NOT EXISTS] staging;
-
-
+CREATE SCHEMA IF NOT EXISTS staging;
 
 -- Navigate to elrr schema 
 SET search_path TO staging;
