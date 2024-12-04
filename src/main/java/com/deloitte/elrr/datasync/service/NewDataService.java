@@ -52,7 +52,7 @@ public class NewDataService {
     log.info("Inside NewDataService");
     // Unprocessed synchrecord.recordStatus=inserted
     List<SyncRecord> syncList = getUnprocessedRecords();
-    log.info("inside getNewData1 " + syncList.size());
+    log.info("==> Unprocessed synch records = " + syncList.size());  // PHL
     for (SyncRecord syncRecord : syncList) {
       List<SyncRecordDetail> details = null;
       try {
@@ -60,6 +60,7 @@ public class NewDataService {
           syncRecordDetailService.findBySyncRecordId(
             syncRecord.getSyncRecordId()
           );
+        log.info("==> details size = " + details.size());  // PHL
         MessageVO kafkaMessage = createKafkaJsonMessage(details);
         sendToKafka(kafkaMessage);
         // Processed synchrecord.recordStatus=success
@@ -72,7 +73,7 @@ public class NewDataService {
       } catch (Exception e) {
         // In case of exception change status back to inserted so that
         // they will be picked again next time and processed
-        log.info("Error in NewDataService.process(). " + e.getMessage().toString());  // PHL
+        log.error("Exception in processing " + e.getMessage());  
         syncRecord.setRecordStatus("INSERTED");
         syncRecordService.save(syncRecord);
         for (SyncRecordDetail syncRecordDetail : details) {
