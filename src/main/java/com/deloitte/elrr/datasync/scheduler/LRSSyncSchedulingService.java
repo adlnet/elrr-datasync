@@ -79,9 +79,9 @@ public class LRSSyncSchedulingService {
    * 
    * 3. Make a call to LRS and get the data.
    * 
-   * 4. insert Sync Records and Sync record details table with INSERTED status. 
+   * 4. Insert Sync Records and Sync record details table with INSERTED status. 
    * 
-   * 5. Updated Import table and insert to Imports detail table with SUCCESS/FAILED status.
+   * 5. Update Import table and insert to Imports detail table with SUCCESS/FAILED status.
    * 
    * 6. Invoke New Processor to process unprocessed records.
    *

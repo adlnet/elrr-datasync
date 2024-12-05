@@ -5,6 +5,7 @@ TRUNCATE staging.importdetail cascade;
 TRUNCATE staging."import" cascade;
 TRUNCATE staging.syncrecorddetail cascade;
 TRUNCATE staging.syncrecord cascade;
+TRUNCATE staging.errors cascade;
 COMMIT;
 
 -- Reset sequences
@@ -12,6 +13,7 @@ ALTER SEQUENCE staging.import_seq RESTART;
 ALTER SEQUENCE staging.importdetail_seq RESTART;
 ALTER SEQUENCE staging.syncrecord_seq RESTART;
 ALTER SEQUENCE staging.syncrecorddetail_seq RESTART;
+ALTER SEQUENCE staging.errors_seq RESTART;
 COMMIT;
 
 -- Insert data
