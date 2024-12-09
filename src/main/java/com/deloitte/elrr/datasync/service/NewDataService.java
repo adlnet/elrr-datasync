@@ -1,5 +1,14 @@
 package com.deloitte.elrr.datasync.service;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.deloitte.elrr.datasync.dto.AuditRecord;
 import com.deloitte.elrr.datasync.dto.LearnerChange;
 import com.deloitte.elrr.datasync.dto.MessageVO;
@@ -12,15 +21,17 @@ import com.deloitte.elrr.datasync.jpa.service.SyncRecordService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
-import java.util.List;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 public class NewDataService {
+    
+    // PHL
+    @Value("${retries}")
+    private int numberOfRetries;
+    
   /**
    *
    */
@@ -74,21 +85,42 @@ public class NewDataService {
           syncRecordDetails.setRecordStatus("SUCCESS");
           syncRecordDetailService.save(syncRecordDetails);
         }
+        
       } catch (Exception e) {
+          
         log.error("Exception in processing " + e.getMessage()); 
         
         // PHL
-        // Create Errors record
-        errorsService.createErrors(Long.toString(syncRecord.getSyncRecordId()), e.getMessage());
+        long retries = syncRecord.getRetries();
         
-        // In case of exception change status back to inserted so that
-        // they will be picked again next time and processed
-        //syncRecord.setRecordStatus("INSERTED");
-        //syncRecordService.save(syncRecord);
-        //for (SyncRecordDetail syncRecordDetail : details) {
-          //syncRecordDetail.setRecordStatus("INSERTED");
-          //syncRecordDetailService.save(syncRecordDetail);
-        //}
+        if (retries < numberOfRetries) {
+            
+            // In case of exception change status back to inserted so that
+            // they will be picked again next time and processed
+            syncRecord.setRecordStatus("INSERTED");
+            syncRecord.setRetries(retries + 1);
+            syncRecordService.save(syncRecord);
+            for (SyncRecordDetail syncRecordDetail : details) {
+              syncRecordDetail.setRecordStatus("INSERTED");
+              syncRecordDetailService.save(syncRecordDetail);
+            }
+            
+        } else {
+        
+            syncRecord.setRecordStatus("FAILED");
+            syncRecord.setRetries(0L);
+            syncRecordService.save(syncRecord);
+
+            for (SyncRecordDetail syncRecordDetail : details) {
+                syncRecordDetail.setRecordStatus("FAILED");
+                syncRecordDetailService.save(syncRecordDetail);
+            }
+
+            // Create Errors record
+            errorsService.createErrors(Long.toString(syncRecord.getSyncRecordId()), e.getMessage());
+        
+        }
+        
       }
     }
   }

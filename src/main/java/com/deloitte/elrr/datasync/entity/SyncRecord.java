@@ -42,4 +42,9 @@ public class SyncRecord extends Auditable<String> {
    */
   @Column(name = "RECORDSTATUS")
   private String recordStatus;
+  
+  // PHL
+  @Column(name = "RETRIES")
+  private long retries;
+  
 }

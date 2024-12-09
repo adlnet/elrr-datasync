@@ -1,5 +1,15 @@
 package com.deloitte.elrr.datasync.scheduler;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
 import com.deloitte.elrr.datasync.dto.ElrrStatement;
 import com.deloitte.elrr.datasync.dto.LearnerChange;
 import com.deloitte.elrr.datasync.dto.UserCourse;
@@ -15,13 +25,8 @@ import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j

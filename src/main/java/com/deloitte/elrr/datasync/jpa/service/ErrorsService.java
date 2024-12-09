@@ -31,12 +31,12 @@ public class ErrorsService implements CommonSvc<Errors, Long> {
   
   @Override
   public Long getId(Errors entity) {
-      return null;
+      return entity.getErrorsId();
   }
   
   @Override
   public CrudRepository<Errors, Long> getRepository() {
-      return null;
+      return this.errorsRepository;
   }
   
 }

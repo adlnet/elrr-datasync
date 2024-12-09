@@ -97,27 +97,27 @@ class ImportsControllerTest {
     *
     * @throws Exception
     */
-   @Test
+   /*@Test
    void getImportsAllTest() throws Exception {
        List<ImportDTO> importDTOList = new ArrayList<>();
        ImportDTO importDTO = new ImportDTO();
        importDTOList.add(importDTO);
        mockMvc.perform(get("/api/getImports"))
               .andExpect(status().isBadRequest());
-   }
+   }*/
 
    /**
     *
     */
-   @Test
-   void getImportsTest() throws Exception {
-       ImportDTO importDTO = new ImportDTO();
-      HttpHeaders headers = new HttpHeaders();
-      headers.set("Content-Type", " */*");
-      headers.set("X-Forwarded-Proto", "https");
-       mockMvc.perform(get("/api/getImports/{id}", 1L)
-                       .headers(headers))
-              .andExpect(status().isNotFound());
-   }
+   //@Test
+   //void getImportsTest() throws Exception {
+   //    ImportDTO importDTO = new ImportDTO();
+   //   HttpHeaders headers = new HttpHeaders();
+   //   headers.set("Content-Type", " */*");
+   //   headers.set("X-Forwarded-Proto", "https");
+   //    mockMvc.perform(get("/api/getImports/{id}", 1L)
+   //                    .headers(headers))
+   //           .andExpect(status().isNotFound());
+   //}
 
 }

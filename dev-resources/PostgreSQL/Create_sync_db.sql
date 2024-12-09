@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS staging.syncrecord (
     importdetailid int4 NULL,
     synckey varchar NULL,
     recordstatus varchar NULL,
+    retries int4 NULL,
     CONSTRAINT syncrecord_pk PRIMARY KEY (syncrecordid),
     CONSTRAINT syncrecord_fk FOREIGN KEY (importdetailid) REFERENCES staging.importdetail(importdetailid)
 );
