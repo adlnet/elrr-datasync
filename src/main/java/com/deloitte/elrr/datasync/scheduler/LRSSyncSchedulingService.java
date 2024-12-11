@@ -1,7 +1,5 @@
 package com.deloitte.elrr.datasync.scheduler;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
