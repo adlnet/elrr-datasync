@@ -13,22 +13,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.deloitte.elrr.datasync.dto.ElrrStatement;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yetanalytics.xapi.model.Statement;
+import com.yetanalytics.xapi.util.Mapper;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class LRSService {
-   /**
-    *
-    */
+   
   @Autowired
   private RestTemplate restTemplate;
-  /**
-   *
-   */
+   
   @Value("${lrsservice.url}")
   private String lrsURL;
 
@@ -42,9 +39,9 @@ public class LRSService {
   /**
    *
    * @param startDate
-   * @return ElrrStatement[]
+   * @return Statement[]
    */
-  public ElrrStatement[] process(final Timestamp startDate) {
+  public Statement[] process(final Timestamp startDate) {  // PHL
     return invokeLRS(startDate);
   }
 
@@ -52,10 +49,10 @@ public class LRSService {
   /**
    *
    * @param startDate
-   * @return ElrrStatement[]
+   * @return Statement[]
    */
-  private ElrrStatement[] invokeLRS(final Timestamp startDate) {
-    ElrrStatement[] statements = null;
+  private Statement[] invokeLRS(final Timestamp startDate) {  // PHL
+    Statement[] statements = null;  // PHL
     try {
       String lastReadDate = formatDate(startDate) + "T00:00:00Z";
       log.info("lastReadDate " + lastReadDate);
@@ -70,8 +67,8 @@ public class LRSService {
       HttpEntity<String> entity = new HttpEntity<>("body", httpHeaders);
       ResponseEntity<String> json = restTemplate.exchange(completeURL, HttpMethod.GET, entity, String.class);
 
-      ObjectMapper mapper = new ObjectMapper();
-      statements = mapper.readValue(json.getBody(), ElrrStatement[].class);
+      ObjectMapper mapper = Mapper.getMapper();  // PHL
+      statements = mapper.readValue(json.getBody(), Statement[].class);  // PHL
       
     } catch (Exception e) {
       e.printStackTrace();
@@ -79,6 +76,7 @@ public class LRSService {
 
     return statements;
   }
+  
   /**
    *
    * @param timestamp

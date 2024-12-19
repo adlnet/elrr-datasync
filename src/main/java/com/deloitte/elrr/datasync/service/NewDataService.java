@@ -26,29 +26,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NewDataService {
     
-    // PHL
-    @Value("${retries}")
-    private int numberOfRetries;
+   // PHL
+   @Value("${retries}")
+   private int numberOfRetries;
     
-  /**
-   *
-   */
-  @Autowired
+   @Autowired
   private KafkaProducer kafkaProducer;
-  /**
-   *
-   */
+  
   @Autowired
   private SyncRecordService syncRecordService;
-  /**
-   *
-   */
+  
   @Autowired
   private SyncRecordDetailService syncRecordDetailService;
-  /**
-   *
-   */
-  
+    
   // PHL
   @Autowired
   private ErrorsService errorsService;

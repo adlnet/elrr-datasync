@@ -101,9 +101,9 @@ class NewDataServiceTest {
     }
     /**
     *
-    * @return ElrrStatement[]
+    * @return List<SyncRecord>
     */
-   public static  List<SyncRecord> getSyncRecord() {
+   public static List<SyncRecord> getSyncRecord() {
        List<SyncRecord> syncList = new ArrayList<>();
        SyncRecord syncRecord = new SyncRecord();
        syncRecord.setSyncRecordId(1L);
@@ -113,7 +113,7 @@ class NewDataServiceTest {
 
    /**
    *
-   * @return ElrrStatement[]
+   * @return List<SyncRecordDetail> 
    */
   public static  List<SyncRecordDetail> getSyncRecordDeatils() {
       List<SyncRecordDetail> detailsList = new ArrayList<>();

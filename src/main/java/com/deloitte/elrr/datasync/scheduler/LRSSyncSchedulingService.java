@@ -3,12 +3,12 @@ package com.deloitte.elrr.datasync.scheduler;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import com.deloitte.elrr.datasync.dto.ElrrStatement;
 import com.deloitte.elrr.datasync.dto.LearnerChange;
 import com.deloitte.elrr.datasync.dto.UserCourse;
 import com.deloitte.elrr.datasync.entity.Import;
@@ -23,57 +23,43 @@ import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yetanalytics.xapi.model.Activity;
+import com.yetanalytics.xapi.model.ActivityDefinition;
+import com.yetanalytics.xapi.model.Agent;
+import com.yetanalytics.xapi.model.LangMap;
+import com.yetanalytics.xapi.model.Statement;
+import com.yetanalytics.xapi.model.Verb;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class LRSSyncSchedulingService {
-  /**
-   *
-   */
+  
   private static String lrsName = "Deloitte LRS";
-  /**
-   *
-   */
+  
   private static String success = "SUCCESS";
-  /**
-   *
-   */
+  
   @Autowired
   private LRSService lrsService;
-  /**
-   *
-   */
+  
   @Autowired
   private NewDataService newDataService;
-  /**
-   *
-   */
+  
   @Autowired
   private ImportService importService;
-  /**
-   *
-   */
+  
   @Autowired
   private ImportDetailService importDetailService;
-  /**
-   *
-   */
+  
   @Autowired
   private SyncRecordService syncService;
-  /**
-   *
-   */
+  
   @Autowired
   private SyncRecordDetailService syncRecordDetailService;
-  /**
-   *
-   */
+  
   private ObjectMapper mapper = new ObjectMapper();
-  /**
-   *
-   */
+  
   @Scheduled(cron = "${cronExpression}")
   /*
    * 1. Connect to db and get Last sync date. 
@@ -96,9 +82,8 @@ public class LRSSyncSchedulingService {
     if (importRecord != null) {
       try {
         updateImportInProcess(importRecord);
-        ElrrStatement[] result = lrsService.process(
-          importRecord.getImportStartDate()
-        );
+        // Make call to LRSService.invokeLRS(final Timestamp startDat)
+        Statement[] result = lrsService.process(importRecord.getImportStartDate());  // PHL
         ImportDetail importDetail = null;
         if (result != null && result.length > 0) {
           importDetail = insertImportDetail(result.length, 0, 0, importRecord);
@@ -125,18 +110,17 @@ public class LRSSyncSchedulingService {
    * @param list
    * @param importDetail
    */
-  private void insertSyncRecords(final ElrrStatement[] list, final ImportDetail importDetail) {
+  private void insertSyncRecords(final Statement[] list, final ImportDetail importDetail) {  // PHL
     int successCount = 0;
     int failedCount = 0;
     int total = list.length;
 
-    for (ElrrStatement statement : list) {
+    for (Statement statement : list) {  // PHL
       try {
-        String key = statement.getActor();
+        String key = statement.getActor().toString();  
         SyncRecord sync = syncService.findExistingRecord(key);
         if (sync == null) {
-          sync =
-            syncService.createSyncRecord(key, importDetail.getImportdetailId());
+          sync = syncService.createSyncRecord(key, importDetail.getImportdetailId());
         }
         createSyncRecordDetail(sync, statement);
         successCount++;
@@ -173,9 +157,8 @@ public class LRSSyncSchedulingService {
    * @param statement
    * @throws JsonProcessingException
    */
-  private void createSyncRecordDetail (final SyncRecord syncRecord,final ElrrStatement statement)
-          throws JsonProcessingException {
-      
+  private void createSyncRecordDetail (final SyncRecord syncRecord,final Statement statement)  // PHL
+          throws JsonProcessingException {  
     SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
     syncRecordDetail.setSyncRecordId(syncRecord.getSyncRecordId());
     LearnerChange learnerChange = getLearnerChange(statement);
@@ -226,18 +209,72 @@ public class LRSSyncSchedulingService {
    * @param statement
    * @return LearnerChange
    */
-  private LearnerChange getLearnerChange(final ElrrStatement statement) {
-    LearnerChange learnerChange = new LearnerChange();
-    List<UserCourse> userCourses = new ArrayList<>();
-    learnerChange.setContactEmailAddress(statement.getActor());
-    learnerChange.setName(statement.getActorName());
-    UserCourse course = new UserCourse();
-    course.setCourseId(statement.getActivity());
-    course.setCourseName(statement.getCourseName());
-    course.setUserCourseStatus(statement.getVerb());
-    userCourses.add(course);
-    learnerChange.setCourses(userCourses);
-    return learnerChange;
+  private LearnerChange getLearnerChange(final Statement statement) {  // PHL
+  
+      // PHL
+      // Parse xAPI Statement
+      // Actor
+      String actorName = "";
+      String actorEmail = "";
+      
+      Agent actor = (Agent) statement.getActor();
+      
+      if (actor != null) {
+          actorName = actor.getName();
+          actorEmail = actor.getMbox();
+      }
+      
+      // Verb
+      String verbDisplay = "";
+      
+      Verb verb = statement.getVerb();
+      
+      if (verb != null) {
+          verbDisplay = verb.getDisplay().get("en-us");
+      }
+            
+      // Activity
+      Activity object = (Activity) statement.getObject();
+      
+      // Activity name
+      String activityName = "";
+      String nameLangCode = "";
+      
+      ActivityDefinition activityDefenition = object.getDefinition();
+      LangMap nameLangMap = activityDefenition.getName();
+ 
+      if (nameLangMap != null) {
+          Set<String> nameLangCodes = nameLangMap.getLanguageCodes();
+          nameLangCode = nameLangCodes.iterator().next();
+          activityName = activityDefenition.getName().get(nameLangCode);
+      }
+               
+      // Activity Description
+      String activityDescription = "";
+      String langCode = "";
+      
+      LangMap descLangMap = activityDefenition.getDescription();
+      
+      if (descLangMap != null) {
+          Set<String> descLangCodes = descLangMap.getLanguageCodes();
+          langCode = descLangCodes.iterator().next();
+          activityDescription = activityDefenition.getDescription().get(langCode);
+      }
+      
+      LearnerChange learnerChange = new LearnerChange();
+      List<UserCourse> userCourses = new ArrayList<>();
+      
+      // Use xAPI Statement values
+      learnerChange.setContactEmailAddress(actorEmail);
+      learnerChange.setName(actorName);
+      UserCourse course = new UserCourse();
+      course.setCourseId(activityName);
+      course.setCourseName(activityDescription);
+      course.setUserCourseStatus(verbDisplay);
+      userCourses.add(course);
+      learnerChange.setCourses(userCourses);
+      
+      return learnerChange;
   }
 
   /**
