@@ -82,7 +82,7 @@ public class LRSSyncSchedulingService {
     if (importRecord != null) {
       try {
         updateImportInProcess(importRecord);
-        // Make call to LRSService.invokeLRS(final Timestamp startDat)
+        // Make call to LRSService.invokeLRS(final Timestamp startDate)
         Statement[] result = lrsService.process(importRecord.getImportStartDate());  // PHL
         ImportDetail importDetail = null;
         if (result != null && result.length > 0) {
