@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -58,25 +60,9 @@ public class LRSService {
    */
   private Statement[] invokeLRS(final Timestamp startDate) {  // PHL
       Statement[] statements = null;  // PHL
-      // PHL  
-      // Call LRS - first time get everything after midnight of import.startdate (2000-12-30 13:08:54.193) 
-      String lastReadDate = formatDateOnly(startDate) + "T00:00:00Z";
-      
-      Calendar calendar = new GregorianCalendar();
-      calendar.setTime(startDate);
-      int year = calendar.get(Calendar.YEAR);
-      int hour = calendar.get(Calendar.HOUR);
-      int minute = calendar.get(Calendar.MINUTE);
-      int second = calendar.get(Calendar.SECOND);
-      
-      log.info("==> Year = " + year);
-      
-      // If not first time (2000-12-30 13:08:54.193) get everything after import.startdate
-      if (year > 2000) {
-          // Call LRS - get everything after import.startdate
-          lastReadDate = formatDateOnly(startDate) + "T" + hour + ":" + minute + ":" + second + "Z";
-      }
-      
+      // PHL   
+      // Format import.startdate date (yyyy-MM-DDThh:mm:ssZ)
+      String lastReadDate = formatStoredDate(startDate);
       log.info("==> lastReadDate = " + lastReadDate);
 
       try {
@@ -86,16 +72,26 @@ public class LRSService {
           httpHeaders.add("X-Forwarded-Proto", "https");
           httpHeaders.add("Content-Type", "application/json");
 
+          // Call LRS passing import.startdate = stored date 
           String completeURL = lrsURL + "/api/lrsdata?lastReadDate=" + lastReadDate;
+          log.info("==> URL = " + completeURL);
 
           HttpEntity<String> entity = new HttpEntity<>("body", httpHeaders);
           ResponseEntity<String> json = restTemplate.exchange(completeURL, HttpMethod.GET, entity, String.class);
 
+          int statusCode = json.getStatusCode().value();
+          
+          if (statusCode != 200) {
+        	  log.info("==> LRS statusCode = " + statusCode);
+        	  return statements;
+          }
+          
           ObjectMapper mapper = Mapper.getMapper();  // PHL
           statements = mapper.readValue(json.getBody(), Statement[].class);
           
+          log.info("==> statements size = " + statements.length);
+          
       } catch (HttpClientErrorException | HttpServerErrorException | JsonProcessingException e) {
-          // Nothing returned from LRS
           log.error("==> Error calling LRS " + e.getMessage());
       }
       
@@ -107,9 +103,58 @@ public class LRSService {
    * @param timestamp
    * @return String
    */
-  private String formatDateOnly(final Timestamp timestamp) {
+  private String formatDate(final Timestamp timestamp) {
       DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
       return formatter.format(timestamp);
     }
+  
+  /**
+  *
+  * @param startDate
+  * @return lastReadDate
+  */
+  private String formatStoredDate(Timestamp startDate) {
+	  
+	  // Call LRS passing import.startdate = stored date - first time get everything after midnight of import.startdate
+	  String lastReadDate = formatDate(startDate) + "T00:00:00Z";
+	  
+      Calendar calendar = new GregorianCalendar();
+      calendar.setTime(startDate);
+      int year = calendar.get(Calendar.YEAR);
+    
+      // If not first time (year > 2000) get everything after import.startdate
+      if (year > 2000) {
+    	  
+    	int hour = calendar.get(Calendar.HOUR);
+        String hr = "";
+        if (hour < 10) {
+        	hr = "0" + Integer.toString(hour);
+        } else {
+        	hr = Integer.toString(hour);
+        }
+          
+        int minute = calendar.get(Calendar.MINUTE);
+        String min = "";
+        if (minute < 10) {
+        	min = "0" + Integer.toString(minute);
+        } else {
+        	min = Integer.toString(minute);
+        }
+          
+        int second = calendar.get(Calendar.SECOND);
+        String sec = "";
+        if (second < 10) {
+        	sec = "0" + Integer.toString(second);
+        } else {
+        	sec = Integer.toString(second);
+        }
+          
+        // Format import.startdate date (yyyy-MM-DDThh:mm:ssZ)
+        lastReadDate = formatDate(startDate) + "T" + hr + ":" + min + ":" + sec + "Z";
+        
+      }
+
+	  return lastReadDate;
+  }
 }
