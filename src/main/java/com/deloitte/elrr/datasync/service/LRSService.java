@@ -3,16 +3,13 @@ package com.deloitte.elrr.datasync.service;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -63,8 +60,7 @@ public class LRSService {
       // PHL   
       // Format import.startdate date (yyyy-MM-DDThh:mm:ssZ)
       String lastReadDate = formatStoredDate(startDate);
-      log.info("==> lastReadDate = " + lastReadDate);
-
+      
       try {
          
           HttpHeaders httpHeaders = new HttpHeaders();
@@ -79,13 +75,6 @@ public class LRSService {
           HttpEntity<String> entity = new HttpEntity<>("body", httpHeaders);
           ResponseEntity<String> json = restTemplate.exchange(completeURL, HttpMethod.GET, entity, String.class);
 
-          int statusCode = json.getStatusCode().value();
-          
-          if (statusCode != 200) {
-        	  log.info("==> LRS statusCode = " + statusCode);
-        	  return statements;
-          }
-          
           ObjectMapper mapper = Mapper.getMapper();  // PHL
           statements = mapper.readValue(json.getBody(), Statement[].class);
           
@@ -115,46 +104,40 @@ public class LRSService {
   * @return lastReadDate
   */
   private String formatStoredDate(Timestamp startDate) {
-	  
-	  // Call LRS passing import.startdate = stored date - first time get everything after midnight of import.startdate
+
+	  // Call LRS passing import.startdate = LRS statement stored date - first time get everything after midnight of import.startdate
 	  String lastReadDate = formatDate(startDate) + "T00:00:00Z";
-	  
-      Calendar calendar = new GregorianCalendar();
-      calendar.setTime(startDate);
-      int year = calendar.get(Calendar.YEAR);
-    
-      // If not first time (year > 2000) get everything after import.startdate
-      if (year > 2000) {
-    	  
-    	int hour = calendar.get(Calendar.HOUR);
-        String hr = "";
-        if (hour < 10) {
-        	hr = "0" + Integer.toString(hour);
-        } else {
-        	hr = Integer.toString(hour);
-        }
-          
-        int minute = calendar.get(Calendar.MINUTE);
-        String min = "";
-        if (minute < 10) {
-        	min = "0" + Integer.toString(minute);
-        } else {
-        	min = Integer.toString(minute);
-        }
-          
-        int second = calendar.get(Calendar.SECOND);
-        String sec = "";
-        if (second < 10) {
-        	sec = "0" + Integer.toString(second);
-        } else {
-        	sec = Integer.toString(second);
-        }
-          
-        // Format import.startdate date (yyyy-MM-DDThh:mm:ssZ)
-        lastReadDate = formatDate(startDate) + "T" + hr + ":" + min + ":" + sec + "Z";
-        
-      }
+
+	  try {
+		  	  
+		  // Convert Timestamp to LocalDateTime
+	      LocalDateTime localDateTime = startDate.toLocalDateTime();
+
+	      // Subtract 2 hours 
+	      LocalDateTime updatedDateTime = localDateTime.minusHours(2);
+
+	      // Convert back to Timestamp
+	      startDate = Timestamp.valueOf(updatedDateTime);
+	      
+	      // Get year
+	      int year = updatedDateTime.getYear();
+		  
+	      log.info("==> year = " + year);
+	      
+	      // If not first time get everything after import.startdate
+	      if (year > 2000) {
+	    	  
+	    	DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");  
+	    	lastReadDate = formatter.format(startDate);
+	    	log.info("==> lastReadDate = " + lastReadDate);
+	        
+	      }
+
+	  } catch (Exception e) {
+		  log.error("==> Error : " + e.getMessage());
+	  }
 
 	  return lastReadDate;
   }
+  
 }
