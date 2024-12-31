@@ -41,23 +41,23 @@ public class LRSService {
    */
   // 06/01 -- 06/22
   /**
-   *
+   * PHL
    * @param startDate
    * @return Statement[]
    */
-  public Statement[] process(final Timestamp startDate) {  // PHL
+  public Statement[] process(final Timestamp startDate) {
     return invokeLRS(startDate);
   }
 
   // @Bean
   /**
-   *
+   * PHL
    * @param startDate
    * @return Statement[]
    */
-  private Statement[] invokeLRS(final Timestamp startDate) {  // PHL
-      Statement[] statements = null;  // PHL
-      // PHL   
+  private Statement[] invokeLRS(final Timestamp startDate) {
+      Statement[] statements = null; 
+      
       // Format import.startdate date (yyyy-MM-DDThh:mm:ssZ)
       String lastReadDate = formatStoredDate(startDate);
       
@@ -75,7 +75,7 @@ public class LRSService {
           HttpEntity<String> entity = new HttpEntity<>("body", httpHeaders);
           ResponseEntity<String> json = restTemplate.exchange(completeURL, HttpMethod.GET, entity, String.class);
 
-          ObjectMapper mapper = Mapper.getMapper();  // PHL
+          ObjectMapper mapper = Mapper.getMapper();
           statements = mapper.readValue(json.getBody(), Statement[].class);
           
           log.info("==> statements size = " + statements.length);
@@ -99,7 +99,7 @@ public class LRSService {
     }
   
   /**
-  *
+  * PHL
   * @param startDate
   * @return lastReadDate
   */

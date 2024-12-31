@@ -25,14 +25,14 @@ public interface SyncRecordDetailRepository
   );
 
   /**
-   *
+   * PHL
    * @param syncRecordId
    * @return List<SyncRecordDetail>
    */
   @Query(
     "SELECT s FROM SyncRecordDetail s WHERE s.syncRecordId = :syncRecordId"
   )
-  List<SyncRecordDetail> findBySyncRecordId(
+  SyncRecordDetail findBySyncRecordId(
     @Param("syncRecordId") long syncRecordId
   );
 }

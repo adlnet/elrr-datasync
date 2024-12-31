@@ -62,6 +62,7 @@ public class LRSSyncSchedulingService {
   
   @Scheduled(cron = "${cronExpression}")
   /*
+   * PHL
    * 1. Connect to db and get Last sync date. 
    * 
    * 2. Update the last sync record with the status INPROCESS and update to current time.
@@ -73,24 +74,45 @@ public class LRSSyncSchedulingService {
    * 5. Update Import table and insert to Imports detail table with SUCCESS/FAILED status.
    * 
    * 6. Invoke New Processor to process unprocessed records.
-   *
+   * 
    */
   public void run() {
+      
     log.info("**inside schedule method");
     Import importRecord = getLRSImport();
-
+    
+    Statement[] result = null;
+    int total = 0;
+    int successCount = 0;
+    int failedCount = 0;
+    
     if (importRecord != null) {
+        
       try {
+          
         updateImportInProcess(importRecord);
+        
         // Make call to LRSService.invokeLRS(final Timestamp startDate)
-        Statement[] result = lrsService.process(importRecord.getImportStartDate());  // PHL
+        result = lrsService.process(importRecord.getImportStartDate());
+        
         ImportDetail importDetail = null;
+        
+        // PHL
         if (result != null && result.length > 0) {
-          importDetail = insertImportDetail(result.length, 0, 0, importRecord);
-          insertSyncRecords(result, importDetail);
-          updateImportDetailSuccess(importDetail); // PHL
+            
+           for (Statement statement : result) {
+                importDetail = insertImportDetail(result.length, 0, 0, importRecord);
+                successCount = insertSyncRecord(statement, importDetail);
+                failedCount = 1 - successCount; 
+                total = successCount + failedCount;
+                updateImportDetail(total, successCount, failedCount, importDetail);
+                updateImportDetailSuccess(importDetail);
+           }
+           
         }
+        
         updateImportSuccess(importRecord);
+                
       } catch (Exception e) {
         log.error("LRS Sync failed " + e.getMessage());
         updateImportFailed(importRecord);
@@ -99,37 +121,37 @@ public class LRSSyncSchedulingService {
       // even if the LRS sync is failed but if any of the
       // unprocessed messages sitting in DB
       // they can be processed
-      newDataService.process();
-    } else {
+      newDataService.process(result);
+     } else {
       log.error("No record was defined for LRS in Imports table");
     }
   }
 
   /**
-   *
-   * @param list
-   * @param importDetail
-   */
-  private void insertSyncRecords(final Statement[] list, final ImportDetail importDetail) {  // PHL
-    int successCount = 0;
-    int failedCount = 0;
-    int total = list.length;
-
-    for (Statement statement : list) {  // PHL
-      try {
-        String key = statement.getActor().toString();  
-        SyncRecord sync = syncService.findExistingRecord(key);
-        if (sync == null) {
-          sync = syncService.createSyncRecord(key, importDetail.getImportdetailId());
-        }
-        createSyncRecordDetail(sync, statement);
-        successCount++;
-      } catch (Exception e) {
-        log.error("Exception in processing " + e.getMessage());
-        failedCount++;
-      }
-    }
-    updateImportDetail(total, successCount, failedCount, importDetail);
+  * PHL
+  * @param Statement
+  * @param importDetail
+  * @return successCount
+  */
+ private int insertSyncRecord(final Statement statement, final ImportDetail importDetail) {
+   int successCount = 0;
+     try {
+         
+         String key = statement.getId().toString();  
+         SyncRecord sync = syncService.findExistingRecord(key);
+         
+         if (sync == null) {
+             sync = syncService.createSyncRecord(key, importDetail.getImportdetailId());
+         }
+         
+         createSyncRecordDetail(sync, statement);
+         successCount++;
+         
+     } catch (Exception e) {
+       log.error("Exception in processing " + e.getMessage());
+     }
+     
+     return successCount;
   }
 
   /**
@@ -143,8 +165,7 @@ public class LRSSyncSchedulingService {
     final int total,
     final int newsuccess,
     final int failed,
-    final ImportDetail importDetail
-  ) {
+    final ImportDetail importDetail) {
     importDetail.setFailedRecords(failed);
     importDetail.setTotalRecords(total);
     importDetail.setSuccessRecords(newsuccess);
@@ -152,12 +173,12 @@ public class LRSSyncSchedulingService {
   }
 
   /**
-   *
+   * PHL
    * @param syncRecord
    * @param statement
    * @throws JsonProcessingException
    */
-  private void createSyncRecordDetail (final SyncRecord syncRecord,final Statement statement)  // PHL
+  private void createSyncRecordDetail (final SyncRecord syncRecord,final Statement statement)
           throws JsonProcessingException {  
     SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
     syncRecordDetail.setSyncRecordId(syncRecord.getSyncRecordId());
@@ -200,18 +221,17 @@ public class LRSSyncSchedulingService {
    * @throws JsonProcessingException
    */
   private String getJson(final Object object) throws JsonProcessingException {
-    log.info("==> json= " + mapper.writeValueAsString(object)); // 
+    log.info("==> json= " + mapper.writeValueAsString(object)); // PHL
     return mapper.writeValueAsString(object);
   }
 
   /**
-   *
+   * PHL
    * @param statement
    * @return LearnerChange
    */
-  private LearnerChange getLearnerChange(final Statement statement) {  // PHL
+  private LearnerChange getLearnerChange(final Statement statement) {
   
-      // PHL
       // Parse xAPI Statement
       // Actor
       String actorName = "";

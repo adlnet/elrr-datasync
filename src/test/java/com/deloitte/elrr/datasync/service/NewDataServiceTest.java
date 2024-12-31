@@ -71,10 +71,10 @@ class NewDataServiceTest {
                 "mapper", mapper);
         Mockito.doReturn(getSyncRecord()).when(syncRecordService)
         .findUnprocessed();
-        Mockito.doReturn(getSyncRecordDeatils())
+        Mockito.doReturn(getSyncRecordDeatil())
         .when(syncRecordDetailService).findBySyncRecordId(1L);
         Mockito.doReturn(getLearnerChange())
-        .when(mapper).readValue(getSyncRecordDeatils().get(0).getLearner(),
+        .when(mapper).readValue(getSyncRecordDeatil().getLearner(),
                 LearnerChange.class);
         //newDataService.process();  // PHL
     }
@@ -92,7 +92,7 @@ class NewDataServiceTest {
                 "mapper", mapper);
         Mockito.doReturn(getSyncRecord()).when(syncRecordService)
         .findUnprocessed();
-        Mockito.doReturn(getSyncRecordDeatils())
+        Mockito.doReturn(getSyncRecordDeatil())
         .when(syncRecordDetailService).findBySyncRecordId(1L);
         //Mockito.doReturn(getLearnerChange())
         //.when(mapper).readValue(getSyncRecordDeatils().get(0).getLearner(),
@@ -113,15 +113,13 @@ class NewDataServiceTest {
 
    /**
    *
-   * @return List<SyncRecordDetail> 
+   * @return SyncRecordDetail 
    */
-  public static  List<SyncRecordDetail> getSyncRecordDeatils() {
-      List<SyncRecordDetail> detailsList = new ArrayList<>();
+  public static SyncRecordDetail getSyncRecordDeatil() {
       SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
       syncRecordDetail.setSyncRecordId(1L);
       syncRecordDetail.setLearner("mailto:c.cooper@yahoo.com");
-      detailsList.add(syncRecordDetail);
-      return detailsList;
+      return syncRecordDetail;
     }
 
   /**

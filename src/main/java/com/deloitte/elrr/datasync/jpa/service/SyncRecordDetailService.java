@@ -32,11 +32,11 @@ public class SyncRecordDetailService
     return syncRecordDetailsRepository.findUnprocessed("inserted");
   }
   /**
-   *
+   * PHL
    * @param recordId
    * @return List<SyncRecordDetail>
    */
-  public List<SyncRecordDetail> findBySyncRecordId(final long recordId) {
+  public SyncRecordDetail findBySyncRecordId(final long recordId) {
     return syncRecordDetailsRepository.findBySyncRecordId(recordId);
   }
   /**
