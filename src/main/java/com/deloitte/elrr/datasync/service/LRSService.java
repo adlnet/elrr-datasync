@@ -3,7 +3,6 @@ package com.deloitte.elrr.datasync.service;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,9 +38,10 @@ public class LRSService {
   /*
    * This process is to get the deltas
    */
-  // 06/01 -- 06/22
+
   /**
    * PHL
+   *
    * @param startDate
    * @return Statement[]
    */
@@ -82,21 +82,11 @@ public class LRSService {
           
       } catch (HttpClientErrorException | HttpServerErrorException | JsonProcessingException e) {
           log.error("==> Error calling LRS " + e.getMessage());
+          e.getStackTrace();
       }
       
       return statements;
   }
-  
-  /**
-   *
-   * @param timestamp
-   * @return String
-   */
-  private String formatDate(final Timestamp timestamp) {
-      DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-
-      return formatter.format(timestamp);
-    }
   
   /**
   * PHL
@@ -105,38 +95,11 @@ public class LRSService {
   */
   private String formatStoredDate(Timestamp startDate) {
 
-	  // Call LRS passing import.startdate = LRS statement stored date - first time get everything after midnight of import.startdate
-	  String lastReadDate = formatDate(startDate) + "T00:00:00Z";
-
-	  try {
-		  	  
-		  // Convert Timestamp to LocalDateTime
-	      LocalDateTime localDateTime = startDate.toLocalDateTime();
-
-	      // Subtract 2 hours 
-	      LocalDateTime updatedDateTime = localDateTime.minusHours(2);
-
-	      // Convert back to Timestamp
-	      startDate = Timestamp.valueOf(updatedDateTime);
-	      
-	      // Get year
-	      int year = updatedDateTime.getYear();
-		  
-	      log.info("==> year = " + year);
-	      
-	      // If not first time get everything after import.startdate
-	      if (year > 2000) {
-	    	  
-	    	DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");  
-	    	lastReadDate = formatter.format(startDate);
-	    	log.info("==> lastReadDate = " + lastReadDate);
-	        
-	      }
-
-	  } catch (Exception e) {
-		  log.error("==> Error : " + e.getMessage());
-	  }
-
+	  // Call LRS passing import.startdate = LRS statement stored date - first time get everything after 12/30/2000
+      DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");  
+      String lastReadDate = formatter.format(startDate);
+      log.info("==> lastReadDate = " + lastReadDate);
+	  
 	  return lastReadDate;
   }
   

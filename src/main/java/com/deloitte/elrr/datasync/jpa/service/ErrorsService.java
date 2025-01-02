@@ -13,10 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class ErrorsService implements CommonSvc<Errors, Long> {
-    
-    @Autowired
-    private ErrorsRepository errorsRepository;
-    
+
+  @Autowired private ErrorsRepository errorsRepository;
+
   /**
    * @param synchRecordId
    * @param errorMsg
@@ -28,15 +27,14 @@ public class ErrorsService implements CommonSvc<Errors, Long> {
     errorsRepository.save(errors);
     return errors;
   }
-  
+
   @Override
   public Long getId(Errors entity) {
-      return entity.getErrorsId();
+    return entity.getErrorsId();
   }
-  
+
   @Override
   public CrudRepository<Errors, Long> getRepository() {
-      return this.errorsRepository;
+    return this.errorsRepository;
   }
-  
 }
