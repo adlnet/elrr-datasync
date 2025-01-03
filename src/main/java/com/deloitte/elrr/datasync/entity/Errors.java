@@ -1,4 +1,3 @@
-// PHL
 package com.deloitte.elrr.datasync.entity;
 
 import jakarta.persistence.Column;

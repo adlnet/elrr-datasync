@@ -76,7 +76,7 @@ class NewDataServiceTest {
         Mockito.doReturn(getLearnerChange())
         .when(mapper).readValue(getSyncRecordDeatil().getLearner(),
                 LearnerChange.class);
-        //newDataService.process();  // PHL
+        //newDataService.process();
     }
 
     @Test
@@ -97,7 +97,7 @@ class NewDataServiceTest {
         //Mockito.doReturn(getLearnerChange())
         //.when(mapper).readValue(getSyncRecordDeatils().get(0).getLearner(),
         //LearnerChange.class);
-        //newDataService.process();  // PHL
+        //newDataService.process();
     }
     /**
     *

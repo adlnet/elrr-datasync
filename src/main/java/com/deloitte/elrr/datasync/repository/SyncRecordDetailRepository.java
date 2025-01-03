@@ -25,7 +25,7 @@ public interface SyncRecordDetailRepository
   );
 
   /**
-   * PHL
+   *
    * @param syncRecordId
    * @return List<SyncRecordDetail>
    */

@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NewDataService {
 
-  // PHL
   @Value("${retries}")
   private int numberOfRetries;
 
@@ -34,13 +33,11 @@ public class NewDataService {
 
   @Autowired private SyncRecordDetailService syncRecordDetailService;
 
-  // PHL
   @Autowired private ErrorsService errorsService;
 
   private ObjectMapper mapper = new ObjectMapper();
   
   /**
-   * PHL 
    * 1. Retrieve all unprocessed synchrecord records with INSERTED status 
    * 2. Send the message to Kafka 
    * 3. Update the records SyncRecord and SyncRecordDetails to SUCCCESS/INSERTED status

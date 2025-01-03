@@ -1,4 +1,4 @@
--- CREATE DATABASE synch_db;
+-- CREATE DATABASE sync_db;
 
 CREATE SCHEMA IF NOT EXISTS staging;
 

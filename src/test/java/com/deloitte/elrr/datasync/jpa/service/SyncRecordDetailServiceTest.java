@@ -70,7 +70,6 @@ class SyncRecordDetailServiceTest {
     }
 
     /**
-    * PHL
     * @return List SyncRecordDetail
     */
    private static SyncRecordDetail getSyncRecordDetail() {

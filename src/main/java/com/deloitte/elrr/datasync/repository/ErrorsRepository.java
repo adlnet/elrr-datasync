@@ -1,4 +1,3 @@
-// PHL
 package com.deloitte.elrr.datasync.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;

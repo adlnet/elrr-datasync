@@ -55,7 +55,6 @@ public class LRSSyncSchedulingService {
 
   @Scheduled(cron = "${cronExpression}")
   /*
-   * PHL
    * 1. Connect to db and get Last sync date.
    *
    * 2. Update the last sync record with the status INPROCESS and update to current time.
@@ -90,7 +89,6 @@ public class LRSSyncSchedulingService {
 
         ImportDetail importDetail = null;
 
-        // PHL
         if (result != null && result.length > 0) {
 
           for (Statement statement : result) {
@@ -119,7 +117,6 @@ public class LRSSyncSchedulingService {
   }
 
   /**
-   * PHL
    *
    * @param Statement
    * @param importDetail
@@ -162,7 +159,6 @@ public class LRSSyncSchedulingService {
   }
 
   /**
-   * PHL
    *
    * @param syncRecord
    * @param statement
@@ -211,7 +207,6 @@ public class LRSSyncSchedulingService {
   }
 
   /**
-   * PHL
    *
    * @param statement
    * @return LearnerChange

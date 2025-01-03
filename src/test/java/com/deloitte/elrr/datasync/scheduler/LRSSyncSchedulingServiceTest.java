@@ -91,7 +91,7 @@ class LRSSyncSchedulingServiceTest {
                 "syncRecordDetailService", syncRecordDetailService);
         Mockito.doReturn(getImport()).when(importService)
         .findByName("Deloitte LRS");
-        Mockito.doReturn(getStatement()).when(lrsService).process(null);  // PHL
+        Mockito.doReturn(getStatement()).when(lrsService).process(null);
         Mockito.doReturn(getImportDetails()).when(importDetailService)
         .save(getImportDetails());
         Mockito.doReturn(getSyncRecord()).when(syncService)
@@ -120,7 +120,7 @@ class LRSSyncSchedulingServiceTest {
                "syncRecordDetailService", syncRecordDetailService);
        Mockito.doReturn(getImport()).when(importService)
        .findByName("Deloitte LRS");
-       Mockito.doReturn(getStatement()).when(lrsService).process(null);  // PHL
+       Mockito.doReturn(getStatement()).when(lrsService).process(null);
        Mockito.doReturn(getImportDetails()).when(importDetailService)
        .save(getImportDetails());
        mockLRSSyncSchedulingService.run();
@@ -146,7 +146,7 @@ class LRSSyncSchedulingServiceTest {
                "syncRecordDetailService", syncRecordDetailService);
        Mockito.doReturn(getImport()).when(importService)
        .findByName("Deloitte LRS");
-       Mockito.doReturn(getStatement()).when(lrsService).process(STARTDATE);  // PHL
+       Mockito.doReturn(getStatement()).when(lrsService).process(STARTDATE);
        Mockito.doReturn(getImportDetails()).when(importDetailService)
        .save(getImportDetails());
        //Mockito.doReturn(getSyncRecord()).when(syncService)
@@ -175,7 +175,6 @@ class LRSSyncSchedulingServiceTest {
        return newimportDetail;
    }
     /**
-     * PHL
      * @return Statement[]
      */
     public static Statement[] getStatement() {
