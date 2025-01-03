@@ -3,6 +3,8 @@ package com.deloitte.elrr.datasync.service;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -95,9 +97,17 @@ public class LRSService {
   */
   private String formatStoredDate(Timestamp startDate) {
 
-	  // Call LRS passing import.startdate = LRS statement stored date - first time get everything after 12/30/2000
       DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");  
-      String lastReadDate = formatter.format(startDate);
+      
+      // Convert timestamp to Long (ms)
+      long startDateLong = startDate.getTime();
+      
+      // Convert Long to Date
+      Date date = new Date(startDateLong);
+      
+      // Convert to GMT
+      formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+      String lastReadDate = formatter.format(date);
       log.info("==> lastReadDate = " + lastReadDate);
 	  
 	  return lastReadDate;
