@@ -38,7 +38,7 @@ public class NewDataService {
   private ObjectMapper mapper = new ObjectMapper();
   
   /**
-   * 1. Retrieve all unprocessed synchrecord records with INSERTED status 
+   * 1. Retrieve all unprocessed syncrecord records with INSERTED status 
    * 2. Send the message to Kafka 
    * 3. Update the records SyncRecord and SyncRecordDetails to SUCCCESS/INSERTED status
    */
@@ -124,8 +124,7 @@ public class NewDataService {
    * @return
    * @throws JsonProcessingException
    */
-  private MessageVO createKafkaJsonMessage(
-      final Statement statement, final SyncRecordDetail syncRecordDetail)
+  private MessageVO createKafkaJsonMessage(final Statement statement, final SyncRecordDetail syncRecordDetail)
       throws JsonProcessingException {
     AuditRecord auditRecord = new AuditRecord();
     MessageVO vo = new MessageVO();
