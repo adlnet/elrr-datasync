@@ -82,12 +82,10 @@ ALTER SEQUENCE staging.syncrecord_seq OWNED BY staging.syncrecord.syncrecordid;
 CREATE TABLE IF NOT EXISTS staging.syncrecorddetail (
     syncrecorddetailid int4 NOT NULL,
     syncrecordid int4 NULL,
-    "jsonb" varchar NULL,
     recordstatus varchar NULL,
     inserteddate timestamp NULL,
     updatedby varchar NULL,
     lastmodified timestamp NULL,
-    payload varchar NULL,
     learner varchar NULL,
     CONSTRAINT syncrecorddetail_pk PRIMARY KEY (syncrecorddetailid),
     CONSTRAINT syncrecorddetail_fk FOREIGN KEY (syncrecordid) REFERENCES staging.syncrecord(syncrecordid)

@@ -117,7 +117,6 @@ public class LRSSyncSchedulingService {
   }
 
   /**
-   *
    * @param Statement
    * @param importDetail
    * @return successCount
@@ -159,7 +158,6 @@ public class LRSSyncSchedulingService {
   }
 
   /**
-   *
    * @param syncRecord
    * @param statement
    * @throws JsonProcessingException
@@ -169,7 +167,6 @@ public class LRSSyncSchedulingService {
     SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
     syncRecordDetail.setSyncRecordId(syncRecord.getSyncRecordId());
     LearnerChange learnerChange = getLearnerChange(statement);
-    syncRecordDetail.setPayload(getJson(statement));
     syncRecordDetail.setLearner(getJson(learnerChange));
     syncRecordDetail.setRecordStatus("INSERTED");
     syncRecordDetailService.save(syncRecordDetail);
@@ -207,7 +204,6 @@ public class LRSSyncSchedulingService {
   }
 
   /**
-   *
    * @param statement
    * @return LearnerChange
    */
