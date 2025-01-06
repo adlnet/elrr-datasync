@@ -3,35 +3,33 @@ package com.deloitte.elrr.datasync.service;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.List;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.deloitte.elrr.datasync.dto.ElrrStatement;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yetanalytics.xapi.model.Statement;
+import com.yetanalytics.xapi.util.Mapper;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class LRSService {
-   /**
-    *
-    */
-  @Autowired
-  private RestTemplate restTemplate;
-  /**
-   *
-   */
+
+  @Autowired private RestTemplate restTemplate;
+
   @Value("${lrsservice.url}")
   private String lrsURL;
 
@@ -41,55 +39,72 @@ public class LRSService {
   /*
    * This process is to get the deltas
    */
-  // 06/01 -- 06/22
+
   /**
-   *
    * @param startDate
-   * @return ElrrStatement[]
+   * @return Statement[]
    */
-  public ElrrStatement[] process(final Timestamp startDate) {
+  public Statement[] process(final Timestamp startDate) {
     return invokeLRS(startDate);
   }
 
-  // @Bean
   /**
-   *
    * @param startDate
-   * @return ElrrStatement[]
+   * @return Statement[]
    */
-  private ElrrStatement[] invokeLRS(final Timestamp startDate) {
-    ElrrStatement[] statements = null;
+  private Statement[] invokeLRS(final Timestamp startDate) {
+    Statement[] statements = null;
+
+    // Format import.startdate date (yyyy-MM-DDThh:mm:ssZ)
+    String lastReadDate = formatStoredDate(startDate);
+
     try {
-      String lastReadDate = formatDate(startDate) + "T00:00:00Z";
-      log.info("lastReadDate " + lastReadDate);
 
       HttpHeaders httpHeaders = new HttpHeaders();
-      httpHeaders.add("Cookie",lrsCookie);
+      httpHeaders.add("Cookie", lrsCookie);
       httpHeaders.add("X-Forwarded-Proto", "https");
       httpHeaders.add("Content-Type", "application/json");
 
+      // Call LRS passing import.startdate = stored date
       String completeURL = lrsURL + "/api/lrsdata?lastReadDate=" + lastReadDate;
+      log.info("==> URL = " + completeURL);
 
       HttpEntity<String> entity = new HttpEntity<>("body", httpHeaders);
-      ResponseEntity<String> json = restTemplate.exchange(completeURL, HttpMethod.GET, entity, String.class);
+      ResponseEntity<String> json =
+          restTemplate.exchange(completeURL, HttpMethod.GET, entity, String.class);
 
-      ObjectMapper mapper = new ObjectMapper();
-      statements = mapper.readValue(json.getBody(), ElrrStatement[].class);
-      log.info("number of statements received " + statements);
-    } catch (Exception e) {
-      e.printStackTrace();
+      ObjectMapper mapper = Mapper.getMapper();
+      statements = mapper.readValue(json.getBody(), Statement[].class);
+
+      log.info("==> statements size = " + statements.length);
+
+    } catch (HttpClientErrorException | HttpServerErrorException | JsonProcessingException e) {
+      log.error("==> Error calling LRS " + e.getMessage());
+      e.getStackTrace();
     }
 
     return statements;
   }
-  /**
-   *
-   * @param timestamp
-   * @return String
-   */
-  private String formatDate(final Timestamp timestamp) {
-    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-    return formatter.format(timestamp);
+  /**
+   * @param startDate
+   * @return lastReadDate
+   */
+  private String formatStoredDate(Timestamp startDate) {
+
+    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+    // Convert timestamp to Long (ms)
+    long startDateLong = startDate.getTime();
+
+    // Convert Long to Date
+    Date date = new Date(startDateLong);
+
+    // Convert to GMT
+    formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+    String lastReadDate = formatter.format(date);
+    log.info("==> lastReadDate = " + lastReadDate);
+
+    return lastReadDate;
   }
 }

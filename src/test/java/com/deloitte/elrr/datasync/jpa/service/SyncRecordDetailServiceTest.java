@@ -1,8 +1,5 @@
 package com.deloitte.elrr.datasync.jpa.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -61,7 +58,7 @@ class SyncRecordDetailServiceTest {
         = new SyncRecordDetailService();
         ReflectionTestUtils.setField(syncRecordDetailService,
                 "syncRecordDetailsRepository", syncRecordDetailsRepository);
-        Mockito.doReturn(getSyncRecordDetailList())
+        Mockito.doReturn(getSyncRecordDetail())
         .when(syncRecordDetailsRepository).findBySyncRecordId(1L);
         syncRecordDetailService.getId(mockSyncRecordDetail);
         syncRecordDetailService.getId(null);
@@ -73,14 +70,11 @@ class SyncRecordDetailServiceTest {
     }
 
     /**
-    *
-    * @return List <SyncRecordDetail>
+    * @return List SyncRecordDetail
     */
-   private static List<SyncRecordDetail>  getSyncRecordDetailList() {
-       List<SyncRecordDetail> syncRecordDetailList = new ArrayList<>();
+   private static SyncRecordDetail getSyncRecordDetail() {
        SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
        syncRecordDetail.setSyncRecordId(1L);
-       syncRecordDetailList.add(syncRecordDetail);
-       return syncRecordDetailList;
+       return syncRecordDetail;
    }
 }

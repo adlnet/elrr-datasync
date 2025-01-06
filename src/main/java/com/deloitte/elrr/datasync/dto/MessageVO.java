@@ -1,5 +1,7 @@
 package com.deloitte.elrr.datasync.dto;
 
+import com.yetanalytics.xapi.model.Statement;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -12,12 +14,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MessageVO {
-  /**
-   *
-   */
   private AuditRecord auditRecord;
-  /**
-   *
-   */
-  private LearnerChange learnerChange;
+  private Statement statement;
 }

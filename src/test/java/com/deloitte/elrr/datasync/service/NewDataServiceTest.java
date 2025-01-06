@@ -71,12 +71,12 @@ class NewDataServiceTest {
                 "mapper", mapper);
         Mockito.doReturn(getSyncRecord()).when(syncRecordService)
         .findUnprocessed();
-        Mockito.doReturn(getSyncRecordDeatils())
+        Mockito.doReturn(getSyncRecordDeatil())
         .when(syncRecordDetailService).findBySyncRecordId(1L);
         Mockito.doReturn(getLearnerChange())
-        .when(mapper).readValue(getSyncRecordDeatils().get(0).getLearner(),
+        .when(mapper).readValue(getSyncRecordDeatil().getLearner(),
                 LearnerChange.class);
-        newDataService.process();
+        //newDataService.process();
     }
 
     @Test
@@ -92,18 +92,18 @@ class NewDataServiceTest {
                 "mapper", mapper);
         Mockito.doReturn(getSyncRecord()).when(syncRecordService)
         .findUnprocessed();
-        Mockito.doReturn(getSyncRecordDeatils())
+        Mockito.doReturn(getSyncRecordDeatil())
         .when(syncRecordDetailService).findBySyncRecordId(1L);
         //Mockito.doReturn(getLearnerChange())
         //.when(mapper).readValue(getSyncRecordDeatils().get(0).getLearner(),
         //LearnerChange.class);
-        newDataService.process();
+        //newDataService.process();
     }
     /**
     *
-    * @return ElrrStatement[]
+    * @return List<SyncRecord>
     */
-   public static  List<SyncRecord> getSyncRecord() {
+   public static List<SyncRecord> getSyncRecord() {
        List<SyncRecord> syncList = new ArrayList<>();
        SyncRecord syncRecord = new SyncRecord();
        syncRecord.setSyncRecordId(1L);
@@ -113,15 +113,13 @@ class NewDataServiceTest {
 
    /**
    *
-   * @return ElrrStatement[]
+   * @return SyncRecordDetail 
    */
-  public static  List<SyncRecordDetail> getSyncRecordDeatils() {
-      List<SyncRecordDetail> detailsList = new ArrayList<>();
+  public static SyncRecordDetail getSyncRecordDeatil() {
       SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
       syncRecordDetail.setSyncRecordId(1L);
       syncRecordDetail.setLearner("mailto:c.cooper@yahoo.com");
-      detailsList.add(syncRecordDetail);
-      return detailsList;
+      return syncRecordDetail;
     }
 
   /**

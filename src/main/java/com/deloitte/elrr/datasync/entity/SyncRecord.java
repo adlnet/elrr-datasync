@@ -19,27 +19,22 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SyncRecord extends Auditable<String> {
-  /**
-   *
-   */
+
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "syncrecord_SEQ")
   @SequenceGenerator(name = "syncrecord_SEQ", sequenceName = "syncrecord_SEQ", allocationSize = 1)
   @Column(name = "SYNCRECORDID")
   private long syncRecordId;
-  /**
-   *
-   */
+
   @Column(name = "IMPORTDETAILID")
   private long importdetailId;
-  /**
-   *
-   */
+
   @Column(name = "SYNCKEY")
   private String syncKey;
-  /**
-   *
-   */
+
   @Column(name = "RECORDSTATUS")
   private String recordStatus;
+
+  @Column(name = "RETRIES")
+  private long retries;
 }

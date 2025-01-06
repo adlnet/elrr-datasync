@@ -32,7 +32,7 @@ public interface SyncRecordDetailRepository
   @Query(
     "SELECT s FROM SyncRecordDetail s WHERE s.syncRecordId = :syncRecordId"
   )
-  List<SyncRecordDetail> findBySyncRecordId(
+  SyncRecordDetail findBySyncRecordId(
     @Param("syncRecordId") long syncRecordId
   );
 }

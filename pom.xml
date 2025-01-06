@@ -317,6 +317,11 @@
 			<artifactId>bcutil-jdk18on</artifactId>
 			<version>1.78</version>
 		</dependency>
+        <dependency>
+            <groupId>com.yetanalytics</groupId>
+            <artifactId>xapi-tools</artifactId>
+            <version>0.0.1</version>
+        </dependency>
 	</dependencies>
 	<build>
 		<resources>

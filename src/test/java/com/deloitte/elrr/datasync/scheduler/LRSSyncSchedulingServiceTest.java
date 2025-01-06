@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.deloitte.elrr.datasync.dto.ElrrStatement;
 import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.entity.ImportDetail;
 import com.deloitte.elrr.datasync.entity.SyncRecord;
@@ -24,6 +23,7 @@ import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordService;
 import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
+import com.yetanalytics.xapi.model.Statement;
 
 /**
  * @author mnelakurti
@@ -91,7 +91,7 @@ class LRSSyncSchedulingServiceTest {
                 "syncRecordDetailService", syncRecordDetailService);
         Mockito.doReturn(getImport()).when(importService)
         .findByName("Deloitte LRS");
-        Mockito.doReturn(getElrrStatement()).when(lrsService).process(null);
+        Mockito.doReturn(getStatement()).when(lrsService).process(null);
         Mockito.doReturn(getImportDetails()).when(importDetailService)
         .save(getImportDetails());
         Mockito.doReturn(getSyncRecord()).when(syncService)
@@ -120,7 +120,7 @@ class LRSSyncSchedulingServiceTest {
                "syncRecordDetailService", syncRecordDetailService);
        Mockito.doReturn(getImport()).when(importService)
        .findByName("Deloitte LRS");
-       Mockito.doReturn(getElrrStatement()).when(lrsService).process(null);
+       Mockito.doReturn(getStatement()).when(lrsService).process(null);
        Mockito.doReturn(getImportDetails()).when(importDetailService)
        .save(getImportDetails());
        mockLRSSyncSchedulingService.run();
@@ -146,7 +146,7 @@ class LRSSyncSchedulingServiceTest {
                "syncRecordDetailService", syncRecordDetailService);
        Mockito.doReturn(getImport()).when(importService)
        .findByName("Deloitte LRS");
-       Mockito.doReturn(getElrrStatement()).when(lrsService).process(STARTDATE);
+       Mockito.doReturn(getStatement()).when(lrsService).process(STARTDATE);
        Mockito.doReturn(getImportDetails()).when(importDetailService)
        .save(getImportDetails());
        //Mockito.doReturn(getSyncRecord()).when(syncService)
@@ -175,19 +175,18 @@ class LRSSyncSchedulingServiceTest {
        return newimportDetail;
    }
     /**
-     *
-     * @return ElrrStatement[]
+     * @return Statement[]
      */
-    public static ElrrStatement[] getElrrStatement() {
-        ElrrStatement[] elrrStatements = new ElrrStatement[1];
-        ElrrStatement elrrStatement = new ElrrStatement();
-        elrrStatements[0] = elrrStatement;
-        return elrrStatements;
+    public static Statement[] getStatement() {
+        Statement[] statements = new Statement[1];
+        Statement statement = new Statement();
+        statements[0] = statement;
+        return statements;
       }
 
     /**
     *
-    * @return ElrrStatement[]
+    * @return SyncRecord
     */
    public static SyncRecord getSyncRecord() {
        SyncRecord syncRecord = new SyncRecord();

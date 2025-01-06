@@ -11,19 +11,13 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class KafkaProducer {
-  /**
-   *
-   */
+  
   @Value("${kafka.topic}")
   private String kafkatopic;
-  /**
-   *
-   */
+  
   @Autowired
   private KafkaTemplate<String, String> kafkaTemplate;
-  /**
-   *
-   */
+  
   private ObjectMapper mapper = new ObjectMapper();
   /**
    *
@@ -44,6 +38,7 @@ public class KafkaProducer {
       );
     } catch (Exception e) {
       log.error("Exception while sending message to Kafka " + e.getMessage());
+      e.getStackTrace();
     }
   }
   /**
@@ -57,6 +52,7 @@ public class KafkaProducer {
       output = mapper.writeValueAsString(data);
     } catch (JsonProcessingException e) {
       log.error("Exception whille converting to JSON " + e.getMessage());
+      e.fillInStackTrace();
     }
     return output;
   }

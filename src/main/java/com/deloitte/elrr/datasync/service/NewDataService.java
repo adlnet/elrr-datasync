@@ -1,119 +1,147 @@
 package com.deloitte.elrr.datasync.service;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.deloitte.elrr.datasync.dto.AuditRecord;
-import com.deloitte.elrr.datasync.dto.LearnerChange;
 import com.deloitte.elrr.datasync.dto.MessageVO;
-import com.deloitte.elrr.datasync.dto.UserCourse;
 import com.deloitte.elrr.datasync.entity.SyncRecord;
 import com.deloitte.elrr.datasync.entity.SyncRecordDetail;
+import com.deloitte.elrr.datasync.jpa.service.ErrorsService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
-import java.util.List;
+import com.yetanalytics.xapi.model.Statement;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 public class NewDataService {
-  /**
-   *
-   */
-  @Autowired
-  private KafkaProducer kafkaProducer;
-  /**
-   *
-   */
-  @Autowired
-  private SyncRecordService syncRecordService;
-  /**
-   *
-   */
-  @Autowired
-  private SyncRecordDetailService syncRecordDetailService;
-  /**
-   *
-   */
-  private ObjectMapper mapper = new ObjectMapper();
 
+  @Value("${retries}")
+  private int numberOfRetries;
+
+  @Autowired private KafkaProducer kafkaProducer;
+
+  @Autowired private SyncRecordService syncRecordService;
+
+  @Autowired private SyncRecordDetailService syncRecordDetailService;
+
+  @Autowired private ErrorsService errorsService;
+
+  private ObjectMapper mapper = new ObjectMapper();
+  
   /**
-   * 1. Retrieve all the records that are with INSERTED status
-   * 2. Create a LearnerChange Json
-   * 3. send the message to Kafka
-   * 4. update the records SyncRecord and SyncRecordDetails
-   * to SUCCCESS/INSERTED status
-   *
+   * 1. Retrieve all unprocessed syncrecord records with INSERTED status 
+   * 2. Send the message to Kafka 
+   * 3. Update the records SyncRecord and SyncRecordDetails to SUCCCESS/INSERTED status
    */
-  public void process() {
+  public void process(Statement[] statements) {
+
     log.info("Inside NewDataService");
+
+    // Unprocessed synchrecord.recordStatus=inserted
     List<SyncRecord> syncList = getUnprocessedRecords();
-    log.info("inside getNewData1 " + syncList.size());
+    log.info("==> Unprocessed synch records = " + syncList.size());
+
+    int x = 0;
+
     for (SyncRecord syncRecord : syncList) {
-      List<SyncRecordDetail> details = null;
+
+      SyncRecordDetail syncRecordDetail = null;
+
       try {
-        details =
-          syncRecordDetailService.findBySyncRecordId(
-            syncRecord.getSyncRecordId()
-          );
-        MessageVO kakfaMessage = createKafkaJsonMessage(details);
-        sendToKafka(kakfaMessage);
+
+        syncRecordDetail = syncRecordDetailService.findBySyncRecordId(syncRecord.getSyncRecordId());
+
+        if (x <= statements.length - 1) {
+
+          MessageVO kafkaMessage = createKafkaJsonMessage(statements[x], syncRecordDetail);
+          sendToKafka(kafkaMessage);
+        }
+
+        x++;
+
+        // Update synchrecord.recordStatus to success (processes)
         syncRecord.setRecordStatus("SUCCESS");
         syncRecordService.save(syncRecord);
-        for (SyncRecordDetail syncRecordDetails : details) {
-          syncRecordDetails.setRecordStatus("SUCCESS");
-          syncRecordDetailService.save(syncRecordDetails);
-        }
+
+        // Update synchrecorddetail.recordStatus to success
+        syncRecordDetail.setRecordStatus("SUCCESS");
+        syncRecordDetailService.save(syncRecordDetail);
+
       } catch (Exception e) {
-        //In case of exception change status back to inserted so that
-        // they will be picked again next time and processed
-        syncRecord.setRecordStatus("INSERTED");
-        syncRecordService.save(syncRecord);
-        for (SyncRecordDetail syncRecordDetail : details) {
+
+        log.error("Exception in processing " + e.getMessage());
+        e.printStackTrace();
+
+        long retries = syncRecord.getRetries();
+
+        if (retries < numberOfRetries) {
+
+          // In case of exception change status back to inserted so that
+          // they will be picked again next time and processed
+          syncRecord.setRecordStatus("INSERTED");
+          syncRecord.setRetries(retries + 1);
+          syncRecordService.save(syncRecord);
           syncRecordDetail.setRecordStatus("INSERTED");
           syncRecordDetailService.save(syncRecordDetail);
+
+        } else {
+
+          syncRecord.setRecordStatus("FAILED");
+          syncRecord.setRetries(0L);
+          syncRecordService.save(syncRecord);
+          syncRecordDetail.setRecordStatus("FAILED");
+          syncRecordDetailService.save(syncRecordDetail);
+
+          // Create Errors record
+          errorsService.createErrors(Long.toString(syncRecord.getSyncRecordId()), e.getMessage());
         }
+
+        log.error("Exception in processing " + e.getMessage());
+        e.getStackTrace();
       }
     }
   }
 
+  /**
+   * @param message
+   */
   private void sendToKafka(final MessageVO message) {
     kafkaProducer.sendMessage(message);
   }
 
-  private MessageVO createKafkaJsonMessage(final List<SyncRecordDetail> details)
-    throws JsonProcessingException {
-    LearnerChange learnerChange = new LearnerChange();
-    List<UserCourse> userCourses = new ArrayList<>();
+  /**
+   * @param statement
+   * @param syncRecordDetail
+   * @return
+   * @throws JsonProcessingException
+   */
+  private MessageVO createKafkaJsonMessage(final Statement statement, final SyncRecordDetail syncRecordDetail)
+      throws JsonProcessingException {
     AuditRecord auditRecord = new AuditRecord();
-    List<Long> detailIds = new ArrayList<>();
-    for (SyncRecordDetail detail : details) {
-      LearnerChange temp = getLearner(detail);
-      learnerChange.setContactEmailAddress(temp.getContactEmailAddress());
-      learnerChange.setName(temp.getName());
-      //there will be only one course for each SyncRecordDetails
-      userCourses.add(temp.getCourses().get(0));
-      detailIds.add(detail.getSyncRecordDetailId());
-      auditRecord.setAuditId(detail.getSyncRecordId());
-    }
-
-    learnerChange.setCourses(userCourses);
-    auditRecord.setAuditDeailIds(detailIds);
-
     MessageVO vo = new MessageVO();
+
+    Long detailId = syncRecordDetail.getSyncRecordDetailId();
+    auditRecord.setAuditId(syncRecordDetail.getSyncRecordId());
+    auditRecord.setAuditDetailId(detailId);
+
+    vo.setStatement(statement);
     vo.setAuditRecord(auditRecord);
-    vo.setLearnerChange(learnerChange);
+
     return vo;
   }
 
-  private LearnerChange getLearner(final SyncRecordDetail detail)
-    throws JsonProcessingException {
-    return mapper.readValue(detail.getLearner(), LearnerChange.class);
-  }
-
+  /**
+   * @return List<SyncRecord>
+   */
   private List<SyncRecord> getUnprocessedRecords() {
     List<SyncRecord> syncList = syncRecordService.findUnprocessed();
     log.info("unprocessed list " + syncList.size());
