@@ -93,7 +93,13 @@ public class SanatizingFilter implements Filter {
       }
     }
 
-    chain.doFilter(httpRequest, response);
+    try {
+      chain.doFilter(httpRequest, response);
+    } catch (IOException | ServletException e) {
+      log.error("Error: " + e.getMessage());
+      e.printStackTrace();
+      return;
+    }
   }
 
   private static boolean hasHomoGlyphs(WrappedHttp httpRequest) {

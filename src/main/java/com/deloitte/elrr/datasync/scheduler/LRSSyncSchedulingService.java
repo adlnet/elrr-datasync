@@ -135,7 +135,7 @@ public class LRSSyncSchedulingService {
       createSyncRecordDetail(sync, statement);
       successCount++;
 
-    } catch (Exception e) {
+    } catch (JsonProcessingException e) {
       log.error("Exception in processing " + e.getMessage());
       e.getStackTrace();
     }
