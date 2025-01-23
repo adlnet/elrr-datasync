@@ -36,43 +36,33 @@ import com.deloitte.elrr.datasync.svc.ImportsCreatorSvc;
 class ImportsControllerTest {
 
   /** */
-  @MockBean 
-  private ImportsCreatorSvc svc;
+  @MockBean private ImportsCreatorSvc svc;
 
   /** */
-  @MockBean 
-  private ImportDetailRepository mockImportDetailRepository;
+  @MockBean private ImportDetailRepository mockImportDetailRepository;
 
   /** */
-  @MockBean 
-  private ImportRepository mockImportRepository;
+  @MockBean private ImportRepository mockImportRepository;
 
   /** */
-  @MockBean 
-  private SyncRecordDetailRepository mockSyncRecordDetailRepository;
+  @MockBean private SyncRecordDetailRepository mockSyncRecordDetailRepository;
 
   /** */
-  @MockBean 
-  private SyncRecordRepository mockSyncRecordRepository;
+  @MockBean private SyncRecordRepository mockSyncRecordRepository;
 
   /** */
-  @MockBean 
-  private RestTemplateBuilder mockRestTemplateBuilder;
+  @MockBean private RestTemplateBuilder mockRestTemplateBuilder;
 
   /** */
-  @MockBean 
-  private RestTemplate mockRestTemplate;
+  @MockBean private RestTemplate mockRestTemplate;
 
   /** */
-  @MockBean 
-  private ModelMapper mapper;
+  @MockBean private ModelMapper mapper;
 
   /** */
-  @Autowired 
-  private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-  @MockBean 
-  private ErrorsRepository mockErrorsRepository;
+  @MockBean private ErrorsRepository mockErrorsRepository;
 
   /**
    * @throws Exception
@@ -85,7 +75,6 @@ class ImportsControllerTest {
     mockMvc.perform(get("/api/getImports")).andExpect(status().isBadRequest());
   }
 
-  /** */
   @Test
   void getImportsTest() throws Exception {
     ImportDTO importDTO = new ImportDTO();

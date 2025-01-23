@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository;
 import com.deloitte.elrr.datasync.entity.Errors;
 
 @Repository
-public interface ErrorsRepository extends JpaRepository<Errors, Long> {
-  
-}
+public interface ErrorsRepository extends JpaRepository<Errors, Long> {}
