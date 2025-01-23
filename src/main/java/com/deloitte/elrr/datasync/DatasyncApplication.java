@@ -1,4 +1,3 @@
-/** */
 package com.deloitte.elrr.datasync;
 
 import org.springframework.boot.SpringApplication;

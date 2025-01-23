@@ -137,7 +137,6 @@ public class LRSSyncSchedulingService {
 
     } catch (JsonProcessingException e) {
       log.error("Exception in processing " + e.getMessage());
-      e.getStackTrace();
     }
 
     return successCount;
