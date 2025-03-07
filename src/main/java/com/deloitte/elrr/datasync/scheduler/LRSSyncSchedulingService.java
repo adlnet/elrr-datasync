@@ -321,7 +321,7 @@ public class LRSSyncSchedulingService {
   /**
    * @return Import
    */
-  private Import getLRSImport() {
+  public Import getLRSImport() {
     return importService.findByName(lrsName);
   }
 }

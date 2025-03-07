@@ -1,21 +1,22 @@
 package com.deloitte.elrr.datasync.service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.deloitte.elrr.datasync.dto.AuditRecord;
 import com.deloitte.elrr.datasync.dto.MessageVO;
+import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.entity.SyncRecord;
 import com.deloitte.elrr.datasync.entity.SyncRecordDetail;
 import com.deloitte.elrr.datasync.jpa.service.ErrorsService;
+import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yetanalytics.xapi.model.Statement;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +36,15 @@ public class NewDataService {
 
   @Autowired private ErrorsService errorsService;
 
-  private ObjectMapper mapper = new ObjectMapper();
+  @Autowired private ImportService importService;
+
+  private static String lrsName = "Deloitte LRS";
+
+  // private ObjectMapper mapper = new ObjectMapper();
 
   /**
-   * 1. Retrieve all unprocessed syncrecord records with INSERTED status 2. Send the message to
-   * Kafka 3. Update the records SyncRecord and SyncRecordDetails to SUCCCESS/INSERTED status
+   * 1. Retrieve all unprocessed syncrecord records with INSERTED status. 2. Create the Kafka
+   * message. 3. Update SyncRecord and SyncRecordDetails to SUCCCESS/INSERTED status.
    */
   public void process(Statement[] statements) {
 
@@ -48,6 +53,9 @@ public class NewDataService {
     // Unprocessed synchrecord.recordStatus=inserted
     List<SyncRecord> syncList = getUnprocessedRecords();
     log.info("==> Unprocessed synch records = " + syncList.size());
+
+    Timestamp importStartDate = getLRSImport().getImportStartDate();
+    Timestamp importEndDate = getLRSImport().getImportEndDate();
 
     int x = 0;
 
@@ -60,8 +68,8 @@ public class NewDataService {
         syncRecordDetail = syncRecordDetailService.findBySyncRecordId(syncRecord.getSyncRecordId());
 
         if (x <= statements.length - 1) {
-
-          MessageVO kafkaMessage = createKafkaJsonMessage(statements[x], syncRecordDetail);
+          MessageVO kafkaMessage =
+              createKafkaJsonMessage(statements[x], importStartDate, importEndDate);
           sendToKafka(kafkaMessage);
         }
 
@@ -124,18 +132,12 @@ public class NewDataService {
    * @throws JsonProcessingException
    */
   private MessageVO createKafkaJsonMessage(
-      final Statement statement, final SyncRecordDetail syncRecordDetail)
+      final Statement statement, final Timestamp importStartDate, final Timestamp importEndDate)
       throws JsonProcessingException {
-    AuditRecord auditRecord = new AuditRecord();
     MessageVO vo = new MessageVO();
-
-    Long detailId = syncRecordDetail.getSyncRecordDetailId();
-    auditRecord.setAuditId(syncRecordDetail.getSyncRecordId());
-    auditRecord.setAuditDetailId(detailId);
-
     vo.setStatement(statement);
-    vo.setAuditRecord(auditRecord);
-
+    vo.setImportStartDate(importStartDate);
+    vo.setImportEndDate(importEndDate);
     return vo;
   }
 
@@ -146,5 +148,9 @@ public class NewDataService {
     List<SyncRecord> syncList = syncRecordService.findUnprocessed();
     log.info("unprocessed list " + syncList.size());
     return syncList;
+  }
+
+  public Import getLRSImport() {
+    return importService.findByName(lrsName);
   }
 }
