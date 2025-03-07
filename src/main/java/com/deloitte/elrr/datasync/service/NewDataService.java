@@ -40,8 +40,6 @@ public class NewDataService {
 
   private static String lrsName = "Deloitte LRS";
 
-  // private ObjectMapper mapper = new ObjectMapper();
-
   /**
    * 1. Retrieve all unprocessed syncrecord records with INSERTED status. 2. Create the Kafka
    * message. 3. Update SyncRecord and SyncRecordDetails to SUCCCESS/INSERTED status.
