@@ -53,7 +53,6 @@ public class LRSSyncSchedulingService {
 
   private ObjectMapper mapper = new ObjectMapper();
 
-  @Scheduled(cron = "${cronExpression}")
   /*
    * 1. Connect to db and get Last sync date.
    *
@@ -68,10 +67,16 @@ public class LRSSyncSchedulingService {
    * 6. Invoke New Processor to process unprocessed records.
    *
    */
+  @Scheduled(cron = "${cronExpression}")
   public void run() {
 
     log.info("**inside schedule method");
     Import importRecord = getLRSImport();
+
+    // If no import record
+    if (importRecord == null) {
+      importRecord = createImport();
+    }
 
     Statement[] result = null;
     int total = 0;
@@ -87,12 +92,10 @@ public class LRSSyncSchedulingService {
         // Make call to LRSService.invokeLRS(final Timestamp startDate)
         result = lrsService.process(importRecord.getImportStartDate());
 
-        ImportDetail importDetail = null;
-
         if (result != null && result.length > 0) {
 
           for (Statement statement : result) {
-            importDetail = insertImportDetail(result.length, 0, 0, importRecord);
+            ImportDetail importDetail = insertImportDetail(result.length, 0, 0, importRecord);
             successCount = insertSyncRecord(statement, importDetail);
             failedCount = 1 - successCount;
             total = successCount + failedCount;
@@ -323,5 +326,18 @@ public class LRSSyncSchedulingService {
    */
   public Import getLRSImport() {
     return importService.findByName(lrsName);
+  }
+
+  private Import createImport() {
+    log.info("Crerating new import.");
+    Import importRecord = new Import();
+    importRecord.setRecordStatus(success);
+    importRecord.setImportName(lrsName);
+    final String initialDate = "2000-12-30 13:08:54.193";
+    Timestamp endDate = Timestamp.valueOf(initialDate);
+    importRecord.setImportStartDate(endDate);
+    importRecord.setImportEndDate(endDate);
+    importService.save(importRecord);
+    return importRecord;
   }
 }

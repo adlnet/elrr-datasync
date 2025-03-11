@@ -1,6 +1,5 @@
 package com.deloitte.elrr.datasync.service;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +38,7 @@ public class NewDataService {
   @Autowired private ImportService importService;
 
   private static String lrsName = "Deloitte LRS";
+  private static String syncStatus = "inserted";
 
   /**
    * 1. Retrieve all unprocessed syncrecord records with INSERTED status. 2. Create the Kafka
@@ -49,11 +49,17 @@ public class NewDataService {
     log.info("Inside NewDataService");
 
     // Unprocessed synchrecord.recordStatus=inserted
+
+    SyncRecord syncRec = syncRecordService.findExistingRecord(lrsName);
+
+    // If no SyncRecord
+    if (syncRec == null) {
+      Import importRecord = getLRSImport();
+      createSyncRecord(importRecord);
+    }
+
     List<SyncRecord> syncList = getUnprocessedRecords();
     log.info("==> Unprocessed synch records = " + syncList.size());
-
-    Timestamp importStartDate = getLRSImport().getImportStartDate();
-    Timestamp importEndDate = getLRSImport().getImportEndDate();
 
     int x = 0;
 
@@ -65,9 +71,13 @@ public class NewDataService {
 
         syncRecordDetail = syncRecordDetailService.findBySyncRecordId(syncRecord.getSyncRecordId());
 
+        // If no SyncRecordDetail
+        if (syncRecordDetail == null) {
+          syncRecordDetail = createSyncRecordDetail(syncRecord.getSyncRecordId());
+        }
+
         if (x <= statements.length - 1) {
-          MessageVO kafkaMessage =
-              createKafkaJsonMessage(statements[x], importStartDate, importEndDate);
+          MessageVO kafkaMessage = createKafkaJsonMessage(statements[x]);
           sendToKafka(kafkaMessage);
         }
 
@@ -129,13 +139,11 @@ public class NewDataService {
    * @return
    * @throws JsonProcessingException
    */
-  private MessageVO createKafkaJsonMessage(
-      final Statement statement, final Timestamp importStartDate, final Timestamp importEndDate)
+  private MessageVO createKafkaJsonMessage(final Statement statement)
       throws JsonProcessingException {
     MessageVO vo = new MessageVO();
     vo.setStatement(statement);
-    vo.setImportStartDate(importStartDate);
-    vo.setImportEndDate(importEndDate);
+
     return vo;
   }
 
@@ -150,5 +158,25 @@ public class NewDataService {
 
   public Import getLRSImport() {
     return importService.findByName(lrsName);
+  }
+
+  private SyncRecord createSyncRecord(Import importRecord) {
+    log.info("Creating SyncRecord.");
+    SyncRecord syncRecord = new SyncRecord();
+    syncRecord.setRecordStatus(syncStatus);
+    syncRecord.setSyncKey(lrsName);
+    syncRecord.setImportdetailId(importRecord.getImportId());
+    syncRecord.setRetries(0L);
+    return syncRecord;
+  }
+
+  private SyncRecordDetail createSyncRecordDetail(long syncRecordId) {
+    log.info("Creating SyncRecordDetail.");
+    SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
+    syncRecordDetail.setSyncRecordId(syncRecordId);
+    syncRecordDetail.setRecordStatus(syncStatus);
+    syncRecordDetail.setLearner("none");
+    syncRecordDetailService.save(syncRecordDetail);
+    return syncRecordDetail;
   }
 }
