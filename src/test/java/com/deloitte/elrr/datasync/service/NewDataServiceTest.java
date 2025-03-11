@@ -10,8 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import com.deloitte.elrr.datasync.dto.LearnerChange;
-import com.deloitte.elrr.datasync.dto.UserCourse;
 import com.deloitte.elrr.datasync.entity.SyncRecord;
 import com.deloitte.elrr.datasync.entity.SyncRecordDetail;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
@@ -97,20 +95,6 @@ class NewDataServiceTest {
   public static SyncRecordDetail getSyncRecordDeatil() {
     SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
     syncRecordDetail.setSyncRecordId(1L);
-    syncRecordDetail.setLearner("mailto:c.cooper@yahoo.com");
     return syncRecordDetail;
-  }
-
-  /**
-   * @return ElrrStatement[]
-   */
-  public static LearnerChange getLearnerChange() {
-    List<UserCourse> userCourseList = new ArrayList<>();
-    userCourseList.add(new UserCourse());
-    LearnerChange learnerChange = new LearnerChange();
-    learnerChange.setContactEmailAddress("c.cooper@yahoo.com");
-    learnerChange.setName("Cristopher Cunningham");
-    learnerChange.setCourses(userCourseList);
-    return learnerChange;
   }
 }

@@ -22,7 +22,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SyncRecordDetail extends Auditable<String> {
-  /** */
+
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "syncrecorddetail_SEQ")
   @SequenceGenerator(
@@ -32,16 +32,9 @@ public class SyncRecordDetail extends Auditable<String> {
   @Column(name = "SYNCRECORDDETAILID")
   private Long syncRecordDetailId;
 
-  /** */
   @Column(name = "SYNCRECORDID")
   private long syncRecordId;
 
-  /** */
-  @Convert(converter = JsonType.class, attributeName = "learner")
-  @Column(columnDefinition = "jsonb")
-  private String learner;
-
-  /** */
   @Column(name = "RECORDSTATUS")
   private String recordStatus;
 }

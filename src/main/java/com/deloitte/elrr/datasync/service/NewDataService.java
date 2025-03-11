@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.deloitte.elrr.datasync.dto.MessageVO;
+import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
 import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.entity.SyncRecord;
 import com.deloitte.elrr.datasync.entity.SyncRecordDetail;
+import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
 import com.deloitte.elrr.datasync.jpa.service.ErrorsService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
@@ -37,19 +39,24 @@ public class NewDataService {
 
   @Autowired private ImportService importService;
 
+  @Autowired private KafkaProducer kafkaProd;
+
+  @Autowired private ELRRAuditLogService elrrAuditLogService;
+
   private static String lrsName = "Deloitte LRS";
   private static String syncStatus = "inserted";
+  private static String updatedBy = "ELRR";
 
   /**
-   * 1. Retrieve all unprocessed syncrecord records with INSERTED status. 2. Create the Kafka
-   * message. 3. Update SyncRecord and SyncRecordDetails to SUCCCESS/INSERTED status.
+   * 1. Retrieve all unprocessed syncrecord records with INSERTED status. 2. Create ELRRAuditLog 3.
+   * Create the Kafka message. 4. Update SyncRecord and SyncRecordDetails to SUCCCESS/INSERTED
+   * status.
    */
   public void process(Statement[] statements) {
 
     log.info("Inside NewDataService");
 
     // Unprocessed synchrecord.recordStatus=inserted
-
     SyncRecord syncRec = syncRecordService.findExistingRecord(lrsName);
 
     // If no SyncRecord
@@ -78,6 +85,7 @@ public class NewDataService {
 
         if (x <= statements.length - 1) {
           MessageVO kafkaMessage = createKafkaJsonMessage(statements[x]);
+          insertAuditLog(kafkaMessage, syncRecordDetail.getSyncRecordId());
           sendToKafka(kafkaMessage);
         }
 
@@ -166,6 +174,7 @@ public class NewDataService {
     syncRecord.setRecordStatus(syncStatus);
     syncRecord.setSyncKey(lrsName);
     syncRecord.setImportdetailId(importRecord.getImportId());
+    syncRecord.setUpdatedBy(updatedBy);
     syncRecord.setRetries(0L);
     return syncRecord;
   }
@@ -175,8 +184,21 @@ public class NewDataService {
     SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
     syncRecordDetail.setSyncRecordId(syncRecordId);
     syncRecordDetail.setRecordStatus(syncStatus);
-    syncRecordDetail.setLearner("none");
+    syncRecordDetail.setUpdatedBy(updatedBy);
     syncRecordDetailService.save(syncRecordDetail);
     return syncRecordDetail;
+  }
+
+  /**
+   * @param messageVo
+   * @param synchRecordId
+   */
+  private void insertAuditLog(final MessageVO messageVo, Long synchRecordId) {
+    log.info("Creating ELRRAuditLog.");
+    ELRRAuditLog auditLog = new ELRRAuditLog();
+    auditLog.setSyncid(synchRecordId);
+    auditLog.setStatement(kafkaProd.writeValueAsString(messageVo.getStatement()));
+    auditLog.setUpdatedBy(updatedBy);
+    elrrAuditLogService.save(auditLog);
   }
 }
