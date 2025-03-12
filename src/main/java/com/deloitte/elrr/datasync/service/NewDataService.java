@@ -164,10 +164,17 @@ public class NewDataService {
     return syncList;
   }
 
+  /**
+   * @return Import
+   */
   public Import getLRSImport() {
     return importService.findByName(lrsName);
   }
 
+  /**
+   * @param importRecord
+   * @return SyncREcord
+   */
   private SyncRecord createSyncRecord(Import importRecord) {
     log.info("Creating SyncRecord.");
     SyncRecord syncRecord = new SyncRecord();
@@ -179,6 +186,10 @@ public class NewDataService {
     return syncRecord;
   }
 
+  /**
+   * @param syncRecordId
+   * @return SyncRecordDetail
+   */
   private SyncRecordDetail createSyncRecordDetail(long syncRecordId) {
     log.info("Creating SyncRecordDetail.");
     SyncRecordDetail syncRecordDetail = new SyncRecordDetail();

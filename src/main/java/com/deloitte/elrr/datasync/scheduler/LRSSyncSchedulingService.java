@@ -187,15 +187,6 @@ public class LRSSyncSchedulingService {
   }
 
   /**
-   * @param object
-   * @return String
-   * @throws JsonProcessingException
-   */
-  private String getJson(final Object object) throws JsonProcessingException {
-    return mapper.writeValueAsString(object);
-  }
-
-  /**
    * @param imports
    */
   private void updateImportInProcess(final Import imports) {
