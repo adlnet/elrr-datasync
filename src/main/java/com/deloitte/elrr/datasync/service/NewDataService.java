@@ -66,7 +66,7 @@ public class NewDataService {
     }
 
     List<SyncRecord> syncList = getUnprocessedRecords();
-    log.info("==> Unprocessed synch records = " + syncList.size());
+    log.info("Unprocessed synch records = " + syncList.size());
 
     int x = 0;
 

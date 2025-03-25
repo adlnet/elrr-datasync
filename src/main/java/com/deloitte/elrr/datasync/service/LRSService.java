@@ -67,7 +67,7 @@ public class LRSService {
 
       // Call LRS passing import.startdate = stored date
       String completeURL = lrsURL + "/api/lrsdata?lastReadDate=" + lastReadDate;
-      log.info("==> URL = " + completeURL);
+      log.info("URL = " + completeURL);
 
       HttpEntity<String> entity = new HttpEntity<>("body", httpHeaders);
       ResponseEntity<String> json =
@@ -76,10 +76,10 @@ public class LRSService {
       ObjectMapper mapper = Mapper.getMapper();
       statements = mapper.readValue(json.getBody(), Statement[].class);
 
-      log.info("==> statements size = " + statements.length);
+      log.info("statements size = " + statements.length);
 
     } catch (HttpClientErrorException | HttpServerErrorException | JsonProcessingException e) {
-      log.error("==> Error calling LRS " + e.getMessage());
+      log.error("Error calling LRS " + e.getMessage());
       e.getStackTrace();
     }
 
@@ -103,7 +103,7 @@ public class LRSService {
     // Convert to GMT
     formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
     String lastReadDate = formatter.format(date);
-    log.info("==> lastReadDate = " + lastReadDate);
+    log.info("lastReadDate = " + lastReadDate);
 
     return lastReadDate;
   }
