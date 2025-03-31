@@ -52,7 +52,7 @@ public class NewDataService {
    * Create the Kafka message. 4. Update SyncRecord and SyncRecordDetails to SUCCCESS/INSERTED
    * status.
    */
-  public void process(Statement[] statements) {
+  public void process(Statement[] statements) throws JsonProcessingException {
 
     log.info("Inside NewDataService");
 
@@ -173,7 +173,7 @@ public class NewDataService {
 
   /**
    * @param importRecord
-   * @return SyncREcord
+   * @return SyncRecord
    */
   private SyncRecord createSyncRecord(Import importRecord) {
     log.info("Creating SyncRecord.");

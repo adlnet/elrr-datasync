@@ -36,29 +36,48 @@ public class LRSService {
   @Value("${lrsservice.cookie}")
   private String lrsCookie;
 
-  /*
-   * This process is to get the deltas
-   */
-
   /**
    * @param startDate
    * @return Statement[]
    */
   public Statement[] process(final Timestamp startDate) {
-    return invokeLRS(startDate);
+
+    Statement[] statements = null;
+
+    try {
+
+      // Get deltas
+      statements = invokeLRS(startDate);
+
+    } catch (IllegalArgumentException
+        | NullPointerException
+        | HttpClientErrorException
+        | HttpServerErrorException
+        | JsonProcessingException e) {
+      log.error("Error calling LRS  - " + e.getMessage());
+      e.getStackTrace();
+    }
+
+    return statements;
   }
 
   /**
    * @param startDate
    * @return Statement[]
    */
-  private Statement[] invokeLRS(final Timestamp startDate) {
+  private Statement[] invokeLRS(final Timestamp startDate)
+      throws IllegalArgumentException,
+          NullPointerException,
+          HttpClientErrorException,
+          HttpServerErrorException,
+          JsonProcessingException {
+
     Statement[] statements = null;
 
-    // Format import.startdate date (yyyy-MM-DDThh:mm:ssZ)
-    String lastReadDate = formatStoredDate(startDate);
-
     try {
+
+      // Format import.startdate date (yyyy-MM-DDThh:mm:ssZ)
+      String lastReadDate = formatStoredDate(startDate);
 
       HttpHeaders httpHeaders = new HttpHeaders();
       httpHeaders.add("Cookie", lrsCookie);
@@ -78,8 +97,12 @@ public class LRSService {
 
       log.info("statements size = " + statements.length);
 
-    } catch (HttpClientErrorException | HttpServerErrorException | JsonProcessingException e) {
-      log.error("Error calling LRS " + e.getMessage());
+    } catch (IllegalArgumentException
+        | NullPointerException
+        | HttpClientErrorException
+        | HttpServerErrorException
+        | JsonProcessingException e) {
+      log.error("Error calling LRS  - " + e.getMessage());
       e.getStackTrace();
     }
 
@@ -90,20 +113,30 @@ public class LRSService {
    * @param startDate
    * @return lastReadDate
    */
-  private String formatStoredDate(Timestamp startDate) {
+  private String formatStoredDate(Timestamp startDate)
+      throws IllegalArgumentException, NullPointerException {
 
-    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    String lastReadDate = null;
 
-    // Convert timestamp to Long (ms)
-    long startDateLong = startDate.getTime();
+    try {
 
-    // Convert Long to Date
-    Date date = new Date(startDateLong);
+      DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-    // Convert to GMT
-    formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-    String lastReadDate = formatter.format(date);
-    log.info("lastReadDate = " + lastReadDate);
+      // Convert timestamp to Long (ms)
+      long startDateLong = startDate.getTime();
+
+      // Convert Long to Date
+      Date date = new Date(startDateLong);
+
+      // Convert to GMT
+      formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+      lastReadDate = formatter.format(date);
+      log.info("lastReadDate = " + lastReadDate);
+
+    } catch (IllegalArgumentException | NullPointerException e) {
+      log.error("Error formatting last read date  - " + e.getMessage());
+      e.getStackTrace();
+    }
 
     return lastReadDate;
   }

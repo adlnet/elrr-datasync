@@ -104,7 +104,12 @@ public class LRSSyncSchedulingService {
       }
       // The reason this is out of the try catch block is that even if the LRS sync is failed
       // but if any of there are  unprocessed messages sitting in the DB, they can be processed.
-      newDataService.process(result);
+      try {
+        newDataService.process(result);
+      } catch (JsonProcessingException e) {
+        log.error(e.getMessage());
+        e.getStackTrace();
+      }
     } else {
       log.error("No record was defined for LRS in Imports table");
     }
