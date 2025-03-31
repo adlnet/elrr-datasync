@@ -45,7 +45,6 @@ public class NewDataService {
 
   private static String lrsName = "Deloitte LRS";
   private static String syncStatus = "inserted";
-  private static String updatedBy = "ELRR";
 
   /**
    * 1. Retrieve all unprocessed syncrecord records with INSERTED status. 2. Create ELRRAuditLog 3.
@@ -181,7 +180,6 @@ public class NewDataService {
     syncRecord.setRecordStatus(syncStatus);
     syncRecord.setSyncKey(lrsName);
     syncRecord.setImportdetailId(importRecord.getImportId());
-    syncRecord.setUpdatedBy(updatedBy);
     syncRecord.setRetries(0L);
     return syncRecord;
   }
@@ -195,7 +193,6 @@ public class NewDataService {
     SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
     syncRecordDetail.setSyncRecordId(syncRecordId);
     syncRecordDetail.setRecordStatus(syncStatus);
-    syncRecordDetail.setUpdatedBy(updatedBy);
     syncRecordDetailService.save(syncRecordDetail);
     return syncRecordDetail;
   }
@@ -209,7 +206,6 @@ public class NewDataService {
     ELRRAuditLog auditLog = new ELRRAuditLog();
     auditLog.setSyncid(synchRecordId);
     auditLog.setStatement(kafkaProd.writeValueAsString(messageVo.getStatement()));
-    auditLog.setUpdatedBy(updatedBy);
     elrrAuditLogService.save(auditLog);
   }
 }

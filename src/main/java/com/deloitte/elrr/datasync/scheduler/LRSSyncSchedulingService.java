@@ -42,7 +42,6 @@ public class LRSSyncSchedulingService {
   @Autowired private SyncRecordDetailService syncRecordDetailService;
 
   private ObjectMapper mapper = new ObjectMapper();
-  private static String updatedBy = "ELRR";
 
   /*
    * 1. Connect to db and get Last sync date.
@@ -165,7 +164,6 @@ public class LRSSyncSchedulingService {
     SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
     syncRecordDetail.setSyncRecordId(syncRecord.getSyncRecordId());
     syncRecordDetail.setRecordStatus("INSERTED");
-    syncRecordDetail.setUpdatedBy(updatedBy);
     syncRecordDetailService.save(syncRecordDetail);
   }
 

@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yetanalytics.xapi.model.Statement;
@@ -49,13 +50,8 @@ public class LRSService {
       // Get deltas
       statements = invokeLRS(startDate);
 
-    } catch (IllegalArgumentException
-        | NullPointerException
-        | HttpClientErrorException
-        | HttpServerErrorException
-        | JsonProcessingException e) {
-      log.error("Error calling LRS  - " + e.getMessage());
-      e.getStackTrace();
+    } catch (DatasyncException e) {
+      log.error("Error processing statement.");
     }
 
     return statements;
@@ -64,13 +60,9 @@ public class LRSService {
   /**
    * @param startDate
    * @return Statement[]
+   * @throws DatasyncException
    */
-  private Statement[] invokeLRS(final Timestamp startDate)
-      throws IllegalArgumentException,
-          NullPointerException,
-          HttpClientErrorException,
-          HttpServerErrorException,
-          JsonProcessingException {
+  private Statement[] invokeLRS(final Timestamp startDate) throws DatasyncException {
 
     Statement[] statements = null;
 
@@ -103,7 +95,7 @@ public class LRSService {
         | HttpServerErrorException
         | JsonProcessingException e) {
       log.error("Error calling LRS  - " + e.getMessage());
-      e.getStackTrace();
+      throw new DatasyncException("Error calling LRS  - " + e.getMessage());
     }
 
     return statements;
@@ -112,9 +104,9 @@ public class LRSService {
   /**
    * @param startDate
    * @return lastReadDate
+   * @throws DatasyncException
    */
-  private String formatStoredDate(Timestamp startDate)
-      throws IllegalArgumentException, NullPointerException {
+  private String formatStoredDate(Timestamp startDate) throws DatasyncException {
 
     String lastReadDate = null;
 
@@ -134,8 +126,8 @@ public class LRSService {
       log.info("lastReadDate = " + lastReadDate);
 
     } catch (IllegalArgumentException | NullPointerException e) {
-      log.error("Error formatting last read date  - " + e.getMessage());
-      e.getStackTrace();
+      log.error("Error formatting last read date - " + e.getMessage());
+      throw new DatasyncException("Error formatting last read date - " + e.getMessage());
     }
 
     return lastReadDate;
