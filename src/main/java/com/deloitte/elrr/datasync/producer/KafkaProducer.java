@@ -24,20 +24,29 @@ public class KafkaProducer {
   /**
    * @param msg
    */
-  public void sendMessage(final Object msg) {
+  public void sendMessage(final Object msg) throws Exception {
+
     try {
+
       String payload = "";
+
       if (msg instanceof String) {
         payload = (String) msg;
       } else {
         payload = writeValueAsString(msg);
       }
-      log.info("payload sent messsage to Kafka" + payload);
+
+      log.info("\n payload sent messsage to Kafka" + payload);
+
       kafkaTemplate.send(kafkatopic, payload);
+
       log.info("payload sent to kafka successfully to kafka topic " + kafkatopic);
+
     } catch (Exception e) {
+
       log.error("Exception while sending message to Kafka " + e.getMessage());
-      e.getStackTrace();
+      e.printStackTrace();
+      throw e;
     }
   }
 

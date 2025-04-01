@@ -3,6 +3,7 @@ package com.deloitte.elrr.datasync.scheduler;
 import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -10,13 +11,13 @@ import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.entity.ImportDetail;
 import com.deloitte.elrr.datasync.entity.SyncRecord;
 import com.deloitte.elrr.datasync.entity.SyncRecordDetail;
+import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.jpa.service.ImportDetailService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordService;
 import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yetanalytics.xapi.model.Statement;
 
@@ -28,6 +29,9 @@ public class LRSSyncSchedulingService {
 
   private static String lrsName = "Deloitte LRS";
   private static String success = "SUCCESS";
+  private static String inserted = "INSERTED";
+  private static String inProcess = "INPROCESS";
+  private static String failed = "FAILED";
 
   @Autowired private LRSService lrsService;
 
@@ -40,6 +44,9 @@ public class LRSSyncSchedulingService {
   @Autowired private SyncRecordService syncService;
 
   @Autowired private SyncRecordDetailService syncRecordDetailService;
+
+  @Value("${initial.date}")
+  private Timestamp initialDate;
 
   private ObjectMapper mapper = new ObjectMapper();
 
@@ -97,18 +104,20 @@ public class LRSSyncSchedulingService {
         updateImportSuccess(importRecord);
 
       } catch (Exception e) {
-        log.error("LRS Sync failed " + e.getMessage());
+        log.error("LRS Sync failed - " + e.getMessage());
+        e.printStackTrace();
         updateImportFailed(importRecord);
-        e.getStackTrace();
       }
+
       // The reason this is out of the try catch block is that even if the LRS sync is failed
       // but if any of there are  unprocessed messages sitting in the DB, they can be processed.
       try {
         newDataService.process(result);
-      } catch (JsonProcessingException e) {
-        log.error(e.getMessage());
-        e.getStackTrace();
+      } catch (DatasyncException e) {
+        log.error("Error processing statements - " + e.getMessage());
+        e.printStackTrace();
       }
+
     } else {
       log.error("No record was defined for LRS in Imports table");
     }
@@ -118,24 +127,21 @@ public class LRSSyncSchedulingService {
    * @param Statement
    * @param importDetail
    * @return successCount
+   * @throws DatasyncException
    */
   private int insertSyncRecord(final Statement statement, final ImportDetail importDetail) {
+
     int successCount = 0;
-    try {
 
-      String key = statement.getId().toString();
-      SyncRecord sync = syncService.findExistingRecord(key);
+    String key = statement.getId().toString();
+    SyncRecord sync = syncService.findExistingRecord(key);
 
-      if (sync == null) {
-        sync = syncService.createSyncRecord(key, importDetail.getImportdetailId());
-      }
-
-      createSyncRecordDetail(sync, statement);
-      successCount++;
-
-    } catch (JsonProcessingException e) {
-      log.error("Exception in processing " + e.getMessage());
+    if (sync == null) {
+      sync = syncService.createSyncRecord(key, importDetail.getImportdetailId());
     }
+
+    createSyncRecordDetail(sync, statement);
+    successCount++;
 
     return successCount;
   }
@@ -157,13 +163,11 @@ public class LRSSyncSchedulingService {
   /**
    * @param syncRecord
    * @param statement
-   * @throws JsonProcessingException
    */
-  private void createSyncRecordDetail(final SyncRecord syncRecord, final Statement statement)
-      throws JsonProcessingException {
+  private void createSyncRecordDetail(final SyncRecord syncRecord, final Statement statement) {
     SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
     syncRecordDetail.setSyncRecordId(syncRecord.getSyncRecordId());
-    syncRecordDetail.setRecordStatus("INSERTED");
+    syncRecordDetail.setRecordStatus(inserted);
     syncRecordDetailService.save(syncRecordDetail);
   }
 
@@ -184,7 +188,7 @@ public class LRSSyncSchedulingService {
     importDetail.setFailedRecords(failed);
     importDetail.setTotalRecords(total);
     importDetail.setSuccessRecords(newsuccess);
-    importDetail.setRecordStatus("INPROCESS");
+    importDetail.setRecordStatus(inProcess);
     importDetailService.save(importDetail);
     return importDetail;
   }
@@ -197,9 +201,9 @@ public class LRSSyncSchedulingService {
     // If not, we just re run again with same old dates.
     if (imports.getRecordStatus().equals(success)) {
       imports.setImportStartDate(imports.getImportEndDate());
-      imports.setImportEndDate(getEndDate());
+      imports.setImportEndDate(new Timestamp(System.currentTimeMillis()));
     }
-    imports.setRecordStatus("INPROCESS");
+    imports.setRecordStatus(inProcess);
     importService.save(imports);
   }
 
@@ -223,15 +227,8 @@ public class LRSSyncSchedulingService {
    * @param Import
    */
   private void updateImportFailed(final Import importRecord) {
-    importRecord.setRecordStatus("FAILED");
+    importRecord.setRecordStatus(failed);
     importService.save(importRecord);
-  }
-
-  /**
-   * @return Timestamp
-   */
-  private Timestamp getEndDate() {
-    return new Timestamp(System.currentTimeMillis());
   }
 
   /**
@@ -246,10 +243,9 @@ public class LRSSyncSchedulingService {
     Import importRecord = new Import();
     importRecord.setRecordStatus(success);
     importRecord.setImportName(lrsName);
-    final String initialDate = "2000-12-30 13:08:54.193";
-    Timestamp endDate = Timestamp.valueOf(initialDate);
-    importRecord.setImportStartDate(endDate);
-    importRecord.setImportEndDate(endDate);
+    // Timestamp endDate = Timestamp.valueOf(initialDate);
+    importRecord.setImportStartDate(initialDate);
+    importRecord.setImportEndDate(initialDate);
     importService.save(importRecord);
     return importRecord;
   }

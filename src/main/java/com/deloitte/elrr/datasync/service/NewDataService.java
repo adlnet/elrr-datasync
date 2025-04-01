@@ -11,13 +11,13 @@ import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
 import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.entity.SyncRecord;
 import com.deloitte.elrr.datasync.entity.SyncRecordDetail;
+import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
 import com.deloitte.elrr.datasync.jpa.service.ErrorsService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yetanalytics.xapi.model.Statement;
 
 import lombok.extern.slf4j.Slf4j;
@@ -47,11 +47,14 @@ public class NewDataService {
   private static String syncStatus = "inserted";
 
   /**
-   * 1. Retrieve all unprocessed syncrecord records with INSERTED status. 2. Create ELRRAuditLog 3.
-   * Create the Kafka message. 4. Update SyncRecord and SyncRecordDetails to SUCCCESS/INSERTED
-   * status.
+   * @param statements
+   * @throws DatasyncException
    */
-  public void process(Statement[] statements) throws JsonProcessingException {
+  // 1. Retrieve unprocessed syncrecord (status = INSERTED).
+  // 2. Insert ELRRAuditLog.
+  // 3. Create Kafka message.
+  // 4. Update syncrecord and syncrecorddetailstatus to SUCCESS/INSERTED.
+  public void process(Statement[] statements) throws DatasyncException {
 
     log.info("Inside NewDataService");
 
@@ -98,7 +101,7 @@ public class NewDataService {
         syncRecordDetail.setRecordStatus("SUCCESS");
         syncRecordDetailService.save(syncRecordDetail);
 
-      } catch (JsonProcessingException e) {
+      } catch (Exception e) {
 
         log.error("Exception in processing " + e.getMessage());
         e.printStackTrace();
@@ -125,32 +128,35 @@ public class NewDataService {
 
           // Create Errors record
           errorsService.createErrors(Long.toString(syncRecord.getSyncRecordId()), e.getMessage());
-        }
 
-        log.error("Exception in processing " + e.getMessage());
-        e.getStackTrace();
+          log.error("Exception in processing - " + e.getMessage());
+          e.printStackTrace();
+          throw new DatasyncException("Exception in processing - " + e.getMessage());
+        }
       }
     }
   }
 
   /**
    * @param message
+   * @throws Exception
    */
-  private void sendToKafka(final MessageVO message) {
-    kafkaProducer.sendMessage(message);
+  private void sendToKafka(final MessageVO message) throws Exception {
+    try {
+      kafkaProducer.sendMessage(message);
+    } catch (Exception e) {
+      throw e;
+    }
   }
 
   /**
    * @param statement
    * @param syncRecordDetail
-   * @return
-   * @throws JsonProcessingException
+   * @return vo
    */
-  private MessageVO createKafkaJsonMessage(final Statement statement)
-      throws JsonProcessingException {
+  private MessageVO createKafkaJsonMessage(final Statement statement) {
     MessageVO vo = new MessageVO();
     vo.setStatement(statement);
-
     return vo;
   }
 
