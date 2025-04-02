@@ -63,7 +63,7 @@ public class LRSService {
    * @return Statement[]
    * @throws DatasyncException
    */
-  private Statement[] invokeLRS(final Timestamp startDate) throws DatasyncException {
+  private Statement[] invokeLRS(final Timestamp startDate) {
 
     Statement[] statements = null;
 
@@ -108,7 +108,7 @@ public class LRSService {
    * @return lastReadDate
    * @throws DatasyncException
    */
-  private String formatStoredDate(Timestamp startDate) throws DatasyncException {
+  private String formatStoredDate(Timestamp startDate) {
 
     String lastReadDate = null;
 

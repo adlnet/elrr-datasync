@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,12 +24,13 @@ public class KafkaProducer {
 
   /**
    * @param msg
+   * @throws JsonProcessingException
    */
-  public void sendMessage(final Object msg) throws Exception {
+  public void sendMessage(final Object msg) {
+
+    String payload = "";
 
     try {
-
-      String payload = "";
 
       if (msg instanceof String) {
         payload = (String) msg;
@@ -36,32 +38,32 @@ public class KafkaProducer {
         payload = writeValueAsString(msg);
       }
 
-      log.info("\n payload sent messsage to Kafka" + payload);
-
+      log.info("\n sent messsage to Kafka - " + payload);
       kafkaTemplate.send(kafkatopic, payload);
+      log.info("Kafka message successfully sent to kafka topic " + kafkatopic);
 
-      log.info("payload sent to kafka successfully to kafka topic " + kafkatopic);
-
-    } catch (Exception e) {
-
-      log.error("Exception while sending message to Kafka " + e.getMessage());
-      e.printStackTrace();
-      throw e;
+    } catch (JsonProcessingException e) {
+      throw new DatasyncException("Exception while sending Kafka message - " + e.getMessage());
     }
   }
 
   /**
    * @param data
    * @return String
+   * @throws JsonProcessingException
    */
-  public String writeValueAsString(final Object data) {
+  public String writeValueAsString(final Object data) throws JsonProcessingException {
+
     String output = "";
+
     try {
       output = mapper.writeValueAsString(data);
     } catch (JsonProcessingException e) {
       log.error("Exception whille converting to JSON " + e.getMessage());
-      e.fillInStackTrace();
+      e.printStackTrace();
+      throw e;
     }
+
     return output;
   }
 }

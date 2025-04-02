@@ -18,6 +18,8 @@ import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
+import com.deloitte.elrr.datasync.scheduler.StatusConstants;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yetanalytics.xapi.model.Statement;
 
 import lombok.extern.slf4j.Slf4j;
@@ -43,9 +45,6 @@ public class NewDataService {
 
   @Autowired private ELRRAuditLogService elrrAuditLogService;
 
-  private static String lrsName = "Deloitte LRS";
-  private static String syncStatus = "inserted";
-
   /**
    * @param statements
    * @throws DatasyncException
@@ -54,20 +53,21 @@ public class NewDataService {
   // 2. Insert ELRRAuditLog.
   // 3. Create Kafka message.
   // 4. Update syncrecord and syncrecorddetailstatus to SUCCESS/INSERTED.
-  public void process(Statement[] statements) throws DatasyncException {
+  public void process(Statement[] statements) {
 
     log.info("Inside NewDataService");
 
     // Unprocessed synchrecord.recordStatus=inserted
-    SyncRecord syncRec = syncRecordService.findExistingRecord(lrsName);
+    SyncRecord syncRec = syncRecordService.findExistingRecord(StatusConstants.LRSNAME);
 
     // If no SyncRecord
     if (syncRec == null) {
-      Import importRecord = getLRSImport();
+      Import importRecord = importService.findByName(StatusConstants.LRSNAME);
       createSyncRecord(importRecord);
     }
 
-    List<SyncRecord> syncList = getUnprocessedRecords();
+    List<SyncRecord> syncList = syncRecordService.findUnprocessed();
+
     log.info("Unprocessed synch records = " + syncList.size());
 
     int x = 0;
@@ -88,7 +88,7 @@ public class NewDataService {
         if (x <= statements.length - 1) {
           MessageVO kafkaMessage = createKafkaJsonMessage(statements[x]);
           insertAuditLog(kafkaMessage, syncRecordDetail.getSyncRecordId());
-          sendToKafka(kafkaMessage);
+          kafkaProducer.sendMessage(kafkaMessage);
         }
 
         x++;
@@ -101,7 +101,7 @@ public class NewDataService {
         syncRecordDetail.setRecordStatus("SUCCESS");
         syncRecordDetailService.save(syncRecordDetail);
 
-      } catch (Exception e) {
+      } catch (DatasyncException | JsonProcessingException e) {
 
         log.error("Exception in processing " + e.getMessage());
         e.printStackTrace();
@@ -138,18 +138,6 @@ public class NewDataService {
   }
 
   /**
-   * @param message
-   * @throws Exception
-   */
-  private void sendToKafka(final MessageVO message) throws Exception {
-    try {
-      kafkaProducer.sendMessage(message);
-    } catch (Exception e) {
-      throw e;
-    }
-  }
-
-  /**
    * @param statement
    * @param syncRecordDetail
    * @return vo
@@ -161,30 +149,14 @@ public class NewDataService {
   }
 
   /**
-   * @return List<SyncRecord>
-   */
-  private List<SyncRecord> getUnprocessedRecords() {
-    List<SyncRecord> syncList = syncRecordService.findUnprocessed();
-    log.info("unprocessed list " + syncList.size());
-    return syncList;
-  }
-
-  /**
-   * @return Import
-   */
-  public Import getLRSImport() {
-    return importService.findByName(lrsName);
-  }
-
-  /**
    * @param importRecord
    * @return SyncRecord
    */
   private SyncRecord createSyncRecord(Import importRecord) {
     log.info("Creating SyncRecord.");
     SyncRecord syncRecord = new SyncRecord();
-    syncRecord.setRecordStatus(syncStatus);
-    syncRecord.setSyncKey(lrsName);
+    syncRecord.setRecordStatus(StatusConstants.INSERTED);
+    syncRecord.setSyncKey(StatusConstants.LRSNAME);
     syncRecord.setImportdetailId(importRecord.getImportId());
     syncRecord.setRetries(0L);
     return syncRecord;
@@ -198,7 +170,7 @@ public class NewDataService {
     log.info("Creating SyncRecordDetail.");
     SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
     syncRecordDetail.setSyncRecordId(syncRecordId);
-    syncRecordDetail.setRecordStatus(syncStatus);
+    syncRecordDetail.setRecordStatus(StatusConstants.INSERTED);
     syncRecordDetailService.save(syncRecordDetail);
     return syncRecordDetail;
   }
@@ -206,12 +178,20 @@ public class NewDataService {
   /**
    * @param messageVo
    * @param synchRecordId
+   * @throws JsonProcessingException
    */
-  private void insertAuditLog(final MessageVO messageVo, Long synchRecordId) {
+  private void insertAuditLog(final MessageVO messageVo, Long synchRecordId)
+      throws JsonProcessingException {
+
     log.info("Creating ELRRAuditLog.");
-    ELRRAuditLog auditLog = new ELRRAuditLog();
-    auditLog.setSyncid(synchRecordId);
-    auditLog.setStatement(kafkaProd.writeValueAsString(messageVo.getStatement()));
-    elrrAuditLogService.save(auditLog);
+
+    try {
+      ELRRAuditLog auditLog = new ELRRAuditLog();
+      auditLog.setSyncid(synchRecordId);
+      auditLog.setStatement(kafkaProd.writeValueAsString(messageVo.getStatement()));
+      elrrAuditLogService.save(auditLog);
+    } catch (JsonProcessingException e) {
+      throw e;
+    }
   }
 }

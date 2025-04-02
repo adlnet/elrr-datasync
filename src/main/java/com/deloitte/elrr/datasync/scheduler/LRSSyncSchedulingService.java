@@ -27,12 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LRSSyncSchedulingService {
 
-  private static String lrsName = "Deloitte LRS";
-  private static String success = "SUCCESS";
-  private static String inserted = "INSERTED";
-  private static String inProcess = "INPROCESS";
-  private static String failed = "FAILED";
-
   @Autowired private LRSService lrsService;
 
   @Autowired private NewDataService newDataService;
@@ -68,7 +62,7 @@ public class LRSSyncSchedulingService {
   public void run() {
 
     log.info("**inside schedule method");
-    Import importRecord = getLRSImport();
+    Import importRecord = importService.findByName(StatusConstants.LRSNAME);
 
     // If no import record
     if (importRecord == null) {
@@ -97,16 +91,22 @@ public class LRSSyncSchedulingService {
             failedCount = 1 - successCount;
             total = successCount + failedCount;
             updateImportDetail(total, successCount, failedCount, importDetail);
-            updateImportDetailSuccess(importDetail);
+            // Update import detail status
+            importDetail.setRecordStatus(StatusConstants.SUCCESS);
+            importDetailService.save(importDetail);
           }
         }
 
-        updateImportSuccess(importRecord);
+        // Update import status
+        importRecord.setRecordStatus(StatusConstants.SUCCESS);
+        importService.save(importRecord);
 
       } catch (Exception e) {
         log.error("LRS Sync failed - " + e.getMessage());
         e.printStackTrace();
-        updateImportFailed(importRecord);
+        // Update import status
+        importRecord.setRecordStatus(StatusConstants.FAILED);
+        importService.save(importRecord);
       }
 
       // The reason this is out of the try catch block is that even if the LRS sync is failed
@@ -167,7 +167,7 @@ public class LRSSyncSchedulingService {
   private void createSyncRecordDetail(final SyncRecord syncRecord, final Statement statement) {
     SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
     syncRecordDetail.setSyncRecordId(syncRecord.getSyncRecordId());
-    syncRecordDetail.setRecordStatus(inserted);
+    syncRecordDetail.setRecordStatus(StatusConstants.INSERTED);
     syncRecordDetailService.save(syncRecordDetail);
   }
 
@@ -188,7 +188,7 @@ public class LRSSyncSchedulingService {
     importDetail.setFailedRecords(failed);
     importDetail.setTotalRecords(total);
     importDetail.setSuccessRecords(newsuccess);
-    importDetail.setRecordStatus(inProcess);
+    importDetail.setRecordStatus(StatusConstants.INPROCESS);
     importDetailService.save(importDetail);
     return importDetail;
   }
@@ -199,51 +199,19 @@ public class LRSSyncSchedulingService {
   private void updateImportInProcess(final Import imports) {
     // If the previous run was successful, we will update the dates.
     // If not, we just re run again with same old dates.
-    if (imports.getRecordStatus().equals(success)) {
+    if (imports.getRecordStatus().equals(StatusConstants.SUCCESS)) {
       imports.setImportStartDate(imports.getImportEndDate());
       imports.setImportEndDate(new Timestamp(System.currentTimeMillis()));
     }
-    imports.setRecordStatus(inProcess);
+    imports.setRecordStatus(StatusConstants.INPROCESS);
     importService.save(imports);
-  }
-
-  /**
-   * @param imports
-   */
-  private void updateImportSuccess(final Import imports) {
-    imports.setRecordStatus(success);
-    importService.save(imports);
-  }
-
-  /**
-   * @param ImportDetail
-   */
-  private void updateImportDetailSuccess(final ImportDetail importDetail) {
-    importDetail.setRecordStatus(success);
-    importDetailService.save(importDetail);
-  }
-
-  /**
-   * @param Import
-   */
-  private void updateImportFailed(final Import importRecord) {
-    importRecord.setRecordStatus(failed);
-    importService.save(importRecord);
-  }
-
-  /**
-   * @return Import
-   */
-  public Import getLRSImport() {
-    return importService.findByName(lrsName);
   }
 
   private Import createImport() {
     log.info("Crerating new import.");
     Import importRecord = new Import();
-    importRecord.setRecordStatus(success);
-    importRecord.setImportName(lrsName);
-    // Timestamp endDate = Timestamp.valueOf(initialDate);
+    importRecord.setRecordStatus(StatusConstants.SUCCESS);
+    importRecord.setImportName(StatusConstants.LRSNAME);
     importRecord.setImportStartDate(initialDate);
     importRecord.setImportEndDate(initialDate);
     importService.save(importRecord);
