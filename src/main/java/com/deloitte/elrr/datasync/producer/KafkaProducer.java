@@ -38,9 +38,9 @@ public class KafkaProducer {
         payload = writeValueAsString(msg);
       }
 
-      log.info("\n sent messsage to Kafka - " + payload);
+      log.info("\n sent messsage to Kafka /n" + payload);
       kafkaTemplate.send(kafkatopic, payload);
-      log.info("Kafka message successfully sent to kafka topic " + kafkatopic);
+      log.info("\n ===> Kafka message successfully sent to kafka topic " + kafkatopic);
 
     } catch (JsonProcessingException e) {
       throw new DatasyncException("Exception while sending Kafka message - " + e.getMessage());

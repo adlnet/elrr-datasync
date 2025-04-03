@@ -28,4 +28,5 @@ public class ELRRAuditLog extends Auditable<String> {
 
   private long syncid;
   private String statement;
+  private String verbid;
 }

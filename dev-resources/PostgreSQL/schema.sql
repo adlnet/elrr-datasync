@@ -134,6 +134,7 @@ CREATE TABLE IF NOT EXISTS staging.elrrauditlog (
     elrrauditlogid int8 NOT NULL,
     syncid int8 NOT NULL,
     statement varchar(2048) NULL,
+    verbId varchar(100) NULL,
     updatedby varchar(20) NULL,
     inserteddate timestamp NULL,
     lastmodified timestamp NULL,

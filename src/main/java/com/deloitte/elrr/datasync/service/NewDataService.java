@@ -19,8 +19,10 @@ import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
 import com.deloitte.elrr.datasync.scheduler.StatusConstants;
+import com.deloitte.elrr.datasync.scheduler.VerbIdConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yetanalytics.xapi.model.Statement;
+import com.yetanalytics.xapi.model.Verb;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -86,9 +88,20 @@ public class NewDataService {
         }
 
         if (x <= statements.length - 1) {
-          MessageVO kafkaMessage = createKafkaJsonMessage(statements[x]);
+
+          MessageVO kafkaMessage = new MessageVO();
+          kafkaMessage.setStatement(statements[x]);
+
           insertAuditLog(kafkaMessage, syncRecordDetail.getSyncRecordId());
-          kafkaProducer.sendMessage(kafkaMessage);
+
+          // Can Verb Id be processed
+          boolean fireRule = fireRule(statements[x]);
+
+          if (fireRule) {
+            kafkaProducer.sendMessage(kafkaMessage);
+          } else {
+            log.info("Verb Id " + statements[x].getVerb().getId() + " cannot be processed. \n\n");
+          }
         }
 
         x++;
@@ -138,17 +151,6 @@ public class NewDataService {
   }
 
   /**
-   * @param statement
-   * @param syncRecordDetail
-   * @return vo
-   */
-  private MessageVO createKafkaJsonMessage(final Statement statement) {
-    MessageVO vo = new MessageVO();
-    vo.setStatement(statement);
-    return vo;
-  }
-
-  /**
    * @param importRecord
    * @return SyncRecord
    */
@@ -189,9 +191,30 @@ public class NewDataService {
       ELRRAuditLog auditLog = new ELRRAuditLog();
       auditLog.setSyncid(synchRecordId);
       auditLog.setStatement(kafkaProd.writeValueAsString(messageVo.getStatement()));
+      auditLog.setVerbid(messageVo.getStatement().getVerb().getId());
       elrrAuditLogService.save(auditLog);
     } catch (JsonProcessingException e) {
       throw e;
+    }
+  }
+
+  /**
+   * @param statement
+   * @return boolean
+   */
+  private boolean fireRule(Statement statement) {
+
+    // Completed Verb Id
+    String completedVerbId = VerbIdConstants.COMPLETED_VERB_ID;
+
+    // Get Verb
+    Verb verb = statement.getVerb();
+
+    // Is Verb Id completed
+    if (verb.getId().equalsIgnoreCase(completedVerbId)) {
+      return true;
+    } else {
+      return false;
     }
   }
 }
