@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.deloitte.elrr.datasync.dto.MessageVO;
 import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
@@ -12,7 +13,7 @@ import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.entity.SyncRecord;
 import com.deloitte.elrr.datasync.entity.SyncRecordDetail;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
-import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
+import com.deloitte.elrr.datasync.jpa.service.CommonSvc;
 import com.deloitte.elrr.datasync.jpa.service.ErrorsService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
@@ -21,6 +22,8 @@ import com.deloitte.elrr.datasync.producer.KafkaProducer;
 import com.deloitte.elrr.datasync.scheduler.StatusConstants;
 import com.deloitte.elrr.datasync.scheduler.VerbIdConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.yetanalytics.xapi.model.AbstractObject;
+import com.yetanalytics.xapi.model.Activity;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.model.Verb;
 
@@ -45,7 +48,8 @@ public class NewDataService {
 
   @Autowired private KafkaProducer kafkaProd;
 
-  @Autowired private ELRRAuditLogService elrrAuditLogService;
+  // Use the interface
+  @Autowired private CommonSvc elrrAuditLogService;
 
   /**
    * @param statements
@@ -54,7 +58,8 @@ public class NewDataService {
   // 1. Retrieve unprocessed syncrecord (status = INSERTED).
   // 2. Insert ELRRAuditLog.
   // 3. Create Kafka message.
-  // 4. Update syncrecord and syncrecorddetailstatus to SUCCESS/INSERTED.
+  // 4. Update syncrecord and syncrecorddetail status to SUCCESS/INSERTED.
+  @Transactional
   public void process(Statement[] statements) {
 
     log.info("Inside NewDataService");
@@ -204,14 +209,15 @@ public class NewDataService {
    */
   private boolean fireRule(Statement statement) {
 
-    // Completed Verb Id
-    String completedVerbId = VerbIdConstants.COMPLETED_VERB_ID;
+    // Get Object
+    AbstractObject obj = statement.getObject();
 
     // Get Verb
     Verb verb = statement.getVerb();
 
-    // Is Verb Id completed
-    if (verb.getId().equalsIgnoreCase(completedVerbId)) {
+    // Is Verb Id completed and activity
+    if (verb.getId().equalsIgnoreCase(VerbIdConstants.COMPLETED_VERB_ID)
+        && obj instanceof Activity) {
       return true;
     } else {
       return false;
