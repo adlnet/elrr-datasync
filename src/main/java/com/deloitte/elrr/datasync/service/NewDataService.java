@@ -21,10 +21,8 @@ import com.deloitte.elrr.datasync.producer.KafkaProducer;
 import com.deloitte.elrr.datasync.scheduler.StatusConstants;
 import com.deloitte.elrr.datasync.scheduler.VerbIdConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.yetanalytics.xapi.model.AbstractObject;
 import com.yetanalytics.xapi.model.Activity;
 import com.yetanalytics.xapi.model.Statement;
-import com.yetanalytics.xapi.model.Verb;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -204,15 +202,9 @@ public class NewDataService {
    */
   private boolean fireRule(Statement statement) {
 
-    // Get Object
-    AbstractObject obj = statement.getObject();
-
-    // Get Verb
-    Verb verb = statement.getVerb();
-
-    // Is Verb Id completed and activity
-    if (verb.getId().equalsIgnoreCase(VerbIdConstants.COMPLETED_VERB_ID)
-        && obj instanceof Activity) {
+    // Is Verb Id completed and object an activity
+    if (statement.getVerb().getId().equalsIgnoreCase(VerbIdConstants.COMPLETED_VERB_ID)
+        && statement.getObject() instanceof Activity) {
       return true;
     } else {
       return false;
