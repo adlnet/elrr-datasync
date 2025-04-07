@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.deloitte.elrr.datasync.dto.MessageVO;
 import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
@@ -13,7 +12,7 @@ import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.entity.SyncRecord;
 import com.deloitte.elrr.datasync.entity.SyncRecordDetail;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
-import com.deloitte.elrr.datasync.jpa.service.CommonSvc;
+import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
 import com.deloitte.elrr.datasync.jpa.service.ErrorsService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
@@ -49,7 +48,7 @@ public class NewDataService {
   @Autowired private KafkaProducer kafkaProd;
 
   // Use the interface
-  @Autowired private CommonSvc elrrAuditLogService;
+  @Autowired private ELRRAuditLogService elrrAuditLogService;
 
   /**
    * @param statements
@@ -59,7 +58,6 @@ public class NewDataService {
   // 2. Insert ELRRAuditLog.
   // 3. Create Kafka message.
   // 4. Update syncrecord and syncrecorddetail status to SUCCESS/INSERTED.
-  @Transactional
   public void process(Statement[] statements) {
 
     log.info("Inside NewDataService");
@@ -122,7 +120,6 @@ public class NewDataService {
       } catch (DatasyncException | JsonProcessingException e) {
 
         log.error("Exception in processing " + e.getMessage());
-        e.printStackTrace();
 
         long retries = syncRecord.getRetries();
 
@@ -147,9 +144,7 @@ public class NewDataService {
           // Create Errors record
           errorsService.createErrors(Long.toString(syncRecord.getSyncRecordId()), e.getMessage());
 
-          log.error("Exception in processing - " + e.getMessage());
-          e.printStackTrace();
-          throw new DatasyncException("Exception in processing - " + e.getMessage());
+          log.error("Exception in processing after 3 retries.");
         }
       }
     }
