@@ -18,6 +18,7 @@ import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
+import com.deloitte.elrr.datasync.scheduler.ObjectTypeConstants;
 import com.deloitte.elrr.datasync.scheduler.StatusConstants;
 import com.deloitte.elrr.datasync.scheduler.VerbIdConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -202,12 +203,31 @@ public class NewDataService {
    */
   private boolean fireRule(Statement statement) {
 
-    // Is Verb Id completed and object an activity
+    Boolean fireRule = false;
+
+    // Is Verb Id = completed and object = activity
     if (statement.getVerb().getId().equalsIgnoreCase(VerbIdConstants.COMPLETED_VERB_ID)
         && statement.getObject() instanceof Activity) {
-      return true;
-    } else {
-      return false;
+      fireRule = true;
+
+      // If Verb Id = achieved and object = activity
+    } else if (statement.getVerb().getId().equalsIgnoreCase(VerbIdConstants.ACHIEVED_VERB_ID)
+        && statement.getObject() instanceof Activity) {
+
+      Activity obj = (Activity) statement.getObject();
+      String objType = obj.getDefinition().getType();
+      log.info("====> object type = " + objType);
+
+      // If no object type
+      if (objType == null) {
+        fireRule = false;
+        // If object type = competency
+      } else if (objType.equalsIgnoreCase(ObjectTypeConstants.COMPETENCY)) {
+        fireRule = true;
+      } else {
+        fireRule = false;
+      }
     }
+    return fireRule;
   }
 }
