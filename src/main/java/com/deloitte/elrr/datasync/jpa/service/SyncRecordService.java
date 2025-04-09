@@ -36,7 +36,6 @@ public class SyncRecordService implements CommonSvc<SyncRecord, Long> {
     syncRecord.setSyncKey(key);
     syncRecord.setRecordStatus(inserted);
     syncRecord.setImportdetailId(importDetailsId);
-    syncRecord.setRetries(0L);
     syncRecordRepository.save(syncRecord);
     return syncRecord;
   }

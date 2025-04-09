@@ -3,7 +3,6 @@ package com.deloitte.elrr.datasync.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,9 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class NewDataService {
-
-  @Value("${retries}")
-  private int numberOfRetries;
 
   @Autowired private KafkaProducer kafkaProducer;
 
@@ -135,7 +131,6 @@ public class NewDataService {
     syncRecord.setRecordStatus(StatusConstants.INSERTED);
     syncRecord.setSyncKey(StatusConstants.LRSNAME);
     syncRecord.setImportdetailId(importRecord.getImportId());
-    syncRecord.setRetries(0L);
     return syncRecord;
   }
 
@@ -166,7 +161,6 @@ public class NewDataService {
       ELRRAuditLog auditLog = new ELRRAuditLog();
       auditLog.setSyncid(synchRecordId);
       auditLog.setStatement(kafkaProd.writeValueAsString(messageVo.getStatement()));
-      auditLog.setVerbid(messageVo.getStatement().getVerb().getId());
       elrrAuditLogService.save(auditLog);
     } catch (JsonProcessingException e) {
       throw e;
