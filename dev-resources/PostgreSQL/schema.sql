@@ -109,27 +109,6 @@ ALTER SEQUENCE staging.syncrecorddetail_seq OWNED BY staging.syncrecorddetail.sy
    
    
    
-CREATE TABLE IF NOT EXISTS staging.errors (
-    errorsid int8 NOT NULL,
-    errorMsg varchar NOT NULL,
-    inserteddate timestamp NULL,
-    updatedby varchar NULL,
-    lastmodified timestamp NULL,
-    CONSTRAINT errorsrecord_pk PRIMARY KEY (errorsid)
-);
-
-CREATE SEQUENCE IF NOT EXISTS staging.errors_seq
-   START WITH 1
-   INCREMENT BY 1
-   NO MINVALUE
-   NO MAXVALUE
-   CACHE 1
-   NO CYCLE;
-
-ALTER SEQUENCE staging.errors_seq OWNED BY staging.errors.errorsid;
-
-
-
 CREATE TABLE IF NOT EXISTS staging.elrrauditlog (
     elrrauditlogid int8 NOT NULL,
     syncid int8 NOT NULL,

@@ -6,6 +6,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
@@ -14,6 +15,7 @@ import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties
 @EnableScheduling
 @ComponentScan({"com.deloitte.elrr"})
 @EnableEncryptableProperties
+@EnableTransactionManagement
 public class DatasyncApplication {
 
   /**

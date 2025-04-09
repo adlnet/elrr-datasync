@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.deloitte.elrr.datasync.dto.MessageVO;
 import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
@@ -13,7 +14,6 @@ import com.deloitte.elrr.datasync.entity.SyncRecord;
 import com.deloitte.elrr.datasync.entity.SyncRecordDetail;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
-import com.deloitte.elrr.datasync.jpa.service.ErrorsService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordService;
@@ -40,8 +40,6 @@ public class NewDataService {
 
   @Autowired private SyncRecordDetailService syncRecordDetailService;
 
-  @Autowired private ErrorsService errorsService;
-
   @Autowired private ImportService importService;
 
   @Autowired private KafkaProducer kafkaProd;
@@ -57,6 +55,7 @@ public class NewDataService {
   // 2. Insert ELRRAuditLog.
   // 3. Create Kafka message.
   // 4. Update syncrecord and syncrecorddetail status to SUCCESS/INSERTED.
+  @Transactional
   public void process(Statement[] statements) {
 
     log.info("Inside NewDataService");
@@ -116,35 +115,12 @@ public class NewDataService {
         syncRecordDetail.setRecordStatus("SUCCESS");
         syncRecordDetailService.save(syncRecordDetail);
 
-      } catch (DatasyncException | JsonProcessingException e) {
-
+      } catch (DatasyncException e) {
         log.error("Exception in processing " + e.getMessage());
+        throw e;
 
-        long retries = syncRecord.getRetries();
-
-        if (retries < numberOfRetries) {
-
-          // In case of exception change status back to inserted so that
-          // they will be picked again next time and processed
-          syncRecord.setRecordStatus("INSERTED");
-          syncRecord.setRetries(retries + 1);
-          syncRecordService.save(syncRecord);
-          syncRecordDetail.setRecordStatus("INSERTED");
-          syncRecordDetailService.save(syncRecordDetail);
-
-        } else {
-
-          syncRecord.setRecordStatus("FAILED");
-          syncRecord.setRetries(0L);
-          syncRecordService.save(syncRecord);
-          syncRecordDetail.setRecordStatus("FAILED");
-          syncRecordDetailService.save(syncRecordDetail);
-
-          // Create Errors record
-          errorsService.createErrors(Long.toString(syncRecord.getSyncRecordId()), e.getMessage());
-
-          log.error("Exception in processing after 3 retries.");
-        }
+      } catch (JsonProcessingException e) {
+        log.error("Exception in processing " + e.getMessage());
       }
     }
   }

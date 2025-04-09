@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.entity.ImportDetail;
@@ -59,6 +60,7 @@ public class LRSSyncSchedulingService {
    *
    */
   @Scheduled(cron = "${cronExpression}")
+  @Transactional
   public void run() {
 
     log.info("**inside schedule method");
@@ -101,21 +103,13 @@ public class LRSSyncSchedulingService {
         importRecord.setRecordStatus(StatusConstants.SUCCESS);
         importService.save(importRecord);
 
-      } catch (Exception e) {
+        // Process unprocessed
+        newDataService.process(result);
+
+      } catch (DatasyncException e) {
         log.error("LRS Sync failed - " + e.getMessage());
         e.printStackTrace();
-        // Update import status
-        importRecord.setRecordStatus(StatusConstants.FAILED);
-        importService.save(importRecord);
-      }
-
-      // The reason this is out of the try catch block is that even if the LRS sync is failed
-      // but if any of there are  unprocessed messages sitting in the DB, they can be processed.
-      try {
-        newDataService.process(result);
-      } catch (DatasyncException e) {
-        log.error("Error processing statements - " + e.getMessage());
-        e.printStackTrace();
+        throw e;
       }
 
     } else {
