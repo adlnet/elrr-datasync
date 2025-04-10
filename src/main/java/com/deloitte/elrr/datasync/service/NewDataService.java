@@ -191,8 +191,9 @@ public class NewDataService {
       // If no object type
       if (objType == null) {
         fireRule = false;
-        // If object type = competency
-      } else if (objType.equalsIgnoreCase(ObjectTypeConstants.COMPETENCY)) {
+        // If object type = competency or credential
+      } else if (objType.equalsIgnoreCase(ObjectTypeConstants.COMPETENCY)
+          || objType.equalsIgnoreCase(ObjectTypeConstants.CREDENTIAL)) {
         fireRule = true;
       } else {
         fireRule = false;
