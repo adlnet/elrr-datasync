@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
 
 import com.deloitte.elrr.datasync.dto.ImportDTO;
+import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
 import com.deloitte.elrr.datasync.repository.ELRRAuditLogRepository;
 import com.deloitte.elrr.datasync.repository.ImportDetailRepository;
 import com.deloitte.elrr.datasync.repository.ImportRepository;
@@ -52,6 +53,8 @@ class ImportsControllerTest {
   @MockBean private ModelMapper mapper;
 
   @Autowired private MockMvc mockMvc;
+
+  @MockBean private ELRRAuditLogService elrrAuditLogService;
 
   @MockBean private ELRRAuditLogRepository elrrAuditLogRepository;
 
