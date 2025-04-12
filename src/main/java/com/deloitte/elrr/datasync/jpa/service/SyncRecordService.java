@@ -8,14 +8,13 @@ import org.springframework.stereotype.Service;
 
 import com.deloitte.elrr.datasync.entity.SyncRecord;
 import com.deloitte.elrr.datasync.repository.SyncRecordRepository;
+import com.deloitte.elrr.datasync.scheduler.StatusConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class SyncRecordService implements CommonSvc<SyncRecord, Long> {
-
-  private static String inserted = "INSERTED";
 
   @Autowired private SyncRecordRepository syncRecordRepository;
 
@@ -32,9 +31,10 @@ public class SyncRecordService implements CommonSvc<SyncRecord, Long> {
    * @return SyncRecord
    */
   public SyncRecord createSyncRecord(final String key, final long importDetailsId) {
+    log.info("Creating new sync record.");
     SyncRecord syncRecord = new SyncRecord();
     syncRecord.setSyncKey(key);
-    syncRecord.setRecordStatus(inserted);
+    syncRecord.setRecordStatus(StatusConstants.INSERTED);
     syncRecord.setImportdetailId(importDetailsId);
     syncRecordRepository.save(syncRecord);
     return syncRecord;
@@ -45,7 +45,7 @@ public class SyncRecordService implements CommonSvc<SyncRecord, Long> {
    * @return SyncRecord
    */
   public SyncRecord findExistingRecord(final String key) {
-    return syncRecordRepository.findExisting(inserted, key);
+    return syncRecordRepository.findExisting(StatusConstants.INSERTED, key);
   }
 
   @Override

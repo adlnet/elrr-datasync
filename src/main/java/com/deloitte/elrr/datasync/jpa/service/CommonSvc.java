@@ -71,11 +71,17 @@ public interface CommonSvc<T, newId extends Serializable> {
    * @param entity
    * @throws ResourceNotFoundException
    */
-  default void update(T entity) throws ResourceNotFoundException {
-    if (getRepository().existsById(getId(entity))) {
-      getRepository().save(entity);
-    } else {
-      throw new ResourceNotFoundException("Not found record in DB to update: " + entity);
+  default void update(T entity) {
+    try {
+    	
+      if (getRepository().existsById(getId(entity))) {
+        getRepository().save(entity);
+      } else {
+        throw new ResourceNotFoundException("Record to update not found: " + entity);
+      }
+
+    } catch (IllegalArgumentException e) {
+      throw new ResourceNotFoundException("Record to update not found: " + entity);
     }
   }
 

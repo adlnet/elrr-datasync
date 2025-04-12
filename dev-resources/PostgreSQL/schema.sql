@@ -9,7 +9,6 @@ DROP TABLE IF EXISTS staging.importdetail cascade;
 DROP TABLE IF EXISTS staging."import" cascade;
 DROP TABLE IF EXISTS staging.syncrecorddetail cascade;
 DROP TABLE IF EXISTS staging.syncrecord cascade;
-DROP TABLE IF EXISTS staging.errors cascade;
 DROP TABLE IF EXISTS staging.elrrauditlog cascade;
 
 CREATE TABLE IF NOT EXISTS staging."import" (

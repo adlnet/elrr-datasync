@@ -54,7 +54,7 @@ public class NewDataService {
   @Transactional
   public void process(Statement[] statements) {
 
-    log.info("Inside NewDataService");
+    log.info(" **Inside NewDataService");
 
     // Unprocessed synchrecord.recordStatus=inserted
     SyncRecord syncRec = syncRecordService.findExistingRecord(StatusConstants.LRSNAME);
@@ -186,7 +186,6 @@ public class NewDataService {
 
       Activity obj = (Activity) statement.getObject();
       String objType = obj.getDefinition().getType();
-      log.info("====> object type = " + objType);
 
       // If no object type
       if (objType == null) {
