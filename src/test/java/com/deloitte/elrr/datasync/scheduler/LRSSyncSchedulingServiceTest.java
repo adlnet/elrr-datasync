@@ -56,7 +56,6 @@ class LRSSyncSchedulingServiceTest {
       ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "syncService", syncService);
       ReflectionTestUtils.setField(
           mockLRSSyncSchedulingService, "syncRecordDetailService", syncRecordDetailService);
-      Mockito.doReturn(getImport()).when(importService).findByName("Deloitte LRS");
       Mockito.doReturn(getStatement()).when(lrsService).process(null);
       Mockito.doReturn(getImportDetails()).when(importDetailService).save(getImportDetails());
       Mockito.doReturn(getSyncRecord()).when(syncService).findExistingRecord(null);
@@ -78,7 +77,6 @@ class LRSSyncSchedulingServiceTest {
       ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "syncService", syncService);
       ReflectionTestUtils.setField(
           mockLRSSyncSchedulingService, "syncRecordDetailService", syncRecordDetailService);
-      Mockito.doReturn(getImport()).when(importService).findByName("Deloitte LRS");
       Mockito.doReturn(getStatement()).when(lrsService).process(null);
       Mockito.doReturn(getImportDetails()).when(importDetailService).save(getImportDetails());
       mockLRSSyncSchedulingService.run();

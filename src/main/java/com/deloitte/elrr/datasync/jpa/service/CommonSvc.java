@@ -57,12 +57,10 @@ public interface CommonSvc<T, newId extends Serializable> {
         throw new ResourceNotFoundException(" Id not found for delete : " + id);
       }
     } catch (IllegalArgumentException e) {
-      e.printStackTrace();
-      return;
+      throw new ResourceNotFoundException("Record to update not found: " + id);
     }
   }
 
-  /** */
   default void deleteAll() {
     getRepository().deleteAll();
   }
@@ -73,7 +71,7 @@ public interface CommonSvc<T, newId extends Serializable> {
    */
   default void update(T entity) {
     try {
-    	
+
       if (getRepository().existsById(getId(entity))) {
         getRepository().save(entity);
       } else {

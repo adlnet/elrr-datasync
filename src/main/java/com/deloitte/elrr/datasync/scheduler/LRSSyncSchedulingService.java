@@ -107,7 +107,7 @@ public class LRSSyncSchedulingService {
       // Process unprocessed
       newDataService.process(result);
 
-    } catch (DatasyncException e) {
+    } catch (DatasyncException | ResourceNotFoundException e) {
       log.error("LRS Sync failed - " + e.getMessage());
       e.printStackTrace();
       throw e;
@@ -200,6 +200,7 @@ public class LRSSyncSchedulingService {
   /**
    * @param imports
    */
+  @Transactional
   private void updateImportInProcess(Import imports) {
 
     // If the previous run was successful, we will update the dates.
@@ -207,16 +208,21 @@ public class LRSSyncSchedulingService {
 
     log.info("Updating import.");
 
-    if (imports.getRecordStatus().equals(StatusConstants.SUCCESS)) {
-      imports.setImportStartDate(imports.getImportEndDate());
-      imports.setImportEndDate(new Timestamp(System.currentTimeMillis()));
-    }
+    try {
+      if (imports.getRecordStatus().equals(StatusConstants.SUCCESS)) {
+        imports.setImportStartDate(imports.getImportEndDate());
+        imports.setImportEndDate(new Timestamp(System.currentTimeMillis()));
+      }
 
-    imports.setRecordStatus(StatusConstants.INPROCESS);
-    importService.save(imports);
+      imports.setRecordStatus(StatusConstants.INPROCESS);
+      importService.update(imports);
+
+    } catch (ResourceNotFoundException e) {
+      throw e;
+    }
   }
 
-  private Import createImport() {
+  public Import createImport() {
     log.info("Crerating new import.");
     Import importRecord = new Import();
     importRecord.setRecordStatus(StatusConstants.SUCCESS);

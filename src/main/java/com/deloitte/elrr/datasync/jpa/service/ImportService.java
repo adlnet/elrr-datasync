@@ -39,6 +39,7 @@ public class ImportService implements CommonSvc<Import, Long> {
    */
   @Override
   public Long getId(final Import entity) {
-    return null;
+    return entity.getImportId();
   }
-}
+  
+ }
