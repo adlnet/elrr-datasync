@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
+import com.deloitte.elrr.datasync.exception.RunTimeServiceException;
 
 /**
  * @author mnelakurti
@@ -47,17 +47,17 @@ public interface CommonSvc<T, newId extends Serializable> {
 
   /**
    * @param id
-   * @throws ResourceNotFoundException
+   * @throws RunTimeServiceException
    */
-  default void delete(newId id) throws ResourceNotFoundException {
+  default void delete(newId id) throws RunTimeServiceException {
     try {
       if (getRepository().existsById(id)) {
         getRepository().deleteById(id);
       } else {
-        throw new ResourceNotFoundException(" Id not found for delete : " + id);
+        throw new RunTimeServiceException(" Id not found for delete : " + id);
       }
     } catch (IllegalArgumentException e) {
-      throw new ResourceNotFoundException("Record to update not found: " + id);
+      throw new RunTimeServiceException("Record to update not found: " + id);
     }
   }
 
@@ -67,7 +67,7 @@ public interface CommonSvc<T, newId extends Serializable> {
 
   /**
    * @param entity
-   * @throws ResourceNotFoundException
+   * @throws RunTimeServiceException
    */
   default void update(T entity) {
     try {
@@ -75,11 +75,11 @@ public interface CommonSvc<T, newId extends Serializable> {
       if (getRepository().existsById(getId(entity))) {
         getRepository().save(entity);
       } else {
-        throw new ResourceNotFoundException("Record to update not found: " + entity);
+        throw new RunTimeServiceException("Record to update not found: " + entity);
       }
 
     } catch (IllegalArgumentException e) {
-      throw new ResourceNotFoundException("Record to update not found: " + entity);
+      throw new RunTimeServiceException("Record to update not found: " + entity);
     }
   }
 

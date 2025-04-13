@@ -108,7 +108,7 @@ public class LRSService {
    * @return lastReadDate
    * @throws DatasyncException
    */
-  private String formatStoredDate(Timestamp startDate) {
+  private String formatStoredDate(final Timestamp startDate) {
 
     String lastReadDate = null;
 

@@ -13,7 +13,7 @@ import com.deloitte.elrr.datasync.entity.ImportDetail;
 import com.deloitte.elrr.datasync.entity.SyncRecord;
 import com.deloitte.elrr.datasync.entity.SyncRecordDetail;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
-import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
+import com.deloitte.elrr.datasync.exception.RunTimeServiceException;
 import com.deloitte.elrr.datasync.jpa.service.ImportDetailService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
@@ -79,8 +79,6 @@ public class LRSSyncSchedulingService {
       int successCount = 0;
       int failedCount = 0;
 
-      log.info("import id = " + importRecord.getImportId());
-
       updateImportInProcess(importRecord);
 
       // Make call to LRSService.invokeLRS(final Timestamp startDate)
@@ -107,7 +105,7 @@ public class LRSSyncSchedulingService {
       // Process unprocessed
       newDataService.process(result);
 
-    } catch (DatasyncException | ResourceNotFoundException e) {
+    } catch (DatasyncException | RunTimeServiceException e) {
       log.error("LRS Sync failed - " + e.getMessage());
       e.printStackTrace();
       throw e;
@@ -144,8 +142,12 @@ public class LRSSyncSchedulingService {
    * @param status
    * @param importDetail
    */
-  private void updateImportDetail(
-      int total, int newsuccess, int failed, String status, ImportDetail importDetail) {
+  private ImportDetail updateImportDetail(
+      final int total,
+      final int newsuccess,
+      final int failed,
+      final String status,
+      ImportDetail importDetail) {
 
     log.info("Updating import detail.");
 
@@ -156,17 +158,18 @@ public class LRSSyncSchedulingService {
 
     try {
       importDetailService.update(importDetail);
-    } catch (ResourceNotFoundException e) {
+    } catch (RunTimeServiceException e) {
       e.printStackTrace();
       throw new DatasyncException("Update import detail failed.");
     }
+    return importDetail;
   }
 
   /**
    * @param syncRecord
    * @param statement
    */
-  private void createSyncRecordDetail(SyncRecord syncRecord, Statement statement) {
+  private void createSyncRecordDetail(final SyncRecord syncRecord, final Statement statement) {
     log.info("Creating syncrecord detail.");
     SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
     syncRecordDetail.setSyncRecordId(syncRecord.getSyncRecordId());
@@ -182,7 +185,7 @@ public class LRSSyncSchedulingService {
    * @return ImportDetail
    */
   private ImportDetail insertImportDetail(
-      int total, int newsuccess, int failed, Import importRecord) {
+      final int total, final int newsuccess, final int failed, final Import importRecord) {
 
     log.info("Creating import detail.");
     ImportDetail importDetail = new ImportDetail();
@@ -217,7 +220,7 @@ public class LRSSyncSchedulingService {
       imports.setRecordStatus(StatusConstants.INPROCESS);
       importService.update(imports);
 
-    } catch (ResourceNotFoundException e) {
+    } catch (RunTimeServiceException e) {
       throw e;
     }
   }

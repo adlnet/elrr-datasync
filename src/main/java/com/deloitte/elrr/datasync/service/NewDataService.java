@@ -125,7 +125,7 @@ public class NewDataService {
    * @param importRecord
    * @return SyncRecord
    */
-  private SyncRecord createSyncRecord(Import importRecord) {
+  private SyncRecord createSyncRecord(final Import importRecord) {
     log.info("Creating SyncRecord.");
     SyncRecord syncRecord = new SyncRecord();
     syncRecord.setRecordStatus(StatusConstants.INSERTED);
@@ -138,7 +138,7 @@ public class NewDataService {
    * @param syncRecordId
    * @return SyncRecordDetail
    */
-  private SyncRecordDetail createSyncRecordDetail(long syncRecordId) {
+  private SyncRecordDetail createSyncRecordDetail(final long syncRecordId) {
     log.info("Creating SyncRecordDetail.");
     SyncRecordDetail syncRecordDetail = new SyncRecordDetail();
     syncRecordDetail.setSyncRecordId(syncRecordId);
@@ -152,7 +152,7 @@ public class NewDataService {
    * @param synchRecordId
    * @throws JsonProcessingException
    */
-  private void insertAuditLog(final MessageVO messageVo, Long synchRecordId)
+  private void insertAuditLog(final MessageVO messageVo, final Long synchRecordId)
       throws JsonProcessingException {
 
     log.info("Creating ELRRAuditLog.");
@@ -171,7 +171,7 @@ public class NewDataService {
    * @param statement
    * @return boolean
    */
-  private boolean fireRule(Statement statement) {
+  private boolean fireRule(final Statement statement) {
 
     Boolean fireRule = false;
 
