@@ -203,7 +203,6 @@ public class LRSSyncSchedulingService {
   /**
    * @param imports
    */
-  @Transactional
   private void updateImportInProcess(Import imports) {
 
     // If the previous run was successful, we will update the dates.
