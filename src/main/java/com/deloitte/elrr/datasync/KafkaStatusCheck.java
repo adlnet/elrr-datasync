@@ -5,15 +5,19 @@ import java.util.Set;
 
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListTopicsOptions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class KafkaStatusCheck {
 
+  @Value("${brokerUrl}")
+  private String brokerUrl;
+
   public boolean isKafkaRunning() {
 
     Properties properties = new Properties();
-    properties.put("bootstrap.servers", "localhost:9092");
+    properties.put("bootstrap.servers", brokerUrl);
 
     try (AdminClient adminClient = AdminClient.create(properties)) {
       Set<String> topics = adminClient.listTopics(new ListTopicsOptions()).names().get();

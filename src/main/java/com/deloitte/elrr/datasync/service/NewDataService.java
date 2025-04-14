@@ -17,11 +17,8 @@ import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
 import com.deloitte.elrr.datasync.jpa.service.SyncRecordService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
-import com.deloitte.elrr.datasync.scheduler.ObjectTypeConstants;
 import com.deloitte.elrr.datasync.scheduler.StatusConstants;
-import com.deloitte.elrr.datasync.scheduler.VerbIdConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.yetanalytics.xapi.model.Activity;
 import com.yetanalytics.xapi.model.Statement;
 
 import lombok.extern.slf4j.Slf4j;
@@ -88,17 +85,8 @@ public class NewDataService {
 
           MessageVO kafkaMessage = new MessageVO();
           kafkaMessage.setStatement(statements[x]);
-
           insertAuditLog(kafkaMessage, syncRecordDetail.getSyncRecordId());
-
-          // Can Verb Id be processed
-          boolean fireRule = fireRule(statements[x]);
-
-          if (fireRule) {
-            kafkaProducer.sendMessage(kafkaMessage);
-          } else {
-            log.info("Verb Id " + statements[x].getVerb().getId() + " cannot be processed. \n\n");
-          }
+          kafkaProducer.sendMessage(kafkaMessage);
         }
 
         x++;
@@ -165,39 +153,5 @@ public class NewDataService {
     } catch (JsonProcessingException e) {
       throw e;
     }
-  }
-
-  /**
-   * @param statement
-   * @return boolean
-   */
-  private boolean fireRule(final Statement statement) {
-
-    Boolean fireRule = false;
-
-    // Is Verb Id = completed and object = activity
-    if (statement.getVerb().getId().equalsIgnoreCase(VerbIdConstants.COMPLETED_VERB_ID)
-        && statement.getObject() instanceof Activity) {
-      fireRule = true;
-
-      // If Verb Id = achieved and object = activity
-    } else if (statement.getVerb().getId().equalsIgnoreCase(VerbIdConstants.ACHIEVED_VERB_ID)
-        && statement.getObject() instanceof Activity) {
-
-      Activity obj = (Activity) statement.getObject();
-      String objType = obj.getDefinition().getType();
-
-      // If no object type
-      if (objType == null) {
-        fireRule = false;
-        // If object type = competency or credential
-      } else if (objType.equalsIgnoreCase(ObjectTypeConstants.COMPETENCY)
-          || objType.equalsIgnoreCase(ObjectTypeConstants.CREDENTIAL)) {
-        fireRule = true;
-      } else {
-        fireRule = false;
-      }
-    }
-    return fireRule;
   }
 }
