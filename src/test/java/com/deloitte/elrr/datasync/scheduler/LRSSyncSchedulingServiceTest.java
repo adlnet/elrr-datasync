@@ -82,7 +82,6 @@ class LRSSyncSchedulingServiceTest {
   private static Import getImport() {
     Import newimports = new Import();
     newimports.setImportName("Deloitte LRS");
-    newimports.setImportId(1L);
     newimports.setRecordStatus("SUCCESS");
     newimports.setImportStartDate(STARTDATE);
     return newimports;

@@ -1,6 +1,7 @@
 package com.deloitte.elrr.datasync.jpa.service;
 
 import java.sql.Timestamp;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
@@ -11,12 +12,12 @@ import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
 import com.deloitte.elrr.datasync.repository.ELRRAuditLogRepository;
 
 @Service
-public class ELRRAuditLogService implements CommonSvc<ELRRAuditLog, Long> {
+public class ELRRAuditLogService implements CommonSvc<ELRRAuditLog, UUID> {
 
   @Autowired private ELRRAuditLogRepository elrrAuditLogRepository;
 
   @Override
-  public Long getId(final ELRRAuditLog entity) {
+  public UUID getId(final ELRRAuditLog entity) {
     return null;
   }
 
@@ -29,7 +30,7 @@ public class ELRRAuditLogService implements CommonSvc<ELRRAuditLog, Long> {
   }
 
   @Override
-  public CrudRepository<ELRRAuditLog, Long> getRepository() {
+  public CrudRepository<ELRRAuditLog, UUID> getRepository() {
     return elrrAuditLogRepository;
   }
 }

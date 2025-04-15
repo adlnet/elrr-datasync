@@ -1,6 +1,7 @@
 package com.deloitte.elrr.datasync.repository;
 
 import java.sql.Timestamp;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,11 +12,10 @@ import org.springframework.stereotype.Repository;
 import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
 
 @Repository
-public interface ELRRAuditLogRepository extends JpaRepository<ELRRAuditLog, Long> {
+public interface ELRRAuditLogRepository extends JpaRepository<ELRRAuditLog, UUID> {
 
   /**
    * @param purgeDate
-   * @return
    */
   @Modifying
   @Query("DELETE FROM ELRRAuditLog a WHERE a.inserteddate <= :purgeDate")

@@ -1,5 +1,7 @@
 package com.deloitte.elrr.datasync.jpa.service;
 
+import java.util.UUID;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
@@ -7,8 +9,8 @@ import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.repository.ImportRepository;
 
 @Service
-public class ImportService implements CommonSvc<Import, Long> {
-  /** */
+public class ImportService implements CommonSvc<Import, UUID> {
+
   private final ImportRepository importsRepository;
 
   /**
@@ -27,19 +29,18 @@ public class ImportService implements CommonSvc<Import, Long> {
   }
 
   /**
-   * @return CrudRepository<Import, Long>
+   * @return CrudRepository<Import, UUID>
    */
   @Override
-  public CrudRepository<Import, Long> getRepository() {
+  public CrudRepository<Import, UUID> getRepository() {
     return this.importsRepository;
   }
 
   /**
-   * @return Long
+   * @return UUID
    */
   @Override
-  public Long getId(final Import entity) {
-    return entity.getImportId();
+  public UUID getId(final Import entity) {
+    return entity.getId();
   }
-  
- }
+}
