@@ -13,12 +13,7 @@ import org.mockito.quality.Strictness;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.deloitte.elrr.datasync.entity.Import;
-import com.deloitte.elrr.datasync.entity.ImportDetail;
-import com.deloitte.elrr.datasync.entity.SyncRecord;
-import com.deloitte.elrr.datasync.jpa.service.ImportDetailService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
-import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
-import com.deloitte.elrr.datasync.jpa.service.SyncRecordService;
 import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
 import com.yetanalytics.xapi.model.Statement;
@@ -36,12 +31,6 @@ class LRSSyncSchedulingServiceTest {
 
   @Mock private ImportService importService;
 
-  @Mock private ImportDetailService importDetailService;
-
-  @Mock private SyncRecordService syncService;
-
-  @Mock private SyncRecordDetailService syncRecordDetailService;
-
   private static final Timestamp STARTDATE = new Timestamp(System.currentTimeMillis());
 
   @Test
@@ -51,14 +40,7 @@ class LRSSyncSchedulingServiceTest {
       ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "lrsService", lrsService);
       ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "newDataService", newDataService);
       ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "importService", importService);
-      ReflectionTestUtils.setField(
-          mockLRSSyncSchedulingService, "importDetailService", importDetailService);
-      ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "syncService", syncService);
-      ReflectionTestUtils.setField(
-          mockLRSSyncSchedulingService, "syncRecordDetailService", syncRecordDetailService);
       Mockito.doReturn(getStatement()).when(lrsService).process(null);
-      Mockito.doReturn(getImportDetails()).when(importDetailService).save(getImportDetails());
-      Mockito.doReturn(getSyncRecord()).when(syncService).findExistingRecord(null);
       mockLRSSyncSchedulingService.run();
     } catch (NullPointerException e) {
       e.printStackTrace();
@@ -72,13 +54,7 @@ class LRSSyncSchedulingServiceTest {
       ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "lrsService", lrsService);
       ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "newDataService", newDataService);
       ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "importService", importService);
-      ReflectionTestUtils.setField(
-          mockLRSSyncSchedulingService, "importDetailService", importDetailService);
-      ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "syncService", syncService);
-      ReflectionTestUtils.setField(
-          mockLRSSyncSchedulingService, "syncRecordDetailService", syncRecordDetailService);
       Mockito.doReturn(getStatement()).when(lrsService).process(null);
-      Mockito.doReturn(getImportDetails()).when(importDetailService).save(getImportDetails());
       mockLRSSyncSchedulingService.run();
     } catch (NullPointerException e) {
       e.printStackTrace();
@@ -92,16 +68,8 @@ class LRSSyncSchedulingServiceTest {
       ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "lrsService", lrsService);
       ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "newDataService", newDataService);
       ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "importService", importService);
-      ReflectionTestUtils.setField(
-          mockLRSSyncSchedulingService, "importDetailService", importDetailService);
-      ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "syncService", syncService);
-      ReflectionTestUtils.setField(
-          mockLRSSyncSchedulingService, "syncRecordDetailService", syncRecordDetailService);
       Mockito.doReturn(getImport()).when(importService).findByName("Deloitte LRS");
       Mockito.doReturn(getStatement()).when(lrsService).process(STARTDATE);
-      Mockito.doReturn(getImportDetails()).when(importDetailService).save(getImportDetails());
-      // Mockito.doReturn(getSyncRecord()).when(syncService)
-      // .findExistingRecord(null);
       mockLRSSyncSchedulingService.run();
     } catch (NullPointerException e) {
       e.printStackTrace();
@@ -121,15 +89,6 @@ class LRSSyncSchedulingServiceTest {
   }
 
   /**
-   * @return List <ImportDetail>
-   */
-  private static ImportDetail getImportDetails() {
-    ImportDetail newimportDetail = new ImportDetail();
-    newimportDetail.setImportId(1L);
-    return newimportDetail;
-  }
-
-  /**
    * @return Statement[]
    */
   public static Statement[] getStatement() {
@@ -137,13 +96,5 @@ class LRSSyncSchedulingServiceTest {
     Statement statement = new Statement();
     statements[0] = statement;
     return statements;
-  }
-
-  /**
-   * @return SyncRecord
-   */
-  public static SyncRecord getSyncRecord() {
-    SyncRecord syncRecord = new SyncRecord();
-    return syncRecord;
   }
 }

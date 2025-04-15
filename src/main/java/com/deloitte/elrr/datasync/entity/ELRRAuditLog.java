@@ -26,6 +26,5 @@ public class ELRRAuditLog extends Auditable<String> {
   @Column(name = "ELRRAUDITLOGID")
   private long auditlogid;
 
-  private long syncid;
   private String statement;
 }
