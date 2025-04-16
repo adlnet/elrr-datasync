@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
@@ -14,6 +13,7 @@ import com.deloitte.elrr.datasync.exception.RunTimeServiceException;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yetanalytics.xapi.model.Statement;
 
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,6 @@ public class LRSSyncSchedulingService {
    *
    */
   @Scheduled(cron = "${cronExpression}")
-  @Transactional
   public void run() {
 
     log.info("**inside LRS schedule method.");
@@ -68,10 +67,10 @@ public class LRSSyncSchedulingService {
       // Process unprocessed
       newDataService.process(result);
 
-    } catch (DatasyncException | RunTimeServiceException e) {
-      log.error("LRS Sync failed - " + e.getMessage());
-      e.printStackTrace();
-      throw e;
+    } catch (DatasyncException | RunTimeServiceException | JsonProcessingException e) {
+      log.error("LRS Sync failed.");
+      importRecord.setRetries(0);
+      importService.update(importRecord);
     }
   }
 
@@ -103,6 +102,7 @@ public class LRSSyncSchedulingService {
     log.info("Crerating new import.");
     Import importRecord = new Import();
     importRecord.setRecordStatus(StatusConstants.SUCCESS);
+    importRecord.setRetries(0);
     importRecord.setImportName(StatusConstants.LRSNAME);
     importRecord.setImportStartDate(initialDate);
     importRecord.setImportEndDate(initialDate);

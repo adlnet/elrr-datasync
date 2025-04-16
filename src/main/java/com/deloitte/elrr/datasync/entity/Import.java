@@ -40,4 +40,7 @@ public class Import extends Auditable<String> {
 
   @Column(name = "RECORDSTATUS")
   private String recordStatus;
+
+  @Column(name = "RETRIES")
+  private int retries;
 }

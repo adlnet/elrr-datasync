@@ -52,7 +52,7 @@ public class LRSService {
       statements = invokeLRS(startDate);
 
     } catch (DatasyncException e) {
-      log.error("Error processing statement.");
+      throw e;
     }
 
     return statements;

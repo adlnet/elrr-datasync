@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS staging."import" (
     importstartdate timestamp NULL,
     importenddate timestamp NULL,
     recordstatus varchar NULL,
+    retries int4 NULL,
     updatedby varchar NULL,
     inserteddate timestamp NULL,
     lastmodified timestamp NULL

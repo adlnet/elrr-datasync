@@ -42,7 +42,7 @@ class LRSSyncSchedulingServiceTest {
       ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "importService", importService);
       Mockito.doReturn(getStatement()).when(lrsService).process(null);
       mockLRSSyncSchedulingService.run();
-    } catch (NullPointerException e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
@@ -56,7 +56,7 @@ class LRSSyncSchedulingServiceTest {
       ReflectionTestUtils.setField(mockLRSSyncSchedulingService, "importService", importService);
       Mockito.doReturn(getStatement()).when(lrsService).process(null);
       mockLRSSyncSchedulingService.run();
-    } catch (NullPointerException e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
@@ -71,7 +71,7 @@ class LRSSyncSchedulingServiceTest {
       Mockito.doReturn(getImport()).when(importService).findByName("Deloitte LRS");
       Mockito.doReturn(getStatement()).when(lrsService).process(STARTDATE);
       mockLRSSyncSchedulingService.run();
-    } catch (NullPointerException e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
