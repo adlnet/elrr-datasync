@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
-import com.deloitte.elrr.datasync.exception.RunTimeServiceException;
+import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
@@ -67,7 +67,7 @@ public class LRSSyncSchedulingService {
       // Process unprocessed
       newDataService.process(result);
 
-    } catch (DatasyncException | RunTimeServiceException | JsonProcessingException e) {
+    } catch (DatasyncException | ResourceNotFoundException | JsonProcessingException e) {
       log.error("LRS Sync failed.");
       importRecord.setRetries(0);
       importService.update(importRecord);
@@ -93,7 +93,7 @@ public class LRSSyncSchedulingService {
       imports.setRecordStatus(StatusConstants.INPROCESS);
       importService.update(imports);
 
-    } catch (RunTimeServiceException e) {
+    } catch (ResourceNotFoundException e) {
       throw e;
     }
   }

@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  *
  */
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class RunTimeServiceException extends RuntimeException {
+public class ResourceNotFoundException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
   /**
    *
    * @param message
    */
-  public RunTimeServiceException(final String message) {
+  public ResourceNotFoundException(final String message) {
     super(message);
   }
 }
