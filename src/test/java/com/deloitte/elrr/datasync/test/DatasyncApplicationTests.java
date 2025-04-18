@@ -1,4 +1,4 @@
-package com.deloitte.elrr.datasync;
+package com.deloitte.elrr.datasync.test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

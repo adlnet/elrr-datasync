@@ -1,4 +1,5 @@
-package com.deloitte.elrr.datasync.entity;
+/** */
+package com.deloitte.elrr.datasync.test.dto;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -8,9 +9,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.deloitte.elrr.datasync.util.ValueObjectTestUtility;
+import com.deloitte.elrr.datasync.dto.MessageVO;
+import com.deloitte.elrr.test.datasync.test.util.ValueObjectTestUtility;
 
-class ImportTest {
+class MessageVOTest {
 
   /**
    * @throws java.lang.Exception
@@ -38,11 +40,11 @@ class ImportTest {
 
   @Test
   void test() {
-    ValueObjectTestUtility.validateAccessors(Import.class);
+    ValueObjectTestUtility.validateAccessors(MessageVO.class);
   }
 
   @Test
   void testToString() {
-    assertNotNull(new Import().toString());
+    assertNotNull(new MessageVO().toString());
   }
 }
