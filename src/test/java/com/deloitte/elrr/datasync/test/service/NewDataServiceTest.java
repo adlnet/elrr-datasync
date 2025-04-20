@@ -3,6 +3,7 @@ package com.deloitte.elrr.datasync.test.service;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
@@ -26,8 +28,6 @@ class NewDataServiceTest {
 
   @Mock private KafkaProducer kafkaProducer;
 
-  @Mock private KafkaProducer kafkaProd;
-
   @Mock private ELRRAuditLogService elrrAuditLogService;
 
   @Mock private ImportService importService;
@@ -37,18 +37,16 @@ class NewDataServiceTest {
   @Test
   void test() {
 
-    File testFile = TestFileUtils.getJsonTestFile("completed");
-
     try {
 
-      Statement stmt = Mapper.getMapper().readValue(testFile, Statement.class);
-      assertTrue(stmt != null);
+      File testFile = TestFileUtils.getJsonTestFile("completed.json");
 
-      Statement[] statements = {stmt};
+      Statement[] stmts = Mapper.getMapper().readValue(testFile, Statement[].class);
+      assertTrue(stmts != null);
 
-      newDataService.process(statements);
+      newDataService.process(stmts);
 
-    } catch (Exception e) {
+    } catch (DatasyncException | IOException e) {
       e.printStackTrace();
     }
   }

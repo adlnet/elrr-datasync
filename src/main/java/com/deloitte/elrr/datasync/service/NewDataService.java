@@ -24,8 +24,6 @@ public class NewDataService {
 
   @Autowired private KafkaProducer kafkaProducer;
 
-  @Autowired private KafkaProducer kafkaProd;
-
   @Autowired private ELRRAuditLogService elrrAuditLogService;
 
   @Autowired private ImportService importService;
@@ -103,7 +101,7 @@ public class NewDataService {
 
     try {
       ELRRAuditLog auditLog = new ELRRAuditLog();
-      auditLog.setStatement(kafkaProd.writeValueAsString(messageVo.getStatement()));
+      auditLog.setStatement(kafkaProducer.writeValueAsString(messageVo.getStatement()));
       elrrAuditLogService.save(auditLog);
     } catch (JsonProcessingException e) {
       log.error("Error creating ELRRAuditLog record - " + e.getMessage());
