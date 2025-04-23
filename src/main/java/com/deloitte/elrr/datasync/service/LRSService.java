@@ -77,7 +77,8 @@ public class LRSService {
       httpHeaders.add("X-Forwarded-Proto", "https");
       httpHeaders.add("Content-Type", "application/json");
 
-      // Call LRS passing import.startdate = stored date
+      // Call LRS (ELRRStagrController.localdata()) in elrrexternalservicess
+      // passing import.startdate = stored date
       String completeURL = lrsURL + "/api/lrsdata?lastReadDate=" + lastReadDate;
       log.info("URL = " + completeURL);
 
