@@ -2,6 +2,7 @@ package com.deloitte.elrr.datasync.producer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +43,7 @@ public class KafkaProducer {
       kafkaTemplate.send(kafkatopic, payload);
       log.info("\n ===> Kafka message successfully sent to kafka topic " + kafkatopic);
 
-    } catch (JsonProcessingException e) {
+    } catch (KafkaException | JsonProcessingException e) {
       log.error("Exception while sending Kafka message - " + e.getMessage());
       e.printStackTrace();
       throw new DatasyncException("Exception while sending Kafka message - " + e.getMessage());

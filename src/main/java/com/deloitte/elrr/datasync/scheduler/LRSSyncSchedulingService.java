@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.KafkaException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -67,7 +68,10 @@ public class LRSSyncSchedulingService {
       // Process unprocessed
       newDataService.process(result);
 
-    } catch (DatasyncException | ResourceNotFoundException | JsonProcessingException e) {
+    } catch (DatasyncException
+        | ResourceNotFoundException
+        | KafkaException
+        | JsonProcessingException e) {
       log.error("LRS Sync failed.");
       importRecord.setRetries(0);
       importService.update(importRecord);

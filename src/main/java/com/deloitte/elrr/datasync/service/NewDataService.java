@@ -2,6 +2,7 @@ package com.deloitte.elrr.datasync.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.KafkaException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +46,7 @@ public class NewDataService {
 
       processStatements(statements);
 
-    } catch (DatasyncException | JsonProcessingException e) {
+    } catch (DatasyncException | KafkaException | JsonProcessingException e) {
 
       // Get number of retries
       Import importRecord = importService.findByName(StatusConstants.LRSNAME);
@@ -85,7 +86,7 @@ public class NewDataService {
         kafkaProducer.sendMessage(kafkaMessage);
       }
 
-    } catch (JsonProcessingException e) {
+    } catch (KafkaException | JsonProcessingException e) {
       throw e;
     }
   }
