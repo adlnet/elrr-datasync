@@ -1,17 +1,30 @@
 package com.deloitte.elrr.datasych.test.scheduler;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.scheduler.LRSSyncSchedulingService;
 import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
+import com.deloitte.elrr.test.datasync.test.util.TestFileUtils;
+import com.yetanalytics.xapi.model.Statement;
+import com.yetanalytics.xapi.util.Mapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,23 +32,43 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class LRSSyncSchedulingServiceTest {
 
-  @Mock private LRSService lrsService;
+	@Mock
+	LRSService lrsService;
 
-  @Mock private NewDataService newDataService;
+	@Mock
+	NewDataService newDataService;
 
-  @Mock private ImportService importService;
+	@Mock
+	ImportService importService;
 
-  @InjectMocks LRSSyncSchedulingService lrsSyncSchedulingservice;
+	@InjectMocks
+	LRSSyncSchedulingService lrsSyncSchedulingservice;
 
-  @Test
-  void test() {
+	@Test
+	void test() {
 
-    try {
+		try {
 
-      lrsSyncSchedulingservice.run();
+			File testFile = TestFileUtils.getJsonTestFile("completed.json");
 
-    } catch (DatasyncException | ResourceNotFoundException e) {
-      e.printStackTrace();
-    }
-  }
+			Statement[] stmts = Mapper.getMapper().readValue(testFile, Statement[].class);
+			assertTrue(stmts != null);
+
+			Import imp = new Import();
+			imp.setId(UUID.randomUUID());
+			imp.setImportName("Deloitte LRS");
+			imp.setRecordStatus("SUCCESS");
+			imp.setRetries(0);
+			Mockito.doReturn(imp).when(importService).findByName(any());
+
+			doNothing().when(newDataService).process(any());
+
+			Mockito.doReturn(stmts).when(lrsService).process(any());
+
+			lrsSyncSchedulingservice.run();
+
+		} catch (DatasyncException | ResourceNotFoundException | IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
