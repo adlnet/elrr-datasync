@@ -23,90 +23,93 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NewDataService {
 
-  @Autowired private KafkaProducer kafkaProducer;
+	@Autowired
+	private KafkaProducer kafkaProducer;
 
-  @Autowired private ELRRAuditLogService elrrAuditLogService;
+	@Autowired
+	private ELRRAuditLogService elrrAuditLogService;
 
-  @Autowired private ImportService importService;
+	@Autowired
+	private ImportService importService;
 
-  @Value("${max.retries}")
-  private int maxRetries;
+	@Value("${max.retries}")
+	private int maxRetries;
 
-  /**
-   * @param statements
-   * @throws DatasyncException
-   * @throws JsonProcessingException
-   */
-  @Transactional
-  public void process(Statement[] statements) throws JsonProcessingException {
+	/**
+	 * @param statements
+	 * @throws DatasyncException
+	 * @throws JsonProcessingException
+	 */
+	@Transactional
+	public void process(Statement[] statements) throws JsonProcessingException {
 
-    log.info("**Inside NewDataService");
+		log.info("**Inside NewDataService");
 
-    try {
+		try {
 
-      processStatements(statements);
+			processStatements(statements);
 
-    } catch (DatasyncException | KafkaException | JsonProcessingException e) {
+		} catch (DatasyncException | KafkaException | JsonProcessingException e) {
 
-      // Get number of retries
-      Import importRecord = importService.findByName(StatusConstants.LRSNAME);
-      int attempts = importRecord.getRetries();
-      attempts++;
+			// Get number of retries
+			Import importRecord = importService.findByName(StatusConstants.LRSNAME);
+			int attempts = importRecord.getRetries();
+			attempts++;
 
-      log.error("processStatements failed on attempt " + attempts + " retrying...");
+			log.error("processStatements failed on attempt " + attempts + " retrying...");
 
-      if (attempts >= maxRetries) {
-        log.error("Max retries reached. Giving up.");
-        throw new DatasyncException("Max retries reached. Giving up.");
-      } else {
-        importRecord.setRetries(attempts);
-        importService.update(importRecord);
-      }
-    }
-  }
+			if (attempts >= maxRetries) {
+				log.error("Max retries reached. Giving up.");
+				throw new DatasyncException("Max retries reached. Giving up.");
+			} else {
+				importRecord.setRetries(attempts);
+				importService.update(importRecord);
+			}
+		}
+	}
 
-  /**
-   * @param statements
-   * @throws JsonProcessingException
-   */
-  // 1. Iterate over statements.
-  // 2. Insert ELRRAuditLog.
-  // 3. Create Kafka message.
-  @Transactional
-  public void processStatements(Statement[] statements) throws JsonProcessingException {
+	/**
+	 * @param statements
+	 * @throws JsonProcessingException
+	 */
+	// 1. Iterate over statements.
+	// 2. Insert ELRRAuditLog.
+	// 3. Create Kafka message.
+	@Transactional
+	public void processStatements(Statement[] statements) throws JsonProcessingException {
 
-    log.info("Process statements.");
+		log.info("Process statements.");
 
-    try {
+		try {
 
-      for (Statement stmnt : statements) {
-        MessageVO kafkaMessage = new MessageVO();
-        kafkaMessage.setStatement(stmnt);
-        insertAuditLog(kafkaMessage);
-        kafkaProducer.sendMessage(kafkaMessage);
-      }
+			for (Statement stmnt : statements) {
+				MessageVO kafkaMessage = new MessageVO();
+				kafkaMessage.setStatement(stmnt);
+				insertAuditLog(kafkaMessage);
+				kafkaProducer.sendMessage(kafkaMessage);
+			}
 
-    } catch (KafkaException | JsonProcessingException e) {
-      throw e;
-    }
-  }
+		} catch (KafkaException | JsonProcessingException e) {
+			throw e;
+		}
+	}
 
-  /**
-   * @param messageVo
-   * @param synchRecordId
-   * @throws JsonProcessingException
-   */
-  private void insertAuditLog(final MessageVO messageVo) throws JsonProcessingException {
+	/**
+	 * @param messageVo
+	 * @param synchRecordId
+	 * @throws JsonProcessingException
+	 */
+	private void insertAuditLog(final MessageVO messageVo) throws JsonProcessingException {
 
-    log.info("Creating ELRRAuditLog.");
+		log.info("Creating ELRRAuditLog.");
 
-    try {
-      ELRRAuditLog auditLog = new ELRRAuditLog();
-      auditLog.setStatement(kafkaProducer.writeValueAsString(messageVo.getStatement()));
-      elrrAuditLogService.save(auditLog);
-    } catch (JsonProcessingException e) {
-      log.error("Error creating ELRRAuditLog record - " + e.getMessage());
-      throw e;
-    }
-  }
+		try {
+			ELRRAuditLog auditLog = new ELRRAuditLog();
+			auditLog.setStatement(kafkaProducer.writeValueAsString(messageVo.getStatement()));
+			elrrAuditLogService.save(auditLog);
+		} catch (JsonProcessingException e) {
+			log.error("Error creating ELRRAuditLog record - " + e.getMessage());
+			throw e;
+		}
+	}
 }

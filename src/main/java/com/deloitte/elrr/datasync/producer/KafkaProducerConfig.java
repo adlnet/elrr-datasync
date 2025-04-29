@@ -18,27 +18,27 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class KafkaProducerConfig {
 
-  @Value("${brokerUrl}")
-  private String brokerUrl;
+	@Value("${brokerUrl}")
+	private String brokerUrl;
 
-  /**
-   * @return ProducerFactory<String, String>
-   */
-  @Bean
-  public ProducerFactory<String, String> producerFactory() {
-    log.info("Start building Kafka Producer factory");
-    Map<String, Object> configProps = new HashMap<>();
-    configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerUrl);
-    configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-    configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-    return new DefaultKafkaProducerFactory<>(configProps);
-  }
+	/**
+	 * @return ProducerFactory<String, String>
+	 */
+	@Bean
+	public ProducerFactory<String, String> producerFactory() {
+		log.info("Start building Kafka Producer factory");
+		Map<String, Object> configProps = new HashMap<>();
+		configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerUrl);
+		configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+		configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+		return new DefaultKafkaProducerFactory<>(configProps);
+	}
 
-  /**
-   * @return KafkaTemplate<String, String>
-   */
-  @Bean
-  public KafkaTemplate<String, String> kafkaTemplate() {
-    return new KafkaTemplate<>(producerFactory());
-  }
+	/**
+	 * @return KafkaTemplate<String, String>
+	 */
+	@Bean
+	public KafkaTemplate<String, String> kafkaTemplate() {
+		return new KafkaTemplate<>(producerFactory());
+	}
 }

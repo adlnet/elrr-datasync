@@ -26,28 +26,32 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class NewDataServiceTest {
 
-  @Mock private KafkaProducer kafkaProducer;
+	@Mock
+	private KafkaProducer kafkaProducer;
 
-  @Mock private ELRRAuditLogService elrrAuditLogService;
+	@Mock
+	private ELRRAuditLogService elrrAuditLogService;
 
-  @Mock private ImportService importService;
+	@Mock
+	private ImportService importService;
 
-  @InjectMocks NewDataService newDataService;
+	@InjectMocks
+	NewDataService newDataService;
 
-  @Test
-  void test() {
+	@Test
+	void test() {
 
-    try {
+		try {
 
-      File testFile = TestFileUtils.getJsonTestFile("completed.json");
+			File testFile = TestFileUtils.getJsonTestFile("completed.json");
 
-      Statement[] stmts = Mapper.getMapper().readValue(testFile, Statement[].class);
-      assertTrue(stmts != null);
+			Statement[] stmts = Mapper.getMapper().readValue(testFile, Statement[].class);
+			assertTrue(stmts != null);
 
-      newDataService.process(stmts);
+			newDataService.process(stmts);
 
-    } catch (DatasyncException | IOException e) {
-      e.printStackTrace();
-    }
-  }
+		} catch (DatasyncException | IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
