@@ -43,7 +43,7 @@ public class NewDataService {
 	@Transactional
 	public void process(Statement[] statements) throws JsonProcessingException {
 
-		log.info("**Inside NewDataService");
+		log.info("\n ===============Inside NewDataService===============");
 
 		try {
 

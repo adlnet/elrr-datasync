@@ -16,57 +16,58 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class KafkaProducer {
 
-  @Value("${kafka.topic}")
-  private String kafkatopic;
+	@Value("${kafka.topic}")
+	private String kafkatopic;
 
-  @Autowired private KafkaTemplate<String, String> kafkaTemplate;
+	@Autowired
+	private KafkaTemplate<String, String> kafkaTemplate;
 
-  private ObjectMapper mapper = new ObjectMapper();
+	private ObjectMapper mapper = new ObjectMapper();
 
-  /**
-   * @param msg
-   * @throws JsonProcessingException
-   */
-  public void sendMessage(final Object msg) {
+	/**
+	 * @param msg
+	 * @throws JsonProcessingException
+	 */
+	public void sendMessage(final Object msg) {
 
-    String payload = "";
+		String payload = "";
 
-    try {
+		try {
 
-      if (msg instanceof String) {
-        payload = (String) msg;
-      } else {
-        payload = writeValueAsString(msg);
-      }
+			if (msg instanceof String) {
+				payload = (String) msg;
+			} else {
+				payload = writeValueAsString(msg);
+			}
 
-      log.info("\n sent messsage to Kafka \n" + payload);
-      kafkaTemplate.send(kafkatopic, payload);
-      log.info("\n ===> Kafka message successfully sent to kafka topic " + kafkatopic);
+			log.info("\n\n ===============sent messsage to Kafka=============== \n" + payload);
+			kafkaTemplate.send(kafkatopic, payload);
+			log.info("\n Kafka message successfully sent to kafka topic " + kafkatopic + "\n\n");
 
-    } catch (KafkaException | JsonProcessingException e) {
-      log.error("Exception while sending Kafka message - " + e.getMessage());
-      e.printStackTrace();
-      throw new DatasyncException("Exception while sending Kafka message - " + e.getMessage());
-    }
-  }
+		} catch (KafkaException | JsonProcessingException e) {
+			log.error("Exception while sending Kafka message - " + e.getMessage());
+			e.printStackTrace();
+			throw new DatasyncException("Exception while sending Kafka message - " + e.getMessage());
+		}
+	}
 
-  /**
-   * @param data
-   * @return String
-   * @throws JsonProcessingException
-   */
-  public String writeValueAsString(final Object data) throws JsonProcessingException {
+	/**
+	 * @param data
+	 * @return String
+	 * @throws JsonProcessingException
+	 */
+	public String writeValueAsString(final Object data) throws JsonProcessingException {
 
-    String output = "";
+		String output = "";
 
-    try {
-      output = mapper.writeValueAsString(data);
-    } catch (JsonProcessingException e) {
-      log.error("Exception whille converting to JSON " + e.getMessage());
-      e.printStackTrace();
-      throw e;
-    }
+		try {
+			output = mapper.writeValueAsString(data);
+		} catch (JsonProcessingException e) {
+			log.error("Exception whille converting to JSON " + e.getMessage());
+			e.printStackTrace();
+			throw e;
+		}
 
-    return output;
-  }
+		return output;
+	}
 }
