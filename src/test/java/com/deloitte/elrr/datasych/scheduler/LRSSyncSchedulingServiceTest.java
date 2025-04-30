@@ -1,4 +1,4 @@
-package com.deloitte.elrr.datasych.test.scheduler;
+package com.deloitte.elrr.datasych.scheduler;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,7 +22,7 @@ import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.scheduler.LRSSyncSchedulingService;
 import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
-import com.deloitte.elrr.test.datasync.test.util.TestFileUtils;
+import com.deloitte.elrr.test.datasync.util.TestFileUtils;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
 

@@ -1,4 +1,4 @@
-package com.deloitte.elrr.datasync.test.service;
+package com.deloitte.elrr.datasync.service;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -16,7 +16,7 @@ import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
 import com.deloitte.elrr.datasync.service.NewDataService;
-import com.deloitte.elrr.test.datasync.test.util.TestFileUtils;
+import com.deloitte.elrr.test.datasync.util.TestFileUtils;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
 

@@ -1,5 +1,5 @@
 /** */
-package com.deloitte.elrr.datasync.test.dto;
+package com.deloitte.elrr.datasync.dto;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.deloitte.elrr.datasync.dto.MessageVO;
-import com.deloitte.elrr.test.datasync.test.util.ValueObjectTestUtility;
+import com.deloitte.elrr.test.datasync.util.ValueObjectTestUtility;
 
 class MessageVOTest {
 

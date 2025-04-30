@@ -1,4 +1,4 @@
-package com.deloitte.elrr.test.datasync.test.util;
+package com.deloitte.elrr.test.datasync.util;
 
 import java.io.File;
 import java.io.IOException;

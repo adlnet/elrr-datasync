@@ -59,7 +59,7 @@ public class LRSSyncSchedulingService {
 			}
 
 			Statement[] result = null;
-			updateImportInProcess(importRecord);
+			importRecord = updateImportInProcess(importRecord);
 
 			// Make call to LRSService.invokeLRS(final Timestamp startDate)
 			result = lrsService.process(importRecord.getImportStartDate());
@@ -79,9 +79,10 @@ public class LRSSyncSchedulingService {
 	}
 
 	/**
-	 * @param imports
+	 * @param Import
+	 * @return Import
 	 */
-	private void updateImportInProcess(Import imports) {
+	private Import updateImportInProcess(Import importRecord) {
 
 		// If the previous run was successful, we will update the dates.
 		// If not, we just re run again with same old dates.
@@ -89,17 +90,22 @@ public class LRSSyncSchedulingService {
 		log.info("Updating import.");
 
 		try {
-			if (imports.getRecordStatus().equals(StatusConstants.SUCCESS)) {
-				imports.setImportStartDate(imports.getImportEndDate());
-				imports.setImportEndDate(new Timestamp(System.currentTimeMillis()));
+
+			if (importRecord.getRecordStatus().equals(StatusConstants.SUCCESS)) {
+				importRecord.setImportStartDate(importRecord.getImportEndDate());
+				importRecord.setImportEndDate(new Timestamp(System.currentTimeMillis()));
 			}
 
-			imports.setRecordStatus(StatusConstants.INPROCESS);
-			importService.update(imports);
+			importRecord.setRecordStatus(StatusConstants.INPROCESS);
+			importService.update(importRecord);
 
 		} catch (ResourceNotFoundException e) {
+			log.error("Error updaung Import - " + e.getMessage());
+			e.printStackTrace();
 			throw e;
 		}
+
+		return importRecord;
 	}
 
 	public Import createImport() {

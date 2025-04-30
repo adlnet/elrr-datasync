@@ -1,4 +1,4 @@
-package com.deloitte.elrr.test.datasync.test.util;
+package com.deloitte.elrr.test.datasync.util;
 
 import com.openpojo.reflection.impl.PojoClassFactory;
 import com.openpojo.validation.Validator;

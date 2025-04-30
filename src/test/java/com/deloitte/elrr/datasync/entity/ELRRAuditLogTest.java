@@ -1,4 +1,4 @@
-package com.deloitte.elrr.test.datasync.test.entity;
+package com.deloitte.elrr.datasync.entity;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
-import com.deloitte.elrr.test.datasync.test.util.ValueObjectTestUtility;
+import com.deloitte.elrr.test.datasync.util.ValueObjectTestUtility;
 
 class ELRRAuditLogTest {
 

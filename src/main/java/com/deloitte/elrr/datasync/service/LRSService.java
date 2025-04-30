@@ -29,111 +29,108 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LRSService {
 
-  @Autowired private RestTemplate restTemplate;
+	@Autowired
+	private RestTemplate restTemplate;
 
-  @Value("${lrsservice.url}")
-  private String lrsURL;
+	@Value("${lrsservice.url}")
+	private String lrsURL;
 
-  @Value("${lrsservice.cookie}")
-  private String lrsCookie;
+	@Value("${lrsservice.cookie}")
+	private String lrsCookie;
 
-  /**
-   * @param startDate
-   * @return Statement[]
-   */
-  // Get xAPI statements from LRS
-  public Statement[] process(final Timestamp startDate) {
+	/**
+	 * @param startDate
+	 * @return Statement[]
+	 */
+	// Get xAPI statements from LRS
+	public Statement[] process(final Timestamp startDate) {
 
-    Statement[] statements = null;
+		Statement[] statements = null;
 
-    try {
+		try {
 
-      // Get new statements from LRS since import.startdate
-      statements = invokeLRS(startDate);
+			// Get new statements from LRS since import.startdate
+			statements = invokeLRS(startDate);
 
-    } catch (DatasyncException e) {
-      throw e;
-    }
+		} catch (DatasyncException e) {
+			throw e;
+		}
 
-    return statements;
-  }
+		return statements;
+	}
 
-  /**
-   * @param startDate
-   * @return Statement[]
-   * @throws DatasyncException
-   */
-  private Statement[] invokeLRS(final Timestamp startDate) {
+	/**
+	 * @param startDate
+	 * @return Statement[]
+	 * @throws DatasyncException
+	 */
+	private Statement[] invokeLRS(final Timestamp startDate) {
 
-    Statement[] statements = null;
+		Statement[] statements = null;
 
-    try {
+		try {
 
-      // Format import.startdate date (yyyy-MM-DDThh:mm:ssZ)
-      String lastReadDate = formatStoredDate(startDate);
+			// Format import.startdate date (yyyy-MM-DDThh:mm:ssZ)
+			String lastReadDate = formatStoredDate(startDate);
 
-      HttpHeaders httpHeaders = new HttpHeaders();
-      httpHeaders.add("Cookie", lrsCookie);
-      httpHeaders.add("X-Forwarded-Proto", "https");
-      httpHeaders.add("Content-Type", "application/json");
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.add("Cookie", lrsCookie);
+			httpHeaders.add("X-Forwarded-Proto", "https");
+			httpHeaders.add("Content-Type", "application/json");
 
-      // Call LRS (ELRRStagrController.localdata()) in elrrexternalservicess
-      // passing import.startdate = stored date
-      String completeURL = lrsURL + "/api/lrsdata?lastReadDate=" + lastReadDate;
-      log.info("URL = " + completeURL);
+			// Call LRS (ELRRStagrController.localdata() in elrrexternalservicess)
+			// passing import.startdate = stored date
+			String completeURL = lrsURL + "/api/lrsdata?lastReadDate=" + lastReadDate;
+			log.info("URL = " + completeURL);
 
-      HttpEntity<String> entity = new HttpEntity<>("body", httpHeaders);
-      ResponseEntity<String> json =
-          restTemplate.exchange(completeURL, HttpMethod.GET, entity, String.class);
+			HttpEntity<String> entity = new HttpEntity<>("body", httpHeaders);
+			ResponseEntity<String> json = restTemplate.exchange(completeURL, HttpMethod.GET, entity, String.class);
 
-      ObjectMapper mapper = Mapper.getMapper();
-      statements = mapper.readValue(json.getBody(), Statement[].class);
+			ObjectMapper mapper = Mapper.getMapper();
+			statements = mapper.readValue(json.getBody(), Statement[].class);
 
-      log.info("statements size = " + statements.length);
+			log.info("statements size = " + statements.length);
 
-    } catch (IllegalArgumentException
-        | NullPointerException
-        | HttpClientErrorException
-        | HttpServerErrorException
-        | JsonProcessingException e) {
-      log.error("Error calling LRS  - " + e.getMessage());
-      e.printStackTrace();
-      throw new DatasyncException("Error calling LRS - " + e.getMessage());
-    }
+		} catch (IllegalArgumentException | NullPointerException | HttpClientErrorException | HttpServerErrorException
+				| JsonProcessingException e) {
+			log.error("Error calling LRS  - " + e.getMessage());
+			e.printStackTrace();
+			throw new DatasyncException("Error calling LRS - " + e.getMessage());
+		}
 
-    return statements;
-  }
+		return statements;
+	}
 
-  /**
-   * @param startDate
-   * @return lastReadDate
-   * @throws DatasyncException
-   */
-  private String formatStoredDate(final Timestamp startDate) {
+	/**
+	 * @param startDate
+	 * @return lastReadDate
+	 * @throws DatasyncException
+	 */
+	private String formatStoredDate(final Timestamp startDate) {
 
-    String lastReadDate = null;
+		String lastReadDate = null;
 
-    try {
+		try {
 
-      DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-      // Convert timestamp to Long (ms)
-      long startDateLong = startDate.getTime();
+			// Convert Timestamp to Long (ms)
+			long startDateLong = startDate.getTime();
 
-      // Convert Long to Date
-      Date date = new Date(startDateLong);
+			// Convert Long to Date
+			Date date = new Date(startDateLong);
 
-      // Convert to GMT
-      formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-      lastReadDate = formatter.format(date);
-      log.info("lastReadDate = " + lastReadDate);
+			// Convert to GMT
+			formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+			lastReadDate = formatter.format(date);
+			log.info("lastReadDate = " + lastReadDate);
 
-    } catch (IllegalArgumentException | NullPointerException e) {
-      log.error("Error formatting last read date - " + e.getMessage());
-      e.printStackTrace();
-      throw new DatasyncException("Error formatting last read date - " + e.getMessage());
-    }
+		} catch (IllegalArgumentException | NullPointerException e) {
+			log.error("Error formatting last read date - " + e.getMessage());
+			e.printStackTrace();
+			throw new DatasyncException("Error formatting last read date - " + e.getMessage());
+		}
 
-    return lastReadDate;
-  }
+		return lastReadDate;
+	}
 }
