@@ -18,6 +18,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
+import com.deloitte.elrr.datasync.util.ArrayToString;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yetanalytics.xapi.model.Statement;
@@ -81,7 +82,6 @@ public class LRSService {
 			// Call LRS (ELRRStagrController.localdata() in elrrexternalservicess)
 			// passing import.startdate = stored date
 			String completeURL = lrsURL + "/api/lrsdata?lastReadDate=" + lastReadDate;
-			log.info("URL = " + completeURL);
 
 			HttpEntity<String> entity = new HttpEntity<>("body", httpHeaders);
 			ResponseEntity<String> json = restTemplate.exchange(completeURL, HttpMethod.GET, entity, String.class);
@@ -89,13 +89,15 @@ public class LRSService {
 			ObjectMapper mapper = Mapper.getMapper();
 			statements = mapper.readValue(json.getBody(), Statement[].class);
 
-			log.info("statements size = " + statements.length);
+			String[] strings = { "statements size = ", Integer.toString(statements.length) };
+			log.info(ArrayToString.convertArrayToString(strings));
 
 		} catch (IllegalArgumentException | NullPointerException | HttpClientErrorException | HttpServerErrorException
 				| JsonProcessingException e) {
-			log.error("Error calling LRS  - " + e.getMessage());
+			String[] strings = { "Error calling LRS - ", e.getMessage() };
+			log.error(ArrayToString.convertArrayToString(strings));
 			e.printStackTrace();
-			throw new DatasyncException("Error calling LRS - " + e.getMessage());
+			throw new DatasyncException(ArrayToString.convertArrayToString(strings));
 		}
 
 		return statements;
@@ -123,12 +125,14 @@ public class LRSService {
 			// Convert to GMT
 			formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
 			lastReadDate = formatter.format(date);
-			log.info("lastReadDate = " + lastReadDate);
+			String[] strings = { "lastReadDate = ", lastReadDate };
+			log.info(ArrayToString.convertArrayToString(strings));
 
 		} catch (IllegalArgumentException | NullPointerException e) {
-			log.error("Error formatting last read date - " + e.getMessage());
+			String[] strings = { "Error formatting last read date - ", e.getMessage() };
+			log.error(ArrayToString.convertArrayToString(strings));
 			e.printStackTrace();
-			throw new DatasyncException("Error formatting last read date - " + e.getMessage());
+			throw new DatasyncException(ArrayToString.convertArrayToString(strings));
 		}
 
 		return lastReadDate;

@@ -7,6 +7,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
+import com.deloitte.elrr.datasync.util.ArrayToString;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,12 +43,15 @@ public class KafkaProducer {
 
 			log.info("\n\n ===============sent messsage to Kafka=============== \n" + payload);
 			kafkaTemplate.send(kafkatopic, payload);
-			log.info("\n Kafka message successfully sent to kafka topic " + kafkatopic + "\n\n");
+
+			String[] strings = { "\n Kafka message successfully sent to kafka topic ", kafkatopic, "\n\n" };
+			log.info(ArrayToString.convertArrayToString(strings));
 
 		} catch (KafkaException | JsonProcessingException e) {
-			log.error("Exception while sending Kafka message - " + e.getMessage());
+			String[] strings = { "Exception while sending Kafka message - ", e.getMessage() };
+			log.error(ArrayToString.convertArrayToString(strings));
 			e.printStackTrace();
-			throw new DatasyncException("Exception while sending Kafka message - " + e.getMessage());
+			throw new DatasyncException(ArrayToString.convertArrayToString(strings));
 		}
 	}
 
