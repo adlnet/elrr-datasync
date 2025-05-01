@@ -15,7 +15,6 @@ import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
-import com.deloitte.elrr.datasync.util.ArrayToString;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yetanalytics.xapi.model.Statement;
 
@@ -103,8 +102,8 @@ public class LRSSyncSchedulingService {
 			importService.update(importRecord);
 
 		} catch (ResourceNotFoundException e) {
-			String[] strings = { "Error updaung Import - ", e.getMessage() };
-			log.error(ArrayToString.convertArrayToString(strings));
+			String[] strings = { "Error updaung Import -", e.getMessage() };
+			log.error(String.join(" ", strings));
 			e.printStackTrace();
 			throw e;
 		}

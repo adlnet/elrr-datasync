@@ -7,7 +7,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
-import com.deloitte.elrr.datasync.util.ArrayToString;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,14 +43,14 @@ public class KafkaProducer {
 			log.info("\n\n ===============sent messsage to Kafka=============== \n" + payload);
 			kafkaTemplate.send(kafkatopic, payload);
 
-			String[] strings = { "\n Kafka message successfully sent to kafka topic ", kafkatopic, "\n\n" };
-			log.info(ArrayToString.convertArrayToString(strings));
+			String[] strings = { "\n Kafka message successfully sent to kafka topic", kafkatopic, "\n\n" };
+			log.info(String.join(" ", strings));
 
 		} catch (KafkaException | JsonProcessingException e) {
-			String[] strings = { "Exception while sending Kafka message - ", e.getMessage() };
-			log.error(ArrayToString.convertArrayToString(strings));
+			String[] strings = { "Exception while sending Kafka message -", e.getMessage() };
+			log.error(String.join(" ", strings));
 			e.printStackTrace();
-			throw new DatasyncException(ArrayToString.convertArrayToString(strings));
+			throw new DatasyncException(String.join("", strings));
 		}
 	}
 
@@ -67,7 +66,8 @@ public class KafkaProducer {
 		try {
 			output = mapper.writeValueAsString(data);
 		} catch (JsonProcessingException e) {
-			log.error("Exception whille converting to JSON " + e.getMessage());
+			String[] strings = { "Exception whille converting to JSON -", e.getMessage() };
+			log.error(String.join(" ", strings));
 			e.printStackTrace();
 			throw e;
 		}

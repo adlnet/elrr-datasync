@@ -18,7 +18,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
-import com.deloitte.elrr.datasync.util.ArrayToString;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yetanalytics.xapi.model.Statement;
@@ -89,15 +88,15 @@ public class LRSService {
 			ObjectMapper mapper = Mapper.getMapper();
 			statements = mapper.readValue(json.getBody(), Statement[].class);
 
-			String[] strings = { "statements size = ", Integer.toString(statements.length) };
-			log.info(ArrayToString.convertArrayToString(strings));
+			String[] strings = { "statements size =", Integer.toString(statements.length) };
+			log.info(String.join(" ", strings));
 
 		} catch (IllegalArgumentException | NullPointerException | HttpClientErrorException | HttpServerErrorException
 				| JsonProcessingException e) {
-			String[] strings = { "Error calling LRS - ", e.getMessage() };
-			log.error(ArrayToString.convertArrayToString(strings));
+			String[] strings = { "Error calling LRS -", e.getMessage() };
+			log.error(String.join(" ", strings));
 			e.printStackTrace();
-			throw new DatasyncException(ArrayToString.convertArrayToString(strings));
+			throw new DatasyncException(String.join(" ", strings));
 		}
 
 		return statements;
@@ -125,14 +124,14 @@ public class LRSService {
 			// Convert to GMT
 			formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
 			lastReadDate = formatter.format(date);
-			String[] strings = { "lastReadDate = ", lastReadDate };
-			log.info(ArrayToString.convertArrayToString(strings));
+			String[] strings = { "lastReadDate =", lastReadDate };
+			log.info(String.join(" ", strings));
 
 		} catch (IllegalArgumentException | NullPointerException e) {
-			String[] strings = { "Error formatting last read date - ", e.getMessage() };
-			log.error(ArrayToString.convertArrayToString(strings));
+			String[] strings = { "Error formatting last read date -", e.getMessage() };
+			log.error(String.join(" ", strings));
 			e.printStackTrace();
-			throw new DatasyncException(ArrayToString.convertArrayToString(strings));
+			throw new DatasyncException(String.join("", strings));
 		}
 
 		return lastReadDate;

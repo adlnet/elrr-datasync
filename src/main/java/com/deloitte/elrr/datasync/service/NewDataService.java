@@ -14,7 +14,6 @@ import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
 import com.deloitte.elrr.datasync.scheduler.StatusConstants;
-import com.deloitte.elrr.datasync.util.ArrayToString;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yetanalytics.xapi.model.Statement;
 
@@ -57,8 +56,8 @@ public class NewDataService {
 			int attempts = importRecord.getRetries();
 			attempts++;
 
-			String[] strings = { "processStatements failed on attempt", Integer.toString(attempts), " retrying..." };
-			log.error(ArrayToString.convertArrayToString(strings));
+			String[] strings = { "processStatements failed on attempt", Integer.toString(attempts), "retrying..." };
+			log.error(String.join(" ", strings));
 
 			if (attempts >= maxRetries) {
 				log.error("Max retries reached. Giving up.");
@@ -110,8 +109,8 @@ public class NewDataService {
 			auditLog.setStatement(kafkaProducer.writeValueAsString(messageVo.getStatement()));
 			elrrAuditLogService.save(auditLog);
 		} catch (JsonProcessingException e) {
-			String[] strings = { "Error creating ELRRAuditLog record - ", e.getMessage() };
-			log.error(ArrayToString.convertArrayToString(strings));
+			String[] strings = { "Error creating ELRRAuditLog record -", e.getMessage() };
+			log.error(String.join(" ", strings));
 			throw e;
 		}
 	}

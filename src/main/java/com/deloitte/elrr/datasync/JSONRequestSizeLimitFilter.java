@@ -8,8 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.deloitte.elrr.datasync.util.ArrayToString;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,8 +38,8 @@ public class JSONRequestSizeLimitFilter extends OncePerRequestFilter {
 			}
 
 		} catch (IOException | ServletException e) {
-			String[] strings = { "Error - ", e.getMessage() };
-			log.error(ArrayToString.convertArrayToString(strings));
+			String[] strings = { "Error -", e.getMessage() };
+			log.error(String.join(" ", strings));
 			e.printStackTrace();
 			return;
 		}
