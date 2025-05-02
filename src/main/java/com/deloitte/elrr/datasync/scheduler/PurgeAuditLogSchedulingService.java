@@ -16,24 +16,25 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PurgeAuditLogSchedulingService {
 
-  @Value("${purgeDays}")
-  private int purgeDays;
+	@Value("${purgeDays}")
+	private int purgeDays;
 
-  @Autowired private ELRRAuditLogService elrrAuditLogService;
+	@Autowired
+	private ELRRAuditLogService elrrAuditLogService;
 
-  @Scheduled(cron = "${purgeCronExpression}")
-  public void run() {
-    // Purge ELRRAuditLog
-    log.info("Purge ELRRAuditLog.");
-    purgeAuditLog(purgeDays);
-  }
+	@Scheduled(cron = "${purgeCronExpression}")
+	public void run() {
+		// Purge ELRRAuditLog
+		log.info("Purge ELRRAuditLog.");
+		purgeAuditLog(purgeDays);
+	}
 
-  private void purgeAuditLog(int purgeDays) {
-    // Purge ELRRAuditLog rows created <= purgeDays days before today.
-    Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-    LocalDateTime localDateTime = currentTimestamp.toLocalDateTime().minusDays(purgeDays);
-    Timestamp purgeDate = Timestamp.valueOf(localDateTime);
-    log.info("Purge date = " + purgeDate);
-    elrrAuditLogService.deleteByDate(purgeDate);
-  }
+	private void purgeAuditLog(int purgeDays) {
+		// Purge ELRRAuditLog rows created <= purgeDays days before today.
+		Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+		LocalDateTime localDateTime = currentTimestamp.toLocalDateTime().minusDays(purgeDays);
+		Timestamp purgeDate = Timestamp.valueOf(localDateTime);
+		log.info("Purge date = " + purgeDate);
+		elrrAuditLogService.deleteByDate(purgeDate);
+	}
 }

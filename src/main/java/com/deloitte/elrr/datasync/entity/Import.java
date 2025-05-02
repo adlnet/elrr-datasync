@@ -23,24 +23,24 @@ import lombok.Setter;
 @Setter
 public class Import extends Auditable<String> {
 
-  @Id
-  @GeneratedValue(generator = "uuid2")
-  @GenericGenerator(name = "uuid", strategy = "uuid2")
-  @Column(name = "ID")
-  private UUID id;
+	@Id
+	@GeneratedValue(generator = "uuid2")
+	@GenericGenerator(name = "uuid", strategy = "uuid2")
+	@Column(name = "ID")
+	private UUID id;
 
-  @Column(name = "IMPORTNAME")
-  private String importName;
+	@Column(name = "IMPORTNAME")
+	private String importName;
 
-  @Column(name = "IMPORTSTARTDATE")
-  private Timestamp importStartDate;
+	@Column(name = "IMPORTSTARTDATE")
+	private Timestamp importStartDate;
 
-  @Column(name = "IMPORTENDDATE")
-  private Timestamp importEndDate;
+	@Column(name = "IMPORTENDDATE")
+	private Timestamp importEndDate;
 
-  @Column(name = "RECORDSTATUS")
-  private String recordStatus;
+	@Column(name = "RECORDSTATUS")
+	private String recordStatus;
 
-  @Column(name = "RETRIES")
-  private int retries;
+	@Column(name = "RETRIES")
+	private int retries;
 }

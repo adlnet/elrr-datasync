@@ -13,26 +13,26 @@ import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties
 
 @SpringBootApplication
 @EnableScheduling
-@ComponentScan({"com.deloitte.elrr"})
+@ComponentScan({ "com.deloitte.elrr" })
 @EnableEncryptableProperties
 @EnableTransactionManagement
 public class DatasyncApplication {
 
-  /**
-   * @param args
-   */
-  public static void main(final String[] args) {
-    SpringApplication.run(DatasyncApplication.class, args);
-  }
+	/**
+	 * @param args
+	 */
+	public static void main(final String[] args) {
+		SpringApplication.run(DatasyncApplication.class, args);
+	}
 
-  /**
-   * This for returning the Rest Template.
-   *
-   * @param builder
-   * @return RestTemplate
-   */
-  @Bean
-  public RestTemplate restTemplate(final RestTemplateBuilder builder) {
-    return builder.build();
-  }
+	/**
+	 * This for returning the Rest Template.
+	 *
+	 * @param builder
+	 * @return RestTemplate
+	 */
+	@Bean
+	public RestTemplate restTemplate(final RestTemplateBuilder builder) {
+		return builder.build();
+	}
 }

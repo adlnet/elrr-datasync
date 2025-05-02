@@ -23,15 +23,15 @@ import lombok.Setter;
 @Setter
 public abstract class Auditable<U> {
 
-  @Column(name = "inserteddate", updatable = false)
-  @CreationTimestamp
-  private Timestamp inserteddate;
+	@Column(name = "inserteddate", updatable = false)
+	@CreationTimestamp
+	private Timestamp inserteddate;
 
-  @Column(name = "updatedby")
-  @LastModifiedBy
-  private U updatedBy;
+	@Column(name = "updatedby")
+	@LastModifiedBy
+	private U updatedBy;
 
-  @Column(name = "lastmodified")
-  @UpdateTimestamp
-  private Timestamp lastmodified;
+	@Column(name = "lastmodified")
+	@UpdateTimestamp
+	private Timestamp lastmodified;
 }

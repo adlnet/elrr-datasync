@@ -14,23 +14,24 @@ import com.deloitte.elrr.datasync.repository.ELRRAuditLogRepository;
 @Service
 public class ELRRAuditLogService implements CommonSvc<ELRRAuditLog, UUID> {
 
-  @Autowired private ELRRAuditLogRepository elrrAuditLogRepository;
+	@Autowired
+	private ELRRAuditLogRepository elrrAuditLogRepository;
 
-  @Override
-  public UUID getId(final ELRRAuditLog entity) {
-    return null;
-  }
+	@Override
+	public UUID getId(final ELRRAuditLog entity) {
+		return null;
+	}
 
-  /**
-   * @param purgeDate
-   */
-  @Transactional
-  public void deleteByDate(final Timestamp purgeDate) {
-    elrrAuditLogRepository.deleteByDate(purgeDate);
-  }
+	/**
+	 * @param purgeDate
+	 */
+	@Transactional
+	public void deleteByDate(final Timestamp purgeDate) {
+		elrrAuditLogRepository.deleteByDate(purgeDate);
+	}
 
-  @Override
-  public CrudRepository<ELRRAuditLog, UUID> getRepository() {
-    return elrrAuditLogRepository;
-  }
+	@Override
+	public CrudRepository<ELRRAuditLog, UUID> getRepository() {
+		return elrrAuditLogRepository;
+	}
 }

@@ -11,21 +11,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaStatusCheck {
 
-  @Value("${brokerUrl}")
-  private String brokerUrl;
+	@Value("${brokerUrl}")
+	private String brokerUrl;
 
-  public boolean isKafkaRunning() {
+	public boolean isKafkaRunning() {
 
-    Properties properties = new Properties();
-    properties.put("bootstrap.servers", brokerUrl);
+		Properties properties = new Properties();
+		properties.put("bootstrap.servers", brokerUrl);
 
-    try (AdminClient adminClient = AdminClient.create(properties)) {
-      Set<String> topics = adminClient.listTopics(new ListTopicsOptions()).names().get();
-      System.out.println("Kafka is running. Available topics: " + topics);
-      return true;
-    } catch (Exception e) {
-      System.out.println("Kafka is not running: " + e.getMessage());
-      return false;
-    }
-  }
+		try (AdminClient adminClient = AdminClient.create(properties)) {
+			Set<String> topics = adminClient.listTopics(new ListTopicsOptions()).names().get();
+			System.out.println("Kafka is running. Available topics: " + topics);
+			return true;
+		} catch (Exception e) {
+			System.out.println("Kafka is not running: " + e.getMessage());
+			return false;
+		}
+	}
 }
