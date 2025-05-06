@@ -24,102 +24,104 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LRSSyncSchedulingService {
 
-	@Autowired
-	private LRSService lrsService;
+    @Autowired
+    private LRSService lrsService;
 
-	@Autowired
-	private NewDataService newDataService;
+    @Autowired
+    private NewDataService newDataService;
 
-	@Autowired
-	private ImportService importService;
+    @Autowired
+    private ImportService importService;
 
-	@Value("${initial.date}")
-	private Timestamp initialDate;
+    @Value("${initial.date}")
+    private Timestamp initialDate;
 
-	/*
-	 * 1. Connect to db and get Last sync date.
-	 *
-	 * 2. Make a call to LRS and get the data.
-	 *
-	 * 3. Update Import table.
-	 *
-	 * 4. Invoke New Processor to process unprocessed records.
-	 *
-	 */
-	@Scheduled(cron = "${cronExpression}")
-	public void run() {
+    /*
+     * 1. Connect to db and get Last sync date.
+     *
+     * 2. Make a call to LRS and get the data.
+     *
+     * 3. Update Import table.
+     *
+     * 4. Invoke New Processor to process unprocessed records.
+     *
+     */
+    @Scheduled(cron = "${cronExpression}")
+    public void run() {
 
-		log.info("===============inside LRS schedule method.===============\n");
-		Import importRecord = importService.findByName(StatusConstants.LRSNAME);
+        log.info("===============inside LRS schedule method.===============\n");
+        Import importRecord = importService.findByName(StatusConstants.LRSNAME);
 
-		try {
+        try {
 
-			// If no import record
-			if (importRecord == null) {
-				importRecord = createImport();
-			}
+            // If no import record
+            if (importRecord == null) {
+                importRecord = createImport();
+            }
 
-			Statement[] result = null;
-			importRecord = updateImportInProcess(importRecord);
+            Statement[] result = null;
+            importRecord = updateImportInProcess(importRecord);
 
-			// Make call to LRSService.invokeLRS(final Timestamp startDate)
-			result = lrsService.process(importRecord.getImportStartDate());
+            // Make call to LRSService.invokeLRS(final Timestamp startDate)
+            result = lrsService.process(importRecord.getImportStartDate());
 
-			// Update import status
-			importRecord.setRecordStatus(StatusConstants.SUCCESS);
-			importService.save(importRecord);
+            // Update import status
+            importRecord.setRecordStatus(StatusConstants.SUCCESS);
+            importService.save(importRecord);
 
-			// Process unprocessed
-			newDataService.process(result);
+            // Process unprocessed
+            newDataService.process(result);
 
-		} catch (DatasyncException | ResourceNotFoundException | KafkaException | JsonProcessingException e) {
-			log.error("LRS Sync failed.");
-			importRecord.setRetries(0);
-			importService.update(importRecord);
-		}
-	}
+        } catch (DatasyncException | ResourceNotFoundException | KafkaException | NullPointerException
+                | JsonProcessingException e) {
 
-	/**
-	 * @param Import
-	 * @return Import
-	 */
-	@Transactional
-	private Import updateImportInProcess(Import importRecord) {
+            log.error("LRS Sync failed.");
+            importRecord.setRetries(0);
+            importService.update(importRecord);
+        }
+    }
 
-		// If the previous run was successful, we will update the dates.
-		// If not, we just re run again with same old dates.
+    /**
+     * @param Import
+     * @return Import
+     */
+    @Transactional
+    private Import updateImportInProcess(Import importRecord) {
 
-		log.info("Updating import.");
+        // If the previous run was successful, we will update the dates.
+        // If not, we just re run again with same old dates.
 
-		try {
+        log.info("Updating import.");
 
-			if (importRecord.getRecordStatus().equals(StatusConstants.SUCCESS)) {
-				importRecord.setImportStartDate(importRecord.getImportEndDate());
-				importRecord.setImportEndDate(new Timestamp(System.currentTimeMillis()));
-			}
+        try {
 
-			importRecord.setRecordStatus(StatusConstants.INPROCESS);
-			importService.update(importRecord);
+            if (importRecord.getRecordStatus().equals(StatusConstants.SUCCESS)) {
+                importRecord.setImportStartDate(importRecord.getImportEndDate());
+                importRecord.setImportEndDate(new Timestamp(System.currentTimeMillis()));
+            }
 
-		} catch (ResourceNotFoundException e) {
-			String[] strings = { "Error updaung Import -", e.getMessage() };
-			log.error(String.join(" ", strings));
-			e.printStackTrace();
-			throw e;
-		}
+            importRecord.setRecordStatus(StatusConstants.INPROCESS);
+            importService.update(importRecord);
 
-		return importRecord;
-	}
+        } catch (ResourceNotFoundException e) {
+            String[] strings = { "Error updaung Import -", e.getMessage() };
+            log.error(String.join(" ", strings));
+            e.printStackTrace();
+            throw e;
+        }
 
-	public Import createImport() {
-		log.info("Crerating new import.");
-		Import importRecord = new Import();
-		importRecord.setRecordStatus(StatusConstants.SUCCESS);
-		importRecord.setRetries(0);
-		importRecord.setImportName(StatusConstants.LRSNAME);
-		importRecord.setImportStartDate(initialDate);
-		importRecord.setImportEndDate(initialDate);
-		importService.save(importRecord);
-		return importRecord;
-	}
+        return importRecord;
+    }
+
+    public Import createImport() {
+        log.info("Crerating new import.");
+        Import importRecord = new Import();
+        importRecord.setRecordStatus(StatusConstants.SUCCESS);
+        importRecord.setRetries(0);
+        importRecord.setImportName(StatusConstants.LRSNAME);
+        importRecord.setImportStartDate(initialDate);
+        importRecord.setImportEndDate(initialDate);
+        importService.save(importRecord);
+        return importRecord;
+    }
 }
