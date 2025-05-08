@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.KafkaException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +14,6 @@ import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yetanalytics.xapi.model.Statement;
 
 import lombok.extern.slf4j.Slf4j;
@@ -72,8 +70,7 @@ public class LRSSyncSchedulingService {
             // Process unprocessed
             newDataService.process(result);
 
-        } catch (DatasyncException | ResourceNotFoundException | KafkaException | NullPointerException
-                | JsonProcessingException e) {
+        } catch (DatasyncException | ResourceNotFoundException e) {
 
             log.error("LRS Sync failed.");
             importRecord.setRetries(0);
@@ -84,6 +81,7 @@ public class LRSSyncSchedulingService {
     /**
      * @param Import
      * @return Import
+     * @throws ResourceNotFoundException
      */
     @Transactional
     private Import updateImportInProcess(Import importRecord) {
@@ -104,8 +102,7 @@ public class LRSSyncSchedulingService {
             importService.update(importRecord);
 
         } catch (ResourceNotFoundException e) {
-            String[] strings = { "Error updaung Import -", e.getMessage() };
-            log.error(String.join(" ", strings));
+            log.error("Error updating Import", e);
             e.printStackTrace();
             throw e;
         }
