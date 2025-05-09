@@ -111,7 +111,7 @@ public class LRSSyncSchedulingService {
     }
 
     public Import createImport() {
-        log.info("Crerating new import.");
+        log.info("Creating new import.");
         Import importRecord = new Import();
         importRecord.setRecordStatus(StatusConstants.SUCCESS);
         importRecord.setRetries(0);
