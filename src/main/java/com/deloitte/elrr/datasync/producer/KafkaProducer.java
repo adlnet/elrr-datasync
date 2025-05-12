@@ -48,7 +48,7 @@ public class KafkaProducer {
         } catch (KafkaException | JsonProcessingException e) {
             log.error("Exception while sending Kafka message", e);
             e.printStackTrace();
-            throw new DatasyncException("Exception while sending Kafka message");
+            throw new DatasyncException("Exception while sending Kafka message", e);
         }
     }
 

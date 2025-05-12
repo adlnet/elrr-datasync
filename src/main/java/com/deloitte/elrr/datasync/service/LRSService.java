@@ -94,7 +94,7 @@ public class LRSService {
         } catch (DatasyncException | RestClientException | JsonProcessingException e) {
             log.error("Error calling LRS.", e);
             e.printStackTrace();
-            throw new DatasyncException("Error calling LRS.");
+            throw new DatasyncException("Error calling LRS.", e);
         }
 
         return statements;
@@ -127,7 +127,7 @@ public class LRSService {
         } catch (IllegalArgumentException | NullPointerException e) {
             log.error("Error formatting last read date.", e);
             e.printStackTrace();
-            throw new DatasyncException("Error formatting last read date.");
+            throw new DatasyncException("Error formatting last read date.", e);
         }
 
         return lastReadDate;
