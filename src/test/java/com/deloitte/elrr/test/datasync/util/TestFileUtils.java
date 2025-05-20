@@ -5,18 +5,28 @@ import java.io.IOException;
 
 import org.springframework.core.io.ClassPathResource;
 
-public class TestFileUtils {
-	public static File getJsonTestFile(String filename) throws IOException {
+public final class TestFileUtils {
+    /**
+     * @param filename
+     * @return file
+     * @throws IOException
+     */
+    public static File getJsonTestFile(String filename) throws IOException {
 
-		File file;
+        File file;
 
-		try {
-			file = new ClassPathResource(filename).getFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw e;
-		}
+        try {
+            file = new ClassPathResource(filename).getFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }
 
-		return file;
-	}
+        return file;
+    }
+
+    private TestFileUtils() {
+        throw new UnsupportedOperationException(
+                "This is a utility class and cannot be instantiated");
+    }
 }

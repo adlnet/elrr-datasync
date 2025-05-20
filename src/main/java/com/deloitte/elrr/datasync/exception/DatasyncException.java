@@ -7,6 +7,7 @@ public class DatasyncException extends RuntimeException {
 
     /**
      * @param message
+     * @param e
      */
     public DatasyncException(final String message, Exception e) {
         super(message);

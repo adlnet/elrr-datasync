@@ -61,8 +61,8 @@ public class LRSService {
     }
 
     /**
-     * @param Timestamp
-     * @return Statement[]
+     * @param startDate
+     * @return statements
      * @throws DatasyncException
      */
     private Statement[] invokeLRS(final Timestamp startDate) {
@@ -79,19 +79,23 @@ public class LRSService {
             httpHeaders.add("X-Forwarded-Proto", "https");
             httpHeaders.add("Content-Type", "application/json");
 
-            // Call LRS (ELRRStagrController.localdata() in elrrexternalservices)
+            // Call LRS (ELRRStagrController.localdata() in
+            // elrrexternalservices)
             // passing import.startdate = stored date
-            String completeURL = lrsURL + "/api/lrsdata?lastReadDate=" + lastReadDate;
+            String completeURL = lrsURL + "/api/lrsdata?lastReadDate="
+                    + lastReadDate;
 
             HttpEntity<String> entity = new HttpEntity<>("body", httpHeaders);
-            ResponseEntity<String> json = restTemplate.exchange(completeURL, HttpMethod.GET, entity, String.class);
+            ResponseEntity<String> json = restTemplate.exchange(completeURL,
+                    HttpMethod.GET, entity, String.class);
 
             ObjectMapper mapper = Mapper.getMapper();
             statements = mapper.readValue(json.getBody(), Statement[].class);
 
             log.info(Integer.toString(statements.length) + " statements.");
 
-        } catch (DatasyncException | RestClientException | JsonProcessingException e) {
+        } catch (DatasyncException | RestClientException
+                | JsonProcessingException e) {
             log.error("Error calling LRS.", e);
             e.printStackTrace();
             throw new DatasyncException("Error calling LRS.", e);
@@ -111,7 +115,8 @@ public class LRSService {
 
         try {
 
-            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            DateFormat formatter = new SimpleDateFormat(
+                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
             // Convert Timestamp to Long (ms)
             long startDateLong = startDate.getTime();

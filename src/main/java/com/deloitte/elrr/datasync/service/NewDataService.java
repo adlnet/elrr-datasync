@@ -35,7 +35,7 @@ public class NewDataService {
     private int maxRetries;
 
     /**
-     * @param Statement[]
+     * @param statements
      */
     @Transactional
     public void process(Statement[] statements) {
@@ -49,13 +49,13 @@ public class NewDataService {
         } catch (DatasyncException e) {
 
             // Get number of retries
-            Import importRecord = importService
-                    .findByName(StatusConstants.LRSNAME);
+            Import importRecord = importService.findByName(
+                    StatusConstants.LRSNAME);
             int attempts = importRecord.getRetries();
             attempts++;
 
-            log.error("processStatements failed on attempt "
-                    + Integer.toString(attempts) + "retrying...");
+            log.error("processStatements failed on attempt " + Integer.toString(
+                    attempts) + "retrying...");
 
             if (attempts >= maxRetries) {
                 log.error("Max retries reached. Giving up.");
@@ -69,7 +69,7 @@ public class NewDataService {
     }
 
     /**
-     * @param Statement[]
+     * @param statements
      * @throws DatasyncException
      */
     // 1. Iterate over statements.
@@ -96,7 +96,6 @@ public class NewDataService {
 
     /**
      * @param messageVo
-     * @param synchRecordId
      * @throws DatasyncException
      */
     private void insertAuditLog(final MessageVO messageVo) {
@@ -105,8 +104,8 @@ public class NewDataService {
 
         try {
             ELRRAuditLog auditLog = new ELRRAuditLog();
-            auditLog.setStatement(
-                    kafkaProducer.writeValueAsString(messageVo.getStatement()));
+            auditLog.setStatement(kafkaProducer.writeValueAsString(messageVo
+                    .getStatement()));
             elrrAuditLogService.save(auditLog);
         } catch (JsonProcessingException e) {
             log.error("Error creating ELRRAuditLog record.", e);

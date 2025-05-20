@@ -15,7 +15,6 @@ import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
-import com.deloitte.elrr.datasync.service.NewDataService;
 import com.deloitte.elrr.test.datasync.util.TestFileUtils;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
@@ -26,32 +25,33 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class NewDataServiceTest {
 
-	@Mock
-	private KafkaProducer kafkaProducer;
+    @Mock
+    private KafkaProducer kafkaProducer;
 
-	@Mock
-	private ELRRAuditLogService elrrAuditLogService;
+    @Mock
+    private ELRRAuditLogService elrrAuditLogService;
 
-	@Mock
-	private ImportService importService;
+    @Mock
+    private ImportService importService;
 
-	@InjectMocks
-	NewDataService newDataService;
+    @InjectMocks
+    private NewDataService newDataService;
 
-	@Test
-	void test() {
+    @Test
+    void test() {
 
-		try {
+        try {
 
-			File testFile = TestFileUtils.getJsonTestFile("completed.json");
+            File testFile = TestFileUtils.getJsonTestFile("completed.json");
 
-			Statement[] stmts = Mapper.getMapper().readValue(testFile, Statement[].class);
-			assertTrue(stmts != null);
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+            assertTrue(stmts != null);
 
-			newDataService.process(stmts);
+            newDataService.process(stmts);
 
-		} catch (DatasyncException | IOException e) {
-			e.printStackTrace();
-		}
-	}
+        } catch (DatasyncException | IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
