@@ -12,12 +12,13 @@ import org.springframework.stereotype.Repository;
 import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
 
 @Repository
-public interface ELRRAuditLogRepository extends JpaRepository<ELRRAuditLog, UUID> {
+public interface ELRRAuditLogRepository extends JpaRepository<ELRRAuditLog,
+        UUID> {
 
-	/**
-	 * @param purgeDate
-	 */
-	@Modifying
-	@Query("DELETE FROM ELRRAuditLog a WHERE a.inserteddate <= :purgeDate")
-	void deleteByDate(@Param("purgeDate") Timestamp purgeDate);
+    /**
+     * @param purgeDate
+     */
+    @Modifying
+    @Query("DELETE FROM ELRRAuditLog a WHERE a.inserteddate <= :purgeDate")
+    void deleteByDate(@Param("purgeDate") Timestamp purgeDate);
 }

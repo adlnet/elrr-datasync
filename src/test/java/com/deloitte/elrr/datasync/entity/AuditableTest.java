@@ -13,8 +13,8 @@ import com.deloitte.elrr.test.datasync.util.ValueObjectTestUtility;
 @ExtendWith(MockitoExtension.class)
 class AuditableTest {
 
-	@Test
-	void test() {
-		ValueObjectTestUtility.validateAccessors(Auditable.class);
-	}
+    @Test
+    void test() {
+        ValueObjectTestUtility.validateAccessors(Auditable.class);
+    }
 }

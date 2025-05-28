@@ -22,12 +22,12 @@ import lombok.Setter;
 @Setter
 public class ELRRAuditLog extends Auditable<String> {
 
-	@Id
-	@GeneratedValue(generator = "uuid2")
-	@GenericGenerator(name = "uuid", strategy = "uuid2")
-	@Column(name = "ID")
-	private UUID id;
+    @Id
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "ID")
+    private UUID id;
 
-	@Column(name = "STATEMENT")
-	private String statement;
+    @Column(name = "STATEMENT")
+    private String statement;
 }

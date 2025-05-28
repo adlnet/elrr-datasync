@@ -10,12 +10,13 @@ import org.springframework.stereotype.Repository;
 import com.deloitte.elrr.datasync.entity.Import;
 
 @Repository
+@SuppressWarnings("checkstyle:linelength")
 public interface ImportRepository extends JpaRepository<Import, UUID> {
 
-	/**
-	 * @param importName
-	 * @return Import
-	 */
-	@Query("SELECT i FROM Import i WHERE LOWER(i.importName) = LOWER(:importName)")
-	Import findByName(@Param("importName") String importName);
+    /**
+     * @param importName
+     * @return Import
+     */
+    @Query("SELECT i FROM Import i WHERE LOWER(i.importName) = LOWER(:importName)")
+    Import findByName(@Param("importName") String importName);
 }

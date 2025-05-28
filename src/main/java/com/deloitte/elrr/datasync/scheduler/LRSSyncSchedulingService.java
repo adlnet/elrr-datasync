@@ -34,14 +34,16 @@ public class LRSSyncSchedulingService {
     @Value("${initial.date}")
     private Timestamp initialDate;
 
-    /*
-     * 1. Connect to db and get Last sync date.
+    /**
+     * @author phleven
      *
-     * 2. Make a call to LRS and get the data.
+     *         1. Connect to db and get Last sync date.
      *
-     * 3. Update Import table.
+     *         2. Make a call to LRS and get the data.
      *
-     * 4. Invoke New Processor to process unprocessed records.
+     *         3. Update Import table.
+     *
+     *         4. Invoke New Processor to process unprocessed records.
      *
      */
     @Scheduled(cron = "${cronExpression}")
@@ -79,8 +81,8 @@ public class LRSSyncSchedulingService {
     }
 
     /**
-     * @param Import
-     * @return Import
+     * @param importRecord
+     * @return importRecord
      * @throws ResourceNotFoundException
      */
     @Transactional
@@ -93,9 +95,12 @@ public class LRSSyncSchedulingService {
 
         try {
 
-            if (importRecord.getRecordStatus().equals(StatusConstants.SUCCESS)) {
-                importRecord.setImportStartDate(importRecord.getImportEndDate());
-                importRecord.setImportEndDate(new Timestamp(System.currentTimeMillis()));
+            if (importRecord.getRecordStatus().equals(
+                    StatusConstants.SUCCESS)) {
+                importRecord.setImportStartDate(importRecord
+                        .getImportEndDate());
+                importRecord.setImportEndDate(new Timestamp(System
+                        .currentTimeMillis()));
             }
 
             importRecord.setRecordStatus(StatusConstants.INPROCESS);
@@ -110,6 +115,9 @@ public class LRSSyncSchedulingService {
         return importRecord;
     }
 
+    /**
+     * @return importRecord
+     */
     public Import createImport() {
         log.info("Creating new import.");
         Import importRecord = new Import();

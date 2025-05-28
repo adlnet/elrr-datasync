@@ -34,16 +34,16 @@ import lombok.extern.slf4j.Slf4j;
 class LRSSyncSchedulingServiceTest {
 
     @Mock
-    LRSService lrsService;
+    private LRSService lrsService;
 
     @Mock
-    NewDataService newDataService;
+    private NewDataService newDataService;
 
     @Mock
-    ImportService importService;
+    private ImportService importService;
 
     @InjectMocks
-    LRSSyncSchedulingService lrsSyncSchedulingservice;
+    private LRSSyncSchedulingService lrsSyncSchedulingservice;
 
     @Test
     void test() {
@@ -52,7 +52,8 @@ class LRSSyncSchedulingServiceTest {
 
             File testFile = TestFileUtils.getJsonTestFile("completed.json");
 
-            Statement[] stmts = Mapper.getMapper().readValue(testFile, Statement[].class);
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
             assertTrue(stmts != null);
 
             Import imp = new Import();
@@ -68,7 +69,8 @@ class LRSSyncSchedulingServiceTest {
 
             lrsSyncSchedulingservice.run();
 
-        } catch (DatasyncException | ResourceNotFoundException | IOException e) {
+        } catch (DatasyncException | ResourceNotFoundException
+                | IOException e) {
             e.printStackTrace();
         }
     }

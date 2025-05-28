@@ -7,4 +7,9 @@ public final class StatusConstants {
     public static final String INPROCESS = "INPROCESS";
     public static final String FAILED = "FAILED";
     public static final String COMPLETED = "COMPLETED";
+
+    private StatusConstants() {
+        throw new UnsupportedOperationException(
+                "This is a utility class and cannot be instantiated");
+    }
 }

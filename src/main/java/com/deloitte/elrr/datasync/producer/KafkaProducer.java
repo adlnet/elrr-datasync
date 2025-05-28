@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@SuppressWarnings("checkstyle:linelength")
 public class KafkaProducer {
 
     @Value("${kafka.topic}")
@@ -40,15 +41,19 @@ public class KafkaProducer {
                 payload = writeValueAsString(msg);
             }
 
-            log.info("\n\n ===============sent messsage to Kafka=============== \n" + payload);
+            log.info(
+                    "\n\n ===============sent messsage to Kafka=============== \n"
+                            + payload);
             kafkaTemplate.send(kafkatopic, payload);
 
-            log.info("\n Kafka message successfully sent to kafka topic " + kafkatopic + "\n\n");
+            log.info("\n Kafka message successfully sent to kafka topic "
+                    + kafkatopic + "\n\n");
 
         } catch (KafkaException | JsonProcessingException e) {
             log.error("Exception while sending Kafka message", e);
             e.printStackTrace();
-            throw new DatasyncException("Exception while sending Kafka message", e);
+            throw new DatasyncException("Exception while sending Kafka message",
+                    e);
         }
     }
 
@@ -57,7 +62,8 @@ public class KafkaProducer {
      * @return String
      * @throws JsonProcessingException
      */
-    public String writeValueAsString(final Object data) throws JsonProcessingException {
+    public String writeValueAsString(final Object data)
+            throws JsonProcessingException {
 
         String output = "";
 
