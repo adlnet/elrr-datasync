@@ -1,6 +1,12 @@
 package com.deloitte.elrr.datasync.entity;
 
 import java.sql.Timestamp;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -8,10 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
@@ -20,22 +22,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 public abstract class Auditable<U> {
-  /**
-   *
-   */
-  @Column(name = "inserteddate", updatable = false)
-  @CreationTimestamp
-  private Timestamp inserteddate;
-  /**
-   *
-   */
-  @Column(name = "updatedby")
-  @LastModifiedBy
-  private U updatedBy;
-  /**
-   *
-   */
-  @Column(name = "lastmodified")
-  @UpdateTimestamp
-  private Timestamp lastmodified;
+
+	@Column(name = "inserteddate", updatable = false)
+	@CreationTimestamp
+	private Timestamp inserteddate;
+
+	@Column(name = "updatedby")
+	@LastModifiedBy
+	private U updatedBy;
+
+	@Column(name = "lastmodified")
+	@UpdateTimestamp
+	private Timestamp lastmodified;
 }

@@ -1,21 +1,19 @@
 package com.deloitte.elrr.datasync.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.deloitte.elrr.datasync.dto.AuditRecord;
 import com.deloitte.elrr.datasync.dto.MessageVO;
-import com.deloitte.elrr.datasync.entity.SyncRecord;
-import com.deloitte.elrr.datasync.entity.SyncRecordDetail;
-import com.deloitte.elrr.datasync.jpa.service.ErrorsService;
-import com.deloitte.elrr.datasync.jpa.service.SyncRecordDetailService;
-import com.deloitte.elrr.datasync.jpa.service.SyncRecordService;
+import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
+import com.deloitte.elrr.datasync.entity.Import;
+import com.deloitte.elrr.datasync.exception.DatasyncException;
+import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
+import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
+import com.deloitte.elrr.datasync.scheduler.StatusConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yetanalytics.xapi.model.Statement;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,127 +22,96 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NewDataService {
 
-  @Value("${retries}")
-  private int numberOfRetries;
+    @Autowired
+    private KafkaProducer kafkaProducer;
 
-  @Autowired private KafkaProducer kafkaProducer;
+    @Autowired
+    private ELRRAuditLogService elrrAuditLogService;
 
-  @Autowired private SyncRecordService syncRecordService;
+    @Autowired
+    private ImportService importService;
 
-  @Autowired private SyncRecordDetailService syncRecordDetailService;
+    @Value("${max.retries}")
+    private int maxRetries;
 
-  @Autowired private ErrorsService errorsService;
+    /**
+     * @param Statement[]
+     */
+    @Transactional
+    public void process(Statement[] statements) {
 
-  private ObjectMapper mapper = new ObjectMapper();
+        log.info("\n ===============Inside NewDataService===============");
 
-  /**
-   * 1. Retrieve all unprocessed syncrecord records with INSERTED status 2. Send the message to
-   * Kafka 3. Update the records SyncRecord and SyncRecordDetails to SUCCCESS/INSERTED status
-   */
-  public void process(Statement[] statements) {
+        try {
 
-    log.info("Inside NewDataService");
+            processStatements(statements);
 
-    // Unprocessed synchrecord.recordStatus=inserted
-    List<SyncRecord> syncList = getUnprocessedRecords();
-    log.info("==> Unprocessed synch records = " + syncList.size());
+        } catch (DatasyncException e) {
 
-    int x = 0;
+            // Get number of retries
+            Import importRecord = importService
+                    .findByName(StatusConstants.LRSNAME);
+            int attempts = importRecord.getRetries();
+            attempts++;
 
-    for (SyncRecord syncRecord : syncList) {
+            log.error("processStatements failed on attempt "
+                    + Integer.toString(attempts) + "retrying...");
 
-      SyncRecordDetail syncRecordDetail = null;
-
-      try {
-
-        syncRecordDetail = syncRecordDetailService.findBySyncRecordId(syncRecord.getSyncRecordId());
-
-        if (x <= statements.length - 1) {
-
-          MessageVO kafkaMessage = createKafkaJsonMessage(statements[x], syncRecordDetail);
-          sendToKafka(kafkaMessage);
+            if (attempts >= maxRetries) {
+                log.error("Max retries reached. Giving up.");
+                throw new DatasyncException("Max retries reached. Giving up.",
+                        e);
+            } else {
+                importRecord.setRetries(attempts);
+                importService.update(importRecord);
+            }
         }
-
-        x++;
-
-        // Update synchrecord.recordStatus to success (processes)
-        syncRecord.setRecordStatus("SUCCESS");
-        syncRecordService.save(syncRecord);
-
-        // Update synchrecorddetail.recordStatus to success
-        syncRecordDetail.setRecordStatus("SUCCESS");
-        syncRecordDetailService.save(syncRecordDetail);
-
-      } catch (JsonProcessingException e) {
-
-        log.error("Exception in processing " + e.getMessage());
-        e.printStackTrace();
-
-        long retries = syncRecord.getRetries();
-
-        if (retries < numberOfRetries) {
-
-          // In case of exception change status back to inserted so that
-          // they will be picked again next time and processed
-          syncRecord.setRecordStatus("INSERTED");
-          syncRecord.setRetries(retries + 1);
-          syncRecordService.save(syncRecord);
-          syncRecordDetail.setRecordStatus("INSERTED");
-          syncRecordDetailService.save(syncRecordDetail);
-
-        } else {
-
-          syncRecord.setRecordStatus("FAILED");
-          syncRecord.setRetries(0L);
-          syncRecordService.save(syncRecord);
-          syncRecordDetail.setRecordStatus("FAILED");
-          syncRecordDetailService.save(syncRecordDetail);
-
-          // Create Errors record
-          errorsService.createErrors(Long.toString(syncRecord.getSyncRecordId()), e.getMessage());
-        }
-
-        log.error("Exception in processing " + e.getMessage());
-        e.getStackTrace();
-      }
     }
-  }
 
-  /**
-   * @param message
-   */
-  private void sendToKafka(final MessageVO message) {
-    kafkaProducer.sendMessage(message);
-  }
+    /**
+     * @param Statement[]
+     * @throws DatasyncException
+     */
+    // 1. Iterate over statements.
+    // 2. Insert ELRRAuditLog.
+    // 3. Create Kafka message.
+    @Transactional
+    public void processStatements(Statement[] statements) {
 
-  /**
-   * @param statement
-   * @param syncRecordDetail
-   * @return
-   * @throws JsonProcessingException
-   */
-  private MessageVO createKafkaJsonMessage(
-      final Statement statement, final SyncRecordDetail syncRecordDetail)
-      throws JsonProcessingException {
-    AuditRecord auditRecord = new AuditRecord();
-    MessageVO vo = new MessageVO();
+        log.info("Process statements.");
 
-    Long detailId = syncRecordDetail.getSyncRecordDetailId();
-    auditRecord.setAuditId(syncRecordDetail.getSyncRecordId());
-    auditRecord.setAuditDetailId(detailId);
+        try {
 
-    vo.setStatement(statement);
-    vo.setAuditRecord(auditRecord);
+            for (Statement stmnt : statements) {
+                MessageVO kafkaMessage = new MessageVO();
+                kafkaMessage.setStatement(stmnt);
+                insertAuditLog(kafkaMessage);
+                kafkaProducer.sendMessage(kafkaMessage);
+            }
 
-    return vo;
-  }
+        } catch (DatasyncException e) {
+            throw e;
+        }
+    }
 
-  /**
-   * @return List<SyncRecord>
-   */
-  private List<SyncRecord> getUnprocessedRecords() {
-    List<SyncRecord> syncList = syncRecordService.findUnprocessed();
-    log.info("unprocessed list " + syncList.size());
-    return syncList;
-  }
+    /**
+     * @param messageVo
+     * @param synchRecordId
+     * @throws DatasyncException
+     */
+    private void insertAuditLog(final MessageVO messageVo) {
+
+        log.info("Creating ELRRAuditLog.");
+
+        try {
+            ELRRAuditLog auditLog = new ELRRAuditLog();
+            auditLog.setStatement(
+                    kafkaProducer.writeValueAsString(messageVo.getStatement()));
+            elrrAuditLogService.save(auditLog);
+        } catch (JsonProcessingException e) {
+            log.error("Error creating ELRRAuditLog record.", e);
+            throw new DatasyncException("Error creating ELRRAuditLog record.",
+                    e);
+        }
+    }
 }
