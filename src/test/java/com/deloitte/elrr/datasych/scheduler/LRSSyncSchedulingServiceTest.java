@@ -1,5 +1,6 @@
 package com.deloitte.elrr.datasych.scheduler;
 
+import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -71,12 +72,12 @@ class LRSSyncSchedulingServiceTest {
 
         } catch (DatasyncException | ResourceNotFoundException
                 | IOException e) {
-            e.printStackTrace();
+            fail("Should not have thrown any exception");
         }
     }
 
     @Test
-    void gtestImport() {
+    void testImport() {
 
         lrsSyncSchedulingservice.createImport();
 

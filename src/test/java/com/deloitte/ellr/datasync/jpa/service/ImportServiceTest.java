@@ -1,5 +1,7 @@
 package com.deloitte.ellr.datasync.jpa.service;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,7 +36,7 @@ class ImportServiceTest {
             importService.getId(imprt);
 
         } catch (DatasyncException e) {
-            e.printStackTrace();
+            fail("Should not have thrown any exception");
         }
     }
 }

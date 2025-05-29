@@ -1,5 +1,7 @@
 package com.deloitte.elrr.datasych.scheduler;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,7 +33,7 @@ class PurgeAuditLogSchedulingServiceTest {
             purgeAuditLogSchedulingservice.run();
 
         } catch (DatasyncException | ResourceNotFoundException e) {
-            e.printStackTrace();
+            fail("Should not have thrown any exception");
         }
     }
 }
