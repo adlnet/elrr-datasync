@@ -1,0 +1,37 @@
+package com.deloitte.elrr.datasych.scheduler;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.deloitte.elrr.datasync.exception.DatasyncException;
+import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
+import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
+import com.deloitte.elrr.datasync.scheduler.PurgeAuditLogSchedulingService;
+
+import lombok.extern.slf4j.Slf4j;
+
+@ExtendWith(MockitoExtension.class)
+@Slf4j
+class PurgeAuditLogSchedulingServiceTest {
+
+    @Mock
+    private ELRRAuditLogService elrrAuditLogService;
+
+    @InjectMocks
+    private PurgeAuditLogSchedulingService purgeAuditLogSchedulingservice;
+
+    @Test
+    void test() {
+
+        try {
+
+            purgeAuditLogSchedulingservice.run();
+
+        } catch (DatasyncException | ResourceNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+}

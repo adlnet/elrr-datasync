@@ -74,4 +74,11 @@ class LRSSyncSchedulingServiceTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    void gtestImport() {
+
+        lrsSyncSchedulingservice.createImport();
+
+    }
 }
