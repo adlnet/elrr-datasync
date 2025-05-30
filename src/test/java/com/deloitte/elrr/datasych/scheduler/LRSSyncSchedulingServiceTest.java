@@ -24,7 +24,7 @@ import com.deloitte.elrr.datasync.scheduler.LRSSyncSchedulingService;
 import com.deloitte.elrr.datasync.scheduler.StatusConstants;
 import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
-import com.deloitte.elrr.test.datasync.util.TestFileUtils;
+import com.deloitte.elrr.test.datasync.util.TestFileUtil;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
 
@@ -51,7 +51,7 @@ class LRSSyncSchedulingServiceTest {
 
         try {
 
-            File testFile = TestFileUtils.getJsonTestFile("completed.json");
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
 
             Statement[] stmts = Mapper.getMapper().readValue(testFile,
                     Statement[].class);

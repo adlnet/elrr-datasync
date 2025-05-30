@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.springframework.core.io.ClassPathResource;
 
-public final class TestFileUtils {
+public final class TestFileUtil {
     /**
      * @param filename
      * @return file
@@ -25,7 +25,7 @@ public final class TestFileUtils {
         return file;
     }
 
-    private TestFileUtils() {
+    private TestFileUtil() {
         throw new UnsupportedOperationException(
                 "This is a utility class and cannot be instantiated");
     }
