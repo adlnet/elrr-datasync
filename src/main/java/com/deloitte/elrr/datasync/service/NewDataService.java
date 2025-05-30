@@ -1,5 +1,7 @@
 package com.deloitte.elrr.datasync.service;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -84,8 +86,9 @@ public class NewDataService {
 
             for (Statement stmnt : statements) {
                 MessageVO kafkaMessage = new MessageVO();
+                UUID id = stmnt.getId();
                 kafkaMessage.setStatement(stmnt);
-                insertAuditLog(kafkaMessage);
+                insertAuditLog(id);
                 kafkaProducer.sendMessage(kafkaMessage);
             }
 
@@ -95,17 +98,16 @@ public class NewDataService {
     }
 
     /**
-     * @param messageVo
+     * @param id
      * @throws DatasyncException
      */
-    private void insertAuditLog(final MessageVO messageVo) {
+    private void insertAuditLog(final UUID id) {
 
         log.info("Creating ELRRAuditLog.");
 
         try {
             ELRRAuditLog auditLog = new ELRRAuditLog();
-            auditLog.setStatement(kafkaProducer.writeValueAsString(messageVo
-                    .getStatement()));
+            auditLog.setStatementId(kafkaProducer.writeValueAsString(id));
             elrrAuditLogService.save(auditLog);
         } catch (JsonProcessingException e) {
             log.error("Error creating ELRRAuditLog record.", e);
