@@ -1,5 +1,6 @@
 package com.deloitte.elrr.datasync.service;
 
+import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -51,8 +52,7 @@ class NewDataServiceTest {
             newDataService.process(stmts);
 
         } catch (DatasyncException | IOException e) {
-            e.printStackTrace();
-            // fail("Should not have thrown any exception");
+            fail("Should not have thrown any exception");
         }
     }
 }

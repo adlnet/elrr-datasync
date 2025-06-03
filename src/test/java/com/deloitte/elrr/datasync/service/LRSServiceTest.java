@@ -1,7 +1,10 @@
 package com.deloitte.elrr.datasync.service;
 
+import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,10 +66,6 @@ class LRSServiceTest {
             httpHeaders.add("X-Forwarded-Proto", "https");
             httpHeaders.add("Content-Type", "application/json");
 
-            // String completeURL =
-            // "http://localhost:8088/api/lrsdata?lastReadDate="
-            // + lastReadDate;
-
             String completeURL = "null/api/lrsdata?lastReadDate="
                     + lastReadDate;
 
@@ -76,15 +75,15 @@ class LRSServiceTest {
                     .getMapper().writeValueAsString(stmts), HttpStatus.OK);
             assertNotNull(json);
 
-            Mockito.doReturn(json).when(restTemplate).exchange(completeURL,
-                    HttpMethod.GET, entity, String.class);
+            Mockito.doReturn(json).when(restTemplate).exchange(eq(completeURL),
+                    eq(HttpMethod.GET), any(HttpEntity.class), eq(
+                            String.class));
 
             Statement[] returnStmts = lrsService.process(timestamp);
 
         } catch (DatasyncException | NullPointerException | IOException
                 | RestClientException e) {
-            e.printStackTrace();
-            // fail("Should not have thrown any exception");
+            fail("Should not have thrown any exception");
         }
     }
 }
