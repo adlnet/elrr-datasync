@@ -52,6 +52,7 @@ class NewDataServiceTest {
 
         } catch (DatasyncException | IOException e) {
             e.printStackTrace();
+            // fail("Should not have thrown any exception");
         }
     }
 }

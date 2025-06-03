@@ -2,6 +2,8 @@ package com.deloitte.ellr.datasync.jpa.service;
 
 import static org.assertj.core.api.Assertions.fail;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
+import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.repository.ImportRepository;
 
@@ -36,6 +39,26 @@ class ImportServiceTest {
             importService.getId(imprt);
 
         } catch (DatasyncException e) {
+            fail("Should not have thrown any exception");
+        }
+    }
+
+    @Test
+    void testCommomSvc() {
+
+        try {
+
+            Import imp = new Import();
+            imp.setId(UUID.randomUUID());
+            imp.setRetries(0);
+            imp.setImportName("testName");
+            importService.save(imp);
+
+            importService.findAll();
+            importService.findByName("testName");
+            importService.deleteAll();
+
+        } catch (ResourceNotFoundException e) {
             fail("Should not have thrown any exception");
         }
     }

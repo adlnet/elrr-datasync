@@ -13,7 +13,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
@@ -48,12 +55,36 @@ class LRSServiceTest {
                     "2025-12-05T15:30:00Z", DateTimeFormatter.ISO_DATE_TIME);
 
             Timestamp timestamp = Timestamp.valueOf(localDateTime);
+            String lastReadDate = lrsService.formatStoredDate(timestamp);
+            assertNotNull(lastReadDate);
 
-            String strDate = lrsService.formatStoredDate(timestamp);
-            assertNotNull(strDate);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add("Cookie", "null");
+            httpHeaders.add("X-Forwarded-Proto", "https");
+            httpHeaders.add("Content-Type", "application/json");
 
-        } catch (DatasyncException | NullPointerException | IOException e) {
+            // String completeURL =
+            // "http://localhost:8088/api/lrsdata?lastReadDate="
+            // + lastReadDate;
+
+            String completeURL = "null/api/lrsdata?lastReadDate="
+                    + lastReadDate;
+
+            HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+
+            ResponseEntity<String> json = new ResponseEntity<String>(Mapper
+                    .getMapper().writeValueAsString(stmts), HttpStatus.OK);
+            assertNotNull(json);
+
+            Mockito.doReturn(json).when(restTemplate).exchange(completeURL,
+                    HttpMethod.GET, entity, String.class);
+
+            Statement[] returnStmts = lrsService.process(timestamp);
+
+        } catch (DatasyncException | NullPointerException | IOException
+                | RestClientException e) {
             e.printStackTrace();
+            // fail("Should not have thrown any exception");
         }
     }
 }

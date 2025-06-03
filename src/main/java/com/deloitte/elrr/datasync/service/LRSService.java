@@ -85,7 +85,7 @@ public class LRSService {
             String completeURL = lrsURL + "/api/lrsdata?lastReadDate="
                     + lastReadDate;
 
-            HttpEntity<String> entity = new HttpEntity<>("body", httpHeaders);
+            HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
             ResponseEntity<String> json = restTemplate.exchange(completeURL,
                     HttpMethod.GET, entity, String.class);
 
