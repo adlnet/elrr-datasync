@@ -1,4 +1,4 @@
-package com.deloitte.ellr.datasync.jpa.service;
+package com.deloitte.elrr.datasync.jpa.service;
 
 import static org.assertj.core.api.Assertions.fail;
 
