@@ -2,6 +2,8 @@ package com.deloitte.elrr.datasync.service;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,8 +78,11 @@ class LRSServiceTest {
                     .getMapper().writeValueAsString(stmts), HttpStatus.OK);
             assertNotNull(json);
 
-            Mockito.doReturn(json).when(restTemplate).exchange(completeURL,
-                    HttpMethod.GET, entity, String.class);
+            Mockito.doReturn(json).when(restTemplate).exchange(
+                eq(completeURL),
+                eq(HttpMethod.GET), 
+                any(HttpEntity.class), 
+                eq(String.class));
 
             Statement[] returnStmts = lrsService.process(timestamp);
 
