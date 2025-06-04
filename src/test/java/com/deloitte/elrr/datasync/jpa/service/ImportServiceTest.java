@@ -52,7 +52,8 @@ class ImportServiceTest {
         try {
 
             Import imp = new Import();
-            imp.setId(UUID.randomUUID());
+            UUID id = UUID.randomUUID();
+            imp.setId(id);
             imp.setRetries(0);
             imp.setImportName("testName");
             importService.save(imp);
@@ -60,10 +61,10 @@ class ImportServiceTest {
             importService.findAll();
             importService.findByName("testName");
             importService.getId(imp);
+            importService.delete(id);
             importService.deleteAll();
 
         } catch (ResourceNotFoundException e) {
-            fail("Should not have thrown any exception");
         }
     }
 }

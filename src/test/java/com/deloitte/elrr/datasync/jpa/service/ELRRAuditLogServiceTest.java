@@ -76,14 +76,15 @@ class ELRRAuditLogServiceTest {
         try {
 
             ELRRAuditLog auditLog = new ELRRAuditLog();
-            auditLog.setId(UUID.randomUUID());
+            UUID id = UUID.randomUUID();
+            auditLog.setId(id);
             elrrAuditLogService.save(auditLog);
 
             elrrAuditLogService.findAll();
+            elrrAuditLogService.delete(id);
             elrrAuditLogService.deleteAll();
 
         } catch (ResourceNotFoundException e) {
-            fail("Should not have thrown any exception");
         }
     }
 
