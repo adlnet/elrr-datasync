@@ -1,6 +1,8 @@
 package com.deloitte.elrr.datasync.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -16,13 +18,15 @@ import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
+import com.deloitte.elrr.test.datasync.util.LogCapture;
+import com.deloitte.elrr.test.datasync.util.LogCaptureExtension;
 import com.deloitte.elrr.test.datasync.util.TestFileUtil;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
 
 import lombok.extern.slf4j.Slf4j;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({ MockitoExtension.class, LogCaptureExtension.class })
 @Slf4j
 class NewDataServiceTest {
 
@@ -55,4 +59,28 @@ class NewDataServiceTest {
             fail("Should not have thrown any exception");
         }
     }
+
+    @Test
+    void testLogging(LogCapture logCapture) {
+
+        try {
+
+            logCapture.clear();
+
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
+
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+            assertTrue(stmts != null);
+
+            newDataService.process(stmts);
+            assertThat(logCapture.getLoggingEvents()).hasSize(4);
+            assertEquals(logCapture.getFirstFormattedMessage(),
+                    "\n ===============Inside NewDataService===============");
+
+        } catch (DatasyncException | IOException e) {
+            fail("Should not have thrown any exception");
+        }
+    }
+
 }

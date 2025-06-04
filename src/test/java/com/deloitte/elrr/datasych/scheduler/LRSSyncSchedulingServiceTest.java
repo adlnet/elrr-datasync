@@ -1,6 +1,8 @@
 package com.deloitte.elrr.datasych.scheduler;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -24,13 +26,15 @@ import com.deloitte.elrr.datasync.scheduler.LRSSyncSchedulingService;
 import com.deloitte.elrr.datasync.scheduler.StatusConstants;
 import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
+import com.deloitte.elrr.test.datasync.util.LogCapture;
+import com.deloitte.elrr.test.datasync.util.LogCaptureExtension;
 import com.deloitte.elrr.test.datasync.util.TestFileUtil;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
 
 import lombok.extern.slf4j.Slf4j;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({ MockitoExtension.class, LogCaptureExtension.class })
 @Slf4j
 class LRSSyncSchedulingServiceTest {
 
@@ -82,4 +86,40 @@ class LRSSyncSchedulingServiceTest {
         lrsSyncSchedulingservice.createImport();
 
     }
+
+    @Test
+    void testLogging(LogCapture logCapture) {
+
+        try {
+
+            logCapture.clear();
+
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
+
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+            assertTrue(stmts != null);
+
+            Import imp = new Import();
+            imp.setId(UUID.randomUUID());
+            imp.setImportName(StatusConstants.LRSNAME);
+            imp.setRecordStatus(StatusConstants.SUCCESS);
+            imp.setRetries(0);
+            Mockito.doReturn(imp).when(importService).findByName(any());
+
+            doNothing().when(newDataService).process(any());
+
+            Mockito.doReturn(stmts).when(lrsService).process(any());
+
+            lrsSyncSchedulingservice.run();
+            assertThat(logCapture.getLoggingEvents()).hasSize(2);
+            assertEquals(logCapture.getFirstFormattedMessage(),
+                    "===============inside LRS schedule method.===============\n");
+
+        } catch (DatasyncException | ResourceNotFoundException
+                | IOException e) {
+            fail("Should not have thrown any exception");
+        }
+    }
+
 }
