@@ -11,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
 import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
-import com.deloitte.elrr.datasync.scheduler.PurgeAuditLogSchedulingService;
 
 import lombok.extern.slf4j.Slf4j;
 

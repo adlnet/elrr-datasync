@@ -88,6 +88,19 @@ public class FilterTest {
         http.getInputStream().available();
         http.getInputStream().isReady();
         http.getInputStream().read();
+        http.getAttributeNames();
+        http.getAsyncContext();
+        http.getBody();
+        http.getCharacterEncoding();
+        http.getContentLength();
+        http.getContextPath();
+        http.getCookies();
+        http.getHeaderNames();
+        http.getParameterNames();
+        http.getAuthType();
+        http.getClass();
+        http.getContentType();
+        http.getDispatcherType();
 
         MockHttpServletResponse res = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
@@ -105,6 +118,19 @@ public class FilterTest {
         http.getInputStream().available();
         http.getInputStream().isReady();
         http.getInputStream().read();
+        http.getAttributeNames();
+        http.getAsyncContext();
+        http.getBody();
+        http.getCharacterEncoding();
+        http.getContentLength();
+        http.getContextPath();
+        http.getCookies();
+        http.getHeaderNames();
+        http.getParameterNames();
+        http.getAuthType();
+        http.getClass();
+        http.getContentType();
+        http.getDispatcherType();
 
         MockHttpServletResponse res = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
@@ -117,11 +143,6 @@ public class FilterTest {
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.addParameter("anything", "goes");
         http = new WrappedHttp(req, "{Unwise: nap}");
-
-        // next lines are simply to increase coverage of wrappedhttp
-        http.getInputStream().available();
-        http.getInputStream().isReady();
-        http.getInputStream().read();
 
         MockHttpServletResponse res = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();

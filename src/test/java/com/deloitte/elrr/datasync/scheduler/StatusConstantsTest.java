@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.deloitte.elrr.datasync.scheduler.StatusConstants;
-
 import lombok.extern.slf4j.Slf4j;
 
 @ExtendWith(MockitoExtension.class)

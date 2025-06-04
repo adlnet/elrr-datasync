@@ -22,8 +22,6 @@ import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
-import com.deloitte.elrr.datasync.scheduler.LRSSyncSchedulingService;
-import com.deloitte.elrr.datasync.scheduler.StatusConstants;
 import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
 import com.deloitte.elrr.test.datasync.util.LogCapture;
