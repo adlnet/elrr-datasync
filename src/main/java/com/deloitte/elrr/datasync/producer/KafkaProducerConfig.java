@@ -12,12 +12,9 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
-import com.deloitte.elrr.datasync.util.Generated;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
-@Generated
 @Slf4j
 public class KafkaProducerConfig {
 

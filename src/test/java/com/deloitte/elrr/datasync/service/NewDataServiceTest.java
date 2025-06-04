@@ -68,6 +68,26 @@ class NewDataServiceTest {
     }
 
     @Test
+    void testNoKafka() {
+
+        try {
+
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
+
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+            assertTrue(stmts != null);
+
+            Mockito.doReturn(false).when(kafkaStatusCheck).isKafkaRunning();
+
+            newDataService.process(stmts);
+
+        } catch (DatasyncException | IOException e) {
+            fail("Should not have thrown any exception");
+        }
+    }
+
+    @Test
     void testLogging(LogCapture logCapture) {
 
         try {

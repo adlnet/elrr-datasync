@@ -61,20 +61,26 @@ public class NewDataService {
             // Get number of retries
             Import importRecord = importService.findByName(
                     StatusConstants.LRSNAME);
-            int attempts = importRecord.getRetries();
-            attempts++;
 
-            log.error("processStatements failed on attempt " + Integer.toString(
-                    attempts) + "retrying...");
+            if (importRecord != null) {
 
-            if (attempts >= maxRetries) {
-                log.error("Max retries reached. Giving up.");
-                throw new DatasyncException("Max retries reached. Giving up.",
-                        e);
-            } else {
-                importRecord.setRetries(attempts);
-                importService.update(importRecord);
+                int attempts = importRecord.getRetries();
+                attempts++;
+
+                log.error("processStatements failed on attempt " + Integer
+                        .toString(attempts) + "retrying...");
+
+                if (attempts >= maxRetries) {
+                    log.error("Max retries reached. Giving up.");
+                    throw new DatasyncException(
+                            "Max retries reached. Giving up.", e);
+                } else {
+                    importRecord.setRetries(attempts);
+                    importService.update(importRecord);
+                }
+
             }
+
         }
     }
 
