@@ -8,7 +8,10 @@ import org.apache.kafka.clients.admin.ListTopicsOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.deloitte.elrr.datasync.util.Generated;
+
 @Component
+@Generated
 public class KafkaStatusCheck {
 
     @Value("${brokerUrl}")

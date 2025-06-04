@@ -6,7 +6,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
+import com.deloitte.elrr.datasync.util.Generated;
+
 @Configuration
+@Generated
 public class KafkaAdminConfiguration {
 
     @Value("${kafka.partitions}")

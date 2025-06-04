@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 
 import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
+import com.deloitte.elrr.datasync.util.Generated;
 
 /**
  * @author mnelakurti
@@ -41,6 +42,7 @@ public interface CommonSvc<T, newId extends Serializable> {
      * @param entities
      * @return Iterable<T>
      */
+    @Generated
     default Iterable<T> saveAll(Iterable<T> entities) {
         return getRepository().saveAll(entities);
     }
@@ -49,6 +51,7 @@ public interface CommonSvc<T, newId extends Serializable> {
      * @param id
      * @throws ResourceNotFoundException
      */
+    @Generated
     default void delete(newId id) throws ResourceNotFoundException {
         try {
             if (getRepository().existsById(id)) {
@@ -74,6 +77,7 @@ public interface CommonSvc<T, newId extends Serializable> {
      * @param entity
      * @throws ResourceNotFoundException
      */
+    @Generated
     default void update(T entity) {
         try {
 
@@ -94,10 +98,12 @@ public interface CommonSvc<T, newId extends Serializable> {
      * @param entity
      * @return NewId
      */
+
     newId getId(T entity);
 
     /**
      * @return CrudRepository<T, NewId>
      */
+    @Generated
     CrudRepository<T, newId> getRepository();
 }

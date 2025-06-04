@@ -7,12 +7,14 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
+import com.deloitte.elrr.datasync.util.Generated;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Generated
 @Slf4j
 @SuppressWarnings("checkstyle:linelength")
 public class KafkaProducer {
