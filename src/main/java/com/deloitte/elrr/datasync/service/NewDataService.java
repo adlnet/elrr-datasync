@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.deloitte.elrr.datasync.KafkaStatusCheck;
 import com.deloitte.elrr.datasync.dto.MessageVO;
 import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
 import com.deloitte.elrr.datasync.entity.Import;
@@ -33,6 +34,9 @@ public class NewDataService {
     @Autowired
     private ImportService importService;
 
+    @Autowired
+    private KafkaStatusCheck kafkaStatusCheck;
+
     @Value("${max.retries}")
     private int maxRetries;
 
@@ -46,7 +50,11 @@ public class NewDataService {
 
         try {
 
-            processStatements(statements);
+            if (kafkaStatusCheck.isKafkaRunning()) {
+                processStatements(statements);
+            } else {
+                throw new DatasyncException("Kafka is not running");
+            }
 
         } catch (DatasyncException e) {
 

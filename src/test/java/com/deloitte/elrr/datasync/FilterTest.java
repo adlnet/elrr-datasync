@@ -1,10 +1,13 @@
 package com.deloitte.elrr.datasync;
 
+import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockFilterChain;
@@ -124,5 +127,25 @@ public class FilterTest {
         MockFilterChain chain = new MockFilterChain();
         hf.doFilter(http, res, chain);
         assertFalse(res.isCommitted());
+    }
+
+    @Test
+    void testInputSanitizer() {
+
+        try {
+
+            Constructor<InputSanitizer> constructor = InputSanitizer.class
+                    .getDeclaredConstructor();
+            constructor.setAccessible(true);
+            InputSanitizer inputSAnitizer = constructor.newInstance();
+
+        } catch (UnsupportedOperationException | InvocationTargetException e) {
+            System.out.println(
+                    "This is a utility class and cannot be instantiated");
+        } catch (NoSuchMethodException | SecurityException
+                | InstantiationException | IllegalAccessException
+                | IllegalArgumentException e1) {
+            fail("Should not have thrown any exception");
+        }
     }
 }

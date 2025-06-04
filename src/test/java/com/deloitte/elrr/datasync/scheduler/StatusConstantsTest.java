@@ -1,4 +1,4 @@
-package com.deloitte.elrr.datasych.scheduler;
+package com.deloitte.elrr.datasync.scheduler;
 
 import static org.assertj.core.api.Assertions.fail;
 

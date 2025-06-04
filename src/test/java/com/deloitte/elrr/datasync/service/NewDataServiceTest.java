@@ -12,8 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.deloitte.elrr.datasync.KafkaStatusCheck;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
@@ -39,6 +41,9 @@ class NewDataServiceTest {
     @Mock
     private ImportService importService;
 
+    @Mock
+    private KafkaStatusCheck kafkaStatusCheck;
+
     @InjectMocks
     private NewDataService newDataService;
 
@@ -52,6 +57,8 @@ class NewDataServiceTest {
             Statement[] stmts = Mapper.getMapper().readValue(testFile,
                     Statement[].class);
             assertTrue(stmts != null);
+
+            Mockito.doReturn(true).when(kafkaStatusCheck).isKafkaRunning();
 
             newDataService.process(stmts);
 
@@ -72,6 +79,8 @@ class NewDataServiceTest {
             Statement[] stmts = Mapper.getMapper().readValue(testFile,
                     Statement[].class);
             assertTrue(stmts != null);
+
+            Mockito.doReturn(true).when(kafkaStatusCheck).isKafkaRunning();
 
             newDataService.process(stmts);
             assertThat(logCapture.getLoggingEvents()).hasSize(4);
