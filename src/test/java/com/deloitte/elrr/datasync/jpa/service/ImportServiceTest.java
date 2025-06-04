@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
-import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.repository.ImportRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +32,14 @@ class ImportServiceTest {
 
         try {
 
-            Import imprt = new Import();
+            Import imp = new Import();
+            imp.setId(UUID.randomUUID());
+            imp.setRetries(0);
+            imp.setImportName("testName");
+            importService.save(imp);
 
-            importService.findByName("name");
-            importService.getId(imprt);
+            importService.findByName("testName");
+            importService.getId(imp);
 
         } catch (DatasyncException e) {
             fail("Should not have thrown any exception");
@@ -56,6 +59,7 @@ class ImportServiceTest {
 
             importService.findAll();
             importService.findByName("testName");
+            importService.getId(imp);
             importService.deleteAll();
 
         } catch (ResourceNotFoundException e) {

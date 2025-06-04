@@ -2,6 +2,9 @@ package com.deloitte.elrr.datasync.jpa.service;
 
 import static org.assertj.core.api.Assertions.fail;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -33,10 +36,34 @@ class ELRRAuditLogServiceTest {
         try {
 
             ELRRAuditLog elrrAuditLog = new ELRRAuditLog();
+            elrrAuditLog.setId(UUID.randomUUID());
+            elrrAuditLogService.save(elrrAuditLog);
 
             elrrAuditLogService.findAll();
+            elrrAuditLog.getId();
             elrrAuditLogService.deleteAll();
             elrrAuditLogService.getId(elrrAuditLog);
+
+        } catch (DatasyncException e) {
+            fail("Should not have thrown any exception");
+        }
+    }
+
+    @Test
+    void testDelete() {
+
+        try {
+
+            ELRRAuditLog elrrAuditLog = new ELRRAuditLog();
+            elrrAuditLog.setId(UUID.randomUUID());
+            elrrAuditLogService.save(elrrAuditLog);
+
+            LocalDateTime localDateTime = LocalDateTime.parse(
+                    "2025-12-05T15:30:00Z", DateTimeFormatter.ISO_DATE_TIME);
+
+            Timestamp timestamp = Timestamp.valueOf(localDateTime);
+
+            elrrAuditLogService.deleteByDate(timestamp);
 
         } catch (DatasyncException e) {
             fail("Should not have thrown any exception");
