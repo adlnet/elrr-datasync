@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 class ELRRAuditLogServiceTest {
 
     @Mock
-    ELRRAuditLogRepository elrrAuditLogRepository;
+    private ELRRAuditLogRepository elrrAuditLogRepository;
 
     @InjectMocks
     private ELRRAuditLogService elrrAuditLogService;

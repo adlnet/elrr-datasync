@@ -10,9 +10,9 @@ public class KafkaAdminConfigurationTest {
     void test() {
         try {
 
-            KafkaAdminConfiguration kafkaAdminConfiguration = new KafkaAdminConfiguration();
-            kafkaAdminConfiguration.topicExample();
-            kafkaAdminConfiguration.topicDeadLetterQueue();
+            KafkaAdminConfiguration kc = new KafkaAdminConfiguration();
+            kc.topicExample();
+            kc.topicDeadLetterQueue();
 
         } catch (Exception e) {
             fail("Should not have thrown any exception");

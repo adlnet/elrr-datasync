@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 class ImportServiceTest {
 
     @Mock
-    ImportRepository importRepository;
+    private ImportRepository importRepository;
 
     @InjectMocks
     private ImportService importService;

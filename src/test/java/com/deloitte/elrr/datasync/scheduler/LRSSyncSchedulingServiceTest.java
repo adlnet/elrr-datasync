@@ -86,6 +86,7 @@ class LRSSyncSchedulingServiceTest {
     }
 
     @Test
+    @SuppressWarnings("checkstyle:linelength")
     void testLogging(LogCapture logCapture) {
 
         try {

@@ -18,36 +18,62 @@ public class LogCapture {
     LogCapture() {
     }
 
+    /**
+     * @return String
+     */
     public String getFirstFormattedMessage() {
         return getFormattedMessageAt(0);
     }
 
+    /**
+     * @return String
+     */
     public String getLastFormattedMessage() {
         return getFormattedMessageAt(listAppender.list.size() - 1);
     }
 
+    /**
+     * @param index
+     * @return String
+     */
     public String getFormattedMessageAt(int index) {
         return getLoggingEventAt(index).getFormattedMessage();
     }
 
+    /**
+     * @return LoggingEvent
+     */
     public LoggingEvent getLoggingEvent() {
         return getLoggingEventAt(0);
     }
 
+    /**
+     * @param index
+     * @return LoggingEvent
+     */
     public LoggingEvent getLoggingEventAt(int index) {
         return (LoggingEvent) listAppender.list.get(index);
     }
 
+    /**
+     * @return LoggingEvent
+     */
     public List<LoggingEvent> getLoggingEvents() {
         return listAppender.list.stream().map(e -> (LoggingEvent) e).collect(
                 Collectors.toList());
     }
 
+    /**
+     * @param logLevel
+     */
     public void setLogFilter(Level logLevel) {
         listAppender.clearAllFilters();
         listAppender.addFilter(buildLevelFilter(logLevel));
     }
 
+    /**
+     * @author phleven
+     */
     public void clear() {
         listAppender.list.clear();
     }

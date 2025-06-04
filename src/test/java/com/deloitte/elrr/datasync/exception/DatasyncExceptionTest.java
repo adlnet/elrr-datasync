@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * @author phleven
- * 
+ *
  */
 @SuppressWarnings("checkstyle:linelength")
 public class DatasyncExceptionTest {
