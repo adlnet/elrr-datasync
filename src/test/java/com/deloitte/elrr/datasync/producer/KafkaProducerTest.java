@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
-import com.deloitte.elrr.test.datasync.util.TestFileUtil;
+import com.deloitte.elrr.datasync.util.TestFileUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;

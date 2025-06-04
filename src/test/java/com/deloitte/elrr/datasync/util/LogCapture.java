@@ -1,4 +1,4 @@
-package com.deloitte.elrr.test.datasync.util;
+package com.deloitte.elrr.datasync.util;
 
 import java.util.List;
 import java.util.stream.Collectors;

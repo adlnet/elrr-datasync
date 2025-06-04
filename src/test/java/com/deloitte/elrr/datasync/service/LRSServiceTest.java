@@ -29,9 +29,9 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
-import com.deloitte.elrr.test.datasync.util.LogCapture;
-import com.deloitte.elrr.test.datasync.util.LogCaptureExtension;
-import com.deloitte.elrr.test.datasync.util.TestFileUtil;
+import com.deloitte.elrr.datasync.util.LogCapture;
+import com.deloitte.elrr.datasync.util.LogCaptureExtension;
+import com.deloitte.elrr.datasync.util.TestFileUtil;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
 
