@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.util.TestFileUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,10 +36,23 @@ class KafkaProducerTest {
 
         try {
 
-            kafkaProducer.writeValueAsString("");
+            kafkaProducer.writeValueAsString("test");
 
         } catch (DatasyncException | JsonProcessingException e) {
-            e.printStackTrace();
+            fail("Should not have thrown any exception");
+        }
+    }
+
+    @Test
+    void testWriteBadValueAsString() {
+
+        try {
+
+            Import imp = new Import();
+            kafkaProducer.writeValueAsString(imp);
+
+        } catch (DatasyncException | JsonProcessingException e) {
+            System.out.println(e.getMessage());
         }
     }
 

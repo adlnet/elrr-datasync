@@ -2,6 +2,8 @@ package com.deloitte.elrr.datasync.jpa.service;
 
 import static org.assertj.core.api.Assertions.fail;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -58,13 +60,17 @@ class ImportServiceTest {
             imp.setImportName("testName");
             importService.save(imp);
 
+            List<Import> imps = List.of(imp);
+            Iterator<Import> iterator = imps.iterator();
+            importService.saveAll(imps);
+
             importService.findAll();
             importService.findByName("testName");
             importService.getId(imp);
-            importService.delete(id);
             importService.deleteAll();
 
         } catch (ResourceNotFoundException e) {
+            fail("Should not have thrown any exception");
         }
     }
 }

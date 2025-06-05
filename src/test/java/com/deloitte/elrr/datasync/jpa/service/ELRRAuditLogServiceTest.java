@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.fail;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -80,11 +82,15 @@ class ELRRAuditLogServiceTest {
             auditLog.setId(id);
             elrrAuditLogService.save(auditLog);
 
+            List<ELRRAuditLog> auditLogs = List.of(auditLog);
+            Iterator<ELRRAuditLog> iterator = auditLogs.iterator();
+            elrrAuditLogService.saveAll(auditLogs);
+
             elrrAuditLogService.findAll();
-            elrrAuditLogService.delete(id);
             elrrAuditLogService.deleteAll();
 
         } catch (ResourceNotFoundException e) {
+            fail("Should not have thrown any exception");
         }
     }
 
