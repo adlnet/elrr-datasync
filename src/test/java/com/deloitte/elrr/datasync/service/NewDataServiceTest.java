@@ -90,7 +90,7 @@ class NewDataServiceTest {
             newDataService.process(stmts);
 
         } catch (DatasyncException | IOException e) {
-            System.out.println(e.getMessage());
+            assertEquals(e.getMessage(), "Max retries reached. Giving up.");
         }
     }
 

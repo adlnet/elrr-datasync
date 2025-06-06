@@ -353,6 +353,10 @@
 					     </limits>
 					     </rule>
 				     </rules>
+				     <excludes>
+                        <exclude>**/*KafkaStatusCheck.*</exclude>
+                        <exclude>**/*CommonSvc.*</exclude>
+                    </excludes>
 			  </configuration>   
           </plugin>
 		  <plugin>

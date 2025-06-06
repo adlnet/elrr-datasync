@@ -25,12 +25,13 @@ class StatusConstantsTest {
             constructor.setAccessible(true);
             StatusConstants statusConstants = constructor.newInstance();
 
-        } catch (UnsupportedOperationException | InvocationTargetException e) {
+        } catch (UnsupportedOperationException | InvocationTargetException e1) {
             System.out.println(
                     "This is a utility class and cannot be instantiated");
+
         } catch (NoSuchMethodException | SecurityException
                 | InstantiationException | IllegalAccessException
-                | IllegalArgumentException e1) {
+                | IllegalArgumentException e) {
             fail("Should not have thrown any exception");
         }
     }
