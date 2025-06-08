@@ -1,6 +1,7 @@
 package com.deloitte.elrr.datasync.jpa.service;
 
 import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
@@ -38,11 +40,16 @@ class ELRRAuditLogServiceTest {
         try {
 
             ELRRAuditLog elrrAuditLog = new ELRRAuditLog();
-            elrrAuditLog.setId(UUID.randomUUID());
+            UUID id = UUID.randomUUID();
+            elrrAuditLog.setId(id);
             elrrAuditLogService.save(elrrAuditLog);
-
+            
+            Mockito.doReturn(true).when(elrrAuditLogRepository).existsById(any());
+            elrrAuditLogService.update(elrrAuditLog);
+ 
             elrrAuditLogService.findAll();
             elrrAuditLog.getId();
+            elrrAuditLogService.delete(id);
             elrrAuditLogService.deleteAll();
             elrrAuditLogService.getId(elrrAuditLog);
 
@@ -60,6 +67,9 @@ class ELRRAuditLogServiceTest {
             elrrAuditLog.setId(UUID.randomUUID());
             elrrAuditLogService.save(elrrAuditLog);
 
+            Mockito.doReturn(true).when(elrrAuditLogRepository).existsById(any());
+            elrrAuditLogService.update(elrrAuditLog);
+ 
             LocalDateTime localDateTime = LocalDateTime.parse(
                     "2025-12-05T15:30:00Z", DateTimeFormatter.ISO_DATE_TIME);
 
@@ -77,17 +87,22 @@ class ELRRAuditLogServiceTest {
 
         try {
 
-            ELRRAuditLog auditLog = new ELRRAuditLog();
+            ELRRAuditLog elrrAuditLog = new ELRRAuditLog();
             UUID id = UUID.randomUUID();
-            auditLog.setId(id);
-            elrrAuditLogService.save(auditLog);
+            elrrAuditLog.setId(id);
+            elrrAuditLogService.save(elrrAuditLog);
 
-            List<ELRRAuditLog> auditLogs = List.of(auditLog);
-            Iterator<ELRRAuditLog> iterator = auditLogs.iterator();
+            Mockito.doReturn(true).when(elrrAuditLogRepository).existsById(any());
+            elrrAuditLogService.update(elrrAuditLog);
+ 
+            List<ELRRAuditLog> auditLogs = List.of(elrrAuditLog);
             elrrAuditLogService.saveAll(auditLogs);
 
             elrrAuditLogService.findAll();
+            elrrAuditLogService.getId(elrrAuditLog);
+            elrrAuditLogService.delete(id);
             elrrAuditLogService.deleteAll();
+            elrrAuditLogService.getId(elrrAuditLog);
 
         } catch (ResourceNotFoundException e) {
             fail("Should not have thrown any exception");

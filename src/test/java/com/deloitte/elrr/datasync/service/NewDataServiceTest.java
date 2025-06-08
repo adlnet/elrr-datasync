@@ -61,6 +61,8 @@ class NewDataServiceTest {
                     Statement[].class);
             assertTrue(stmts != null);
 
+            Mockito.doReturn(true).when(kafkaStatusCheck).isKafkaRunning();
+
             newDataService.process(stmts);
 
         } catch (DatasyncException | IOException e) {

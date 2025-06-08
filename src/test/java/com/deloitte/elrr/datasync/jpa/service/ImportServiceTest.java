@@ -1,15 +1,18 @@
 package com.deloitte.elrr.datasync.jpa.service;
 
 import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.deloitte.elrr.datasync.entity.Import;
@@ -35,13 +38,23 @@ class ImportServiceTest {
         try {
 
             Import imp = new Import();
-            imp.setId(UUID.randomUUID());
+            UUID id = UUID.randomUUID();
+            imp.setId(id);
             imp.setRetries(0);
             imp.setImportName("testName");
             importService.save(imp);
 
+            Mockito.doReturn(true).when(importRepository).existsById(any());
+            importService.update(imp);
+            
+            List<Import> imps = List.of(imp);
+            importService.saveAll(imps);
+
+            importService.findAll();
             importService.findByName("testName");
             importService.getId(imp);
+            importService.delete(id);
+            importService.deleteAll();
 
         } catch (DatasyncException e) {
             fail("Should not have thrown any exception");
@@ -60,13 +73,16 @@ class ImportServiceTest {
             imp.setImportName("testName");
             importService.save(imp);
 
+            Mockito.doReturn(true).when(importRepository).existsById(any());
+            importService.update(imp);
+            
             List<Import> imps = List.of(imp);
-            Iterator<Import> iterator = imps.iterator();
             importService.saveAll(imps);
 
             importService.findAll();
             importService.findByName("testName");
             importService.getId(imp);
+            importService.delete(id);
             importService.deleteAll();
 
         } catch (ResourceNotFoundException e) {
