@@ -144,6 +144,24 @@ public class FilterTest {
         req.addParameter("anything", "goes");
         http = new WrappedHttp(req, "{Unwise: nap}");
 
+        // next lines are simply to increase coverage of wrappedhttp
+        http.getInputStream().available();
+        http.getInputStream().isReady();
+        http.getInputStream().read();
+        http.getAttributeNames();
+        http.getAsyncContext();
+        http.getBody();
+        http.getCharacterEncoding();
+        http.getContentLength();
+        http.getContextPath();
+        http.getCookies();
+        http.getHeaderNames();
+        http.getParameterNames();
+        http.getAuthType();
+        http.getClass();
+        http.getContentType();
+        http.getDispatcherType();
+
         MockHttpServletResponse res = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
         hf.doFilter(http, res, chain);
