@@ -2,11 +2,13 @@ package com.deloitte.elrr.datasync;
 
 import static org.assertj.core.api.Assertions.fail;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 public class KafkaStatusCheckTest {
 
+    @Disabled("Requires Kafka to be running")
     @Test
     void test() {
         try {
