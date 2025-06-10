@@ -26,7 +26,7 @@ public class JSONRequestSizeLimitFilterTest {
     private JSONRequestSizeLimitFilter sl = new JSONRequestSizeLimitFilter();
 
     @Test
-    void testSizeLimitTooBig(LogCapture logCapture) throws IOException,
+    void testSizeLimit(LogCapture logCapture) throws IOException,
             ServletException {
 
         logCapture.clear();

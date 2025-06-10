@@ -10,6 +10,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -27,6 +28,7 @@ public class FilterTest {
     @Test
     void testIllegalBodyNotJson() throws IOException, ServletException {
         MockHttpServletRequest req = new MockHttpServletRequest();
+        req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         http = new WrappedHttp(req, "not allowed");
         MockHttpServletResponse res = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
@@ -38,6 +40,7 @@ public class FilterTest {
     @Test
     void testeeIllegalBodyNotJson() throws IOException, ServletException {
         MockHttpServletRequest req = new MockHttpServletRequest();
+        req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         // http = new WrappedHttp(req, "not allowed");
         MockHttpServletResponse res = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
@@ -48,6 +51,7 @@ public class FilterTest {
     @Test
     void testIllegalBodyWhitelist() throws IOException, ServletException {
         MockHttpServletRequest req = new MockHttpServletRequest();
+        req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         http = new WrappedHttp(req, "{Unwise: afsd,.e\0nab}"); // not allowed
                                                                // illegal \0
         MockHttpServletResponse res = new MockHttpServletResponse();
@@ -59,6 +63,7 @@ public class FilterTest {
     @Test
     void testIllegalParam() throws IOException, ServletException {
         MockHttpServletRequest req = new MockHttpServletRequest();
+        req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         req.addParameter("file./iofa\0je%00\\0/0/00efwho", "anything");
         http = new WrappedHttp(req, "{Unwise: nap}");
         MockHttpServletResponse res = new MockHttpServletResponse();
@@ -71,6 +76,7 @@ public class FilterTest {
     @Test
     void testIllegalParamValue() throws IOException, ServletException {
         MockHttpServletRequest req = new MockHttpServletRequest();
+        req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         req.addParameter("anything", "file./iofaje%00\0/0/00efwho");
         http = new WrappedHttp(req, "{Unwise: nap}");
         MockHttpServletResponse res = new MockHttpServletResponse();
@@ -82,6 +88,7 @@ public class FilterTest {
     @Test
     void testSanatizerOk() throws IOException, ServletException {
         MockHttpServletRequest req = new MockHttpServletRequest();
+        req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         req.addParameter("anything", "goes");
         http = new WrappedHttp(req, "{Unwise: nap}");
 
@@ -112,6 +119,7 @@ public class FilterTest {
     @Test
     void testSizeLimitOk() throws IOException, ServletException {
         MockHttpServletRequest req = new MockHttpServletRequest();
+        req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         req.addParameter("anything", "goes");
         http = new WrappedHttp(req, "{Unwise: nap}");
 
@@ -142,6 +150,7 @@ public class FilterTest {
     @Test
     void testHeaderNoCheck() throws IOException, ServletException {
         MockHttpServletRequest req = new MockHttpServletRequest();
+        req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         req.addParameter("anything", "goes");
         http = new WrappedHttp(req, "{Unwise: nap}");
 
@@ -174,6 +183,7 @@ public class FilterTest {
         ReflectionTestUtils.setField(hf, "checkHttpHeader", true);
 
         MockHttpServletRequest req = new MockHttpServletRequest();
+        req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         req.addParameter("anything", "goes");
         http = new WrappedHttp(req, "{Unwise: nap}");
 
