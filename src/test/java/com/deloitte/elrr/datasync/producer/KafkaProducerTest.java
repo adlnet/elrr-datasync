@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
+import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.util.TestFileUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yetanalytics.xapi.model.Statement;
@@ -24,6 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 @ExtendWith(MockitoExtension.class)
 @Slf4j
 class KafkaProducerTest {
+
+    @Mock
+    ImportService importService;
 
     @Mock
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -44,15 +49,33 @@ class KafkaProducerTest {
     }
 
     @Test
-    void testWriteBadValueAsString() {
+    void testImportWriteValueAsString() {
 
         try {
 
             Import imp = new Import();
+            imp.setId(UUID.randomUUID());
+            imp.setImportName("name");
+            imp.setRetries(0);
+            importService.save(imp);
+
             kafkaProducer.writeValueAsString(imp);
 
         } catch (DatasyncException | JsonProcessingException e) {
-            System.out.println(e.getMessage());
+            fail("Should not have thrown any exception");
+        }
+    }
+
+    @Test
+    void testWriteBadValueAsString() {
+
+        try {
+
+            ObjectWithNoToString objectWithNoToString = new ObjectWithNoToString();
+            kafkaProducer.writeValueAsString(objectWithNoToString);
+
+        } catch (DatasyncException | JsonProcessingException e) {
+            fail("Should not have thrown any exception");
         }
     }
 

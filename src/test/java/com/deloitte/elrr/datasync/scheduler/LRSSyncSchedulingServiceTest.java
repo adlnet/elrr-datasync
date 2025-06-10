@@ -49,7 +49,7 @@ class LRSSyncSchedulingServiceTest {
     private LRSSyncSchedulingService lrsSyncSchedulingservice;
 
     @Test
-    void test() {
+    void testImportAlreadyExists() {
 
         try {
 
@@ -79,10 +79,34 @@ class LRSSyncSchedulingServiceTest {
     }
 
     @Test
-    void testImport() {
+    void testImportDoesNotExists() {
 
-        lrsSyncSchedulingservice.createImport();
+        try {
 
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
+
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+            assertTrue(stmts != null);
+
+            Import imp = new Import();
+            imp.setId(UUID.randomUUID());
+            imp.setImportName(StatusConstants.LRSNAME);
+            imp.setRecordStatus(StatusConstants.SUCCESS);
+            imp.setRetries(0);
+            Mockito.doReturn(null).when(importService).findByName(any());
+
+            doNothing().when(newDataService).process(any());
+
+            Mockito.doReturn(stmts).when(lrsService).process(any());
+
+            lrsSyncSchedulingservice.run();
+
+        } catch (DatasyncException | ResourceNotFoundException
+                | IOException e) {
+            e.printStackTrace();
+            fail("Should not have thrown any exception");
+        }
     }
 
     @Test

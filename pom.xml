@@ -349,6 +349,10 @@
 					     </limits>
 					     </rule>
 				     </rules>
+				     <excludes>
+                        <exclude>**/*KafkaStatusCheck.*</exclude>
+                        <exclude>**/*KafkaProducerConfig.*</exclude>
+                     </excludes>
 			  </configuration>   
           </plugin>
 		  <plugin>

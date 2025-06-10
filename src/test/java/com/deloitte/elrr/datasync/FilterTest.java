@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import jakarta.servlet.ServletException;
 
@@ -139,7 +140,7 @@ public class FilterTest {
     }
 
     @Test
-    void testHeader() throws IOException, ServletException {
+    void testHeaderNoCheck() throws IOException, ServletException {
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.addParameter("anything", "goes");
         http = new WrappedHttp(req, "{Unwise: nap}");
@@ -166,6 +167,38 @@ public class FilterTest {
         MockFilterChain chain = new MockFilterChain();
         hf.doFilter(http, res, chain);
         assertFalse(res.isCommitted());
+    }
+
+    @Test
+    void testHeaderCheck() throws IOException, ServletException {
+        ReflectionTestUtils.setField(hf, "checkHttpHeader", true);
+
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        req.addParameter("anything", "goes");
+        http = new WrappedHttp(req, "{Unwise: nap}");
+
+        // next lines are simply to increase coverage of wrappedhttp
+        http.getInputStream().available();
+        http.getInputStream().isReady();
+        http.getInputStream().read();
+        http.getAttributeNames();
+        http.getAsyncContext();
+        http.getBody();
+        http.getCharacterEncoding();
+        http.getContentLength();
+        http.getContextPath();
+        http.getCookies();
+        http.getHeaderNames();
+        http.getParameterNames();
+        http.getAuthType();
+        http.getClass();
+        http.getContentType();
+        http.getDispatcherType();
+
+        MockHttpServletResponse res = new MockHttpServletResponse();
+        MockFilterChain chain = new MockFilterChain();
+        hf.doFilter(http, res, chain);
+        assertTrue(res.isCommitted());
     }
 
     @Test

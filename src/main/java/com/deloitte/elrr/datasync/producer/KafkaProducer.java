@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -68,6 +69,7 @@ public class KafkaProducer {
         String output = "";
 
         try {
+            mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             output = mapper.writeValueAsString(data);
         } catch (JsonProcessingException e) {
             log.error("Exception whille converting to JSON", e);
