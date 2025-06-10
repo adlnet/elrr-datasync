@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -31,8 +32,32 @@ public class JSONRequestSizeLimitFilterTest {
         logCapture.clear();
 
         ReflectionTestUtils.setField(sl, "maxSizeLimit", 2000000L);
+        ReflectionTestUtils.setField(sl, "checkMediaTypeJson", false);
 
         MockHttpServletRequest req = new MockHttpServletRequest();
+        req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+        req.addParameter("anything", "goes");
+        http = new WrappedHttp(req, "{Unwise: napping during work}");
+
+        MockHttpServletResponse res = new MockHttpServletResponse();
+        MockFilterChain chain = new MockFilterChain();
+        sl.doFilter(http, res, chain);
+        assertFalse(res.isCommitted());
+        assertThat(logCapture.getLoggingEvents()).hasSize(0);
+
+    }
+
+    @Test
+    void testMimeType(LogCapture logCapture) throws IOException,
+            ServletException {
+
+        logCapture.clear();
+
+        ReflectionTestUtils.setField(sl, "maxSizeLimit", 2000000L);
+        ReflectionTestUtils.setField(sl, "checkMediaTypeJson", true);
+
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         req.addParameter("anything", "goes");
         http = new WrappedHttp(req, "{Unwise: napping during work}");
 
