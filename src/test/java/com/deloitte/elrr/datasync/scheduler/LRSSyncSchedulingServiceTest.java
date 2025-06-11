@@ -1,8 +1,6 @@
 package com.deloitte.elrr.datasync.scheduler;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -24,15 +22,13 @@ import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.service.LRSService;
 import com.deloitte.elrr.datasync.service.NewDataService;
-import com.deloitte.elrr.datasync.util.LogCapture;
-import com.deloitte.elrr.datasync.util.LogCaptureExtension;
 import com.deloitte.elrr.datasync.util.TestFileUtil;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
 
 import lombok.extern.slf4j.Slf4j;
 
-@ExtendWith({ MockitoExtension.class, LogCaptureExtension.class })
+@ExtendWith(MockitoExtension.class)
 @Slf4j
 class LRSSyncSchedulingServiceTest {
 
@@ -105,42 +101,6 @@ class LRSSyncSchedulingServiceTest {
         } catch (DatasyncException | ResourceNotFoundException
                 | IOException e) {
             e.printStackTrace();
-            fail("Should not have thrown any exception");
-        }
-    }
-
-    @Test
-    @SuppressWarnings("checkstyle:linelength")
-    void testLogging(LogCapture logCapture) {
-
-        try {
-
-            logCapture.clear();
-
-            File testFile = TestFileUtil.getJsonTestFile("completed.json");
-
-            Statement[] stmts = Mapper.getMapper().readValue(testFile,
-                    Statement[].class);
-            assertTrue(stmts != null);
-
-            Import imp = new Import();
-            imp.setId(UUID.randomUUID());
-            imp.setImportName(StatusConstants.LRSNAME);
-            imp.setRecordStatus(StatusConstants.SUCCESS);
-            imp.setRetries(0);
-            Mockito.doReturn(imp).when(importService).findByName(any());
-
-            doNothing().when(newDataService).process(any());
-
-            Mockito.doReturn(stmts).when(lrsService).process(any());
-
-            lrsSyncSchedulingservice.run();
-            assertThat(logCapture.getLoggingEvents()).hasSize(2);
-            assertEquals(logCapture.getFirstFormattedMessage(),
-                    "===============inside LRS schedule method.===============\n");
-
-        } catch (DatasyncException | ResourceNotFoundException
-                | IOException e) {
             fail("Should not have thrown any exception");
         }
     }

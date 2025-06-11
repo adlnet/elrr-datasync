@@ -46,7 +46,7 @@ public class NewDataService {
     @Transactional
     public void process(Statement[] statements) {
 
-        log.info("\n ===============Inside NewDataService===============");
+        log.debug("\n ===============Inside NewDataService===============");
 
         try {
 

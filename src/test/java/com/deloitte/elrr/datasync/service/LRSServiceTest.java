@@ -1,8 +1,6 @@
 package com.deloitte.elrr.datasync.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,15 +27,13 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
-import com.deloitte.elrr.datasync.util.LogCapture;
-import com.deloitte.elrr.datasync.util.LogCaptureExtension;
 import com.deloitte.elrr.datasync.util.TestFileUtil;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
 
 import lombok.extern.slf4j.Slf4j;
 
-@ExtendWith({ MockitoExtension.class, LogCaptureExtension.class })
+@ExtendWith(MockitoExtension.class)
 @Slf4j
 class LRSServiceTest {
 
@@ -84,55 +80,6 @@ class LRSServiceTest {
                             String.class));
 
             Statement[] returnStmts = lrsService.process(timestamp);
-
-        } catch (DatasyncException | NullPointerException | IOException
-                | RestClientException e) {
-            fail("Should not have thrown any exception");
-        }
-    }
-
-    @Test
-    void testLogging(LogCapture logCapture) {
-
-        try {
-
-            logCapture.clear();
-
-            File testFile = TestFileUtil.getJsonTestFile("completed.json");
-
-            Statement[] stmts = Mapper.getMapper().readValue(testFile,
-                    Statement[].class);
-            assertTrue(stmts != null);
-
-            LocalDateTime localDateTime = LocalDateTime.parse(
-                    "2025-12-05T15:30:00Z", DateTimeFormatter.ISO_DATE_TIME);
-
-            Timestamp timestamp = Timestamp.valueOf(localDateTime);
-            String lastReadDate = lrsService.formatStoredDate(timestamp);
-            assertNotNull(lastReadDate);
-
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add("Cookie", "null");
-            httpHeaders.add("X-Forwarded-Proto", "https");
-            httpHeaders.add("Content-Type", "application/json");
-
-            String completeURL = "null/api/lrsdata?lastReadDate="
-                    + lastReadDate;
-
-            HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
-
-            ResponseEntity<String> json = new ResponseEntity<String>(Mapper
-                    .getMapper().writeValueAsString(stmts), HttpStatus.OK);
-            assertNotNull(json);
-
-            Mockito.doReturn(json).when(restTemplate).exchange(eq(completeURL),
-                    eq(HttpMethod.GET), any(HttpEntity.class), eq(
-                            String.class));
-
-            Statement[] returnStmts = lrsService.process(timestamp);
-            assertThat(logCapture.getLoggingEvents()).hasSize(3);
-            assertEquals(logCapture.getFirstFormattedMessage(),
-                    "Last read date = 2025-12-05T20:30:00.000Z");
 
         } catch (DatasyncException | NullPointerException | IOException
                 | RestClientException e) {

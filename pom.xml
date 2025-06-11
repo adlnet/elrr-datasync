@@ -350,7 +350,7 @@
 					     </rule>
 				     </rules>
 				     <excludes>
-                        <exclude>**/*KafkaStatusCheck.*</exclude>
+                        <exclude>**/*KafkaAdminConfig.*</exclude>
                         <exclude>**/*KafkaProducerConfig.*</exclude>
                      </excludes>
 			  </configuration>   

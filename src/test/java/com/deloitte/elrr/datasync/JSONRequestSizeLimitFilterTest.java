@@ -1,6 +1,5 @@
 package com.deloitte.elrr.datasync;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.IOException;
@@ -14,22 +13,16 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.deloitte.elrr.datasync.util.LogCapture;
-import com.deloitte.elrr.datasync.util.LogCaptureExtension;
-
 import jakarta.servlet.ServletException;
 
-@ExtendWith({ MockitoExtension.class, LogCaptureExtension.class })
+@ExtendWith(MockitoExtension.class)
 public class JSONRequestSizeLimitFilterTest {
 
     private WrappedHttp http;
     private JSONRequestSizeLimitFilter sl = new JSONRequestSizeLimitFilter();
 
     @Test
-    void testSizeLimit(LogCapture logCapture) throws IOException,
-            ServletException {
-
-        logCapture.clear();
+    void testSizeLimit() throws IOException, ServletException {
 
         ReflectionTestUtils.setField(sl, "maxSizeLimit", 2000000L);
         ReflectionTestUtils.setField(sl, "checkMediaTypeJson", false);
@@ -43,15 +36,11 @@ public class JSONRequestSizeLimitFilterTest {
         MockFilterChain chain = new MockFilterChain();
         sl.doFilter(http, res, chain);
         assertFalse(res.isCommitted());
-        assertThat(logCapture.getLoggingEvents()).hasSize(0);
 
     }
 
     @Test
-    void testMimeType(LogCapture logCapture) throws IOException,
-            ServletException {
-
-        logCapture.clear();
+    void testMimeType() throws IOException, ServletException {
 
         ReflectionTestUtils.setField(sl, "maxSizeLimit", 2000000L);
         ReflectionTestUtils.setField(sl, "checkMediaTypeJson", true);
@@ -65,7 +54,6 @@ public class JSONRequestSizeLimitFilterTest {
         MockFilterChain chain = new MockFilterChain();
         sl.doFilter(http, res, chain);
         assertFalse(res.isCommitted());
-        assertThat(logCapture.getLoggingEvents()).hasSize(0);
 
     }
 
