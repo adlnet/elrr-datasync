@@ -100,7 +100,6 @@ class LRSSyncSchedulingServiceTest {
 
         } catch (DatasyncException | ResourceNotFoundException
                 | IOException e) {
-            e.printStackTrace();
             fail("Should not have thrown any exception");
         }
     }

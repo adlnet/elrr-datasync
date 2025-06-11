@@ -61,8 +61,7 @@ public class SanitizingFilter implements Filter {
                             "Illegal Parameter Value");
                     return;
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    log.error("Error: " + e.getMessage());
                 }
             }
         });

@@ -18,7 +18,6 @@ public final class TestFileUtil {
         try {
             file = new ClassPathResource(filename).getFile();
         } catch (IOException e) {
-            e.printStackTrace();
             throw e;
         }
 

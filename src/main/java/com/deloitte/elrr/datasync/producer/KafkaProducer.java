@@ -51,8 +51,6 @@ public class KafkaProducer {
                     + kafkatopic + "\n\n");
 
         } catch (KafkaException | JsonProcessingException e) {
-            log.error("Exception while sending Kafka message", e);
-            e.printStackTrace();
             throw new DatasyncException("Exception while sending Kafka message",
                     e);
         }
@@ -72,8 +70,6 @@ public class KafkaProducer {
             mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             output = mapper.writeValueAsString(data);
         } catch (JsonProcessingException e) {
-            log.error("Exception whille converting to JSON", e);
-            e.printStackTrace();
             throw e;
         }
 

@@ -107,8 +107,6 @@ public class LRSSyncSchedulingService {
             importService.update(importRecord);
 
         } catch (ResourceNotFoundException e) {
-            log.error("Error updating Import", e);
-            e.printStackTrace();
             throw e;
         }
 
