@@ -1,6 +1,4 @@
-/**
- *
- */
+/** */
 package com.deloitte.elrr.datasync.entity;
 
 import org.junit.jupiter.api.Test;
@@ -11,18 +9,12 @@ import com.deloitte.elrr.datasync.util.ValueObjectTestUtility;
 
 /**
  * @author mnelakurti
- *
  */
 @ExtendWith(MockitoExtension.class)
 class AuditableTest {
 
-
-    /**
-    *
-    */
     @Test
     void test() {
         ValueObjectTestUtility.validateAccessors(Auditable.class);
     }
-
 }

@@ -15,12 +15,13 @@ public final class ValueObjectTestUtility {
     private ValueObjectTestUtility() {
 
     }
+
     /**
      *
      */
-    private static final Validator ACCESSOR_VALIDATOR =
-                         ValidatorBuilder.create().with(new GetterTester())
-                                     .with(new SetterTester()).build();
+    private static final Validator ACCESSOR_VALIDATOR = ValidatorBuilder
+            .create().with(new GetterTester()).with(new SetterTester()).build();
+
     /**
      *
      * @param clazz

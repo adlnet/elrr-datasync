@@ -2,47 +2,48 @@
 
 ELRR services which aid in the streaming (Kafka streams) of data from the staging database to the ELRR database.
 
-1. [Requirements](#requirements)
-2. [Building ELRR Datasync](#build-the-application)
-3. [Deploy on Docker](#deploy-on-docker)
-4. [Running the app locally](#run-app-locally)
-5. [ELRR Data Sync API](docs/api/api.md)
+There are database and kafka dependencies, but there's a [repo with a docker-compose](https://github.com/US-ELRR/elrrdockercompose/) that resolves them locally.
 
+# Dependencies
+- [Java JDK 1.8](https://www.oracle.com/java/technologies/downloads/)
+- [git](https://git-scm.com/downloads)
+- [Maven](https://maven.apache.org/)
+- [Docker](https://www.docker.com/products/docker-desktop/)
+- [PostgreSQL](https://www.postgresql.org/download/)
 
-## Requirements 
+# Tools
+- SQL client or Terminal
+- [Postman](https://www.postman.com/downloads/)
+- [Eclipse](https://www.eclipse.org/downloads/packages/) or other IDE
 
-For building and running the elrrdatasync you need:
-- JDK 1.8
-- Maven 3
+# Create Docker Containers
+- Start Docker Desktop
+- docker compose up
+- Check for new containers in Docker Desktop
+   
+# Create and populate PostgreSQL staging schema
+- Start Docker Desktop
+- Open SQL client
+- Run schema.sql 
 
+# Build the application
+- mvn clean install -Dmaven.test.skip=false
 
-
-## Building the application 
-
-To build the application run the following command
-
-```shell
-mvn clean install -Dmaven.test.skip=false
-```
-
-
-## Deploy on Docker 
-
+# Deploying the application on Docker 
 The easiest way to deploy the sample application to Docker is to follow below steps:
-1. Extract the jar file: ```mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)```
-2. Build the docker image: ```docker build --build-arg JAR_FILE="./target/elrrdatasync-0.0.1-SNAPSHOT.jar" --file Dockerfile -t <docker_hub>/test:elrrdatasync-dck-img .```
-3. Run the docker image: ```docker run -p Port:Port -t <docker_hub>/test:elrrdatasync-dck-img```
+- mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+- docker build --build-arg JAR_FILE="./target/elrrdatasync-0.0.1-SNAPSHOT.jar" --file Dockerfile -t <docker_hub>/test:elrrdatasync-dck-img .
+- docker run -p Port:Port -t <docker_hub>/test:elrrdatasync-dck-img
 
+# Running the application locally
+There are several ways to run a Spring Boot application on your local machine. One way is to execute the main method in the com.deloitte.elrr.datasync.DatasyncApplication class from your IDE
 
+# Alternatively you can use the Spring Boot Maven plugin: 
+- [Run elrrexternalservices first](https://github.com/US-ELRR/elrrexternalservices)
+- mvn clean
+- mvn spring-boot:run -D"spring-boot.run.profiles"=local -e (Windows)
+- mvn spring-boot:run -D spring-boot.run.profiles=local -e  (Linux)
+- Ctrl+C to end --> Terminate batch job = Y
 
-## Run app locally
-
-There are several ways to run a Spring Boot application on your local machine.
-
-1. Execute the main method in the com.deloitte.elrr.datasync.DatasyncApplication class from your IDE
-2. Using the Spring Boot Maven plugin:  ```mvn spring-boot:run```
-3. Optional step ```docker push <docker_hub>/test:elrrdatasync-dck-img```
-
-
-
-
+# Optional step 
+- docker push <docker_hub>/test:elrrdatasync-dck-img

@@ -1,92 +1,82 @@
-/**
- *
- */
 package com.deloitte.elrr.datasync.jpa.service;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.List;
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import com.deloitte.elrr.datasync.entity.Import;
+import com.deloitte.elrr.datasync.exception.DatasyncException;
+import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
 import com.deloitte.elrr.datasync.repository.ImportRepository;
 
-/**
- * @author mnelakurti
- *
- */
+import lombok.extern.slf4j.Slf4j;
+
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
+@Slf4j
 class ImportServiceTest {
 
-    /**
-    *
-    */
     @Mock
-    private ImportRepository importsRepository;
+    private ImportRepository importRepository;
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @BeforeAll
-    static void setUpBeforeClass() throws Exception {
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @AfterAll
-    static void tearDownAfterClass() throws Exception {
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @BeforeEach
-    void setUp() throws Exception {
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @AfterEach
-    void tearDown() throws Exception {
-    }
+    @InjectMocks
+    private ImportService importService;
 
     @Test
     void test() {
-        ImportService mockImportService = new ImportService(importsRepository);
-        assertNotNull(mockImportService.get(1L));
-        mockImportService.getId(getImport());
-        mockImportService.getId(null);
-        mockImportService.findByName("Deloitte LRS");
-        assertNotNull(mockImportService.findAll());
-        ReflectionTestUtils.setField(mockImportService,
-                "importsRepository", importsRepository);
-        Mockito.doReturn(getImport())
-        .when(importsRepository).findByName("Deloitte LRS");
-        assertNotNull(mockImportService.findByName("Deloitte LRS"));
+
+        try {
+
+            Import imp = new Import();
+            UUID id = UUID.randomUUID();
+            imp.setId(id);
+            imp.setRetries(0);
+            imp.setImportName("testName");
+            importService.save(imp);
+
+            Mockito.doReturn(true).when(importRepository).existsById(any());
+            importService.update(imp);
+
+            List<Import> imps = List.of(imp);
+            importService.saveAll(imps);
+
+            importService.get(id);
+            importService.findAll();
+            importService.findByName("testName");
+            importService.getId(imp);
+            importService.delete(id);
+            importService.deleteAll();
+
+        } catch (ResourceNotFoundException | DatasyncException e) {
+            fail("Should not have thrown any exception");
+        }
     }
 
-    /**
-    *
-    * @return Import
-    */
-   private static Import  getImport() {
-       Import tempimport  = new Import();
-       tempimport.setImportId(1L);
-       tempimport.setImportName("Deloitte LRS");
-       return tempimport;
-   }
+    @Test
+    void testResourceNotFound() {
 
+        try {
+
+            Import imp = new Import();
+            UUID id = UUID.randomUUID();
+            imp.setId(id);
+            imp.setRetries(0);
+            imp.setImportName("testName");
+            importService.save(imp);
+
+            Mockito.doReturn(false).when(importRepository).existsById(any());
+            importService.update(imp);
+        } catch (ResourceNotFoundException e) {
+            assertTrue(e.getMessage().contains("Record to update not found"));
+        }
+    }
 }
