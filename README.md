@@ -22,11 +22,8 @@ There are database and kafka dependencies, but there's a [repo with a docker-com
    
 # Create and populate PostgreSQL staging schema
 - Start Docker Desktop
-- Open DBeaver
-- Run Create_sync_db.sql
-- Run sync_db_insert.sql
-- Run Create_service_db.sql
-- Run service_db_insert.sql
+- Open SQL client
+- Run schema.sql 
 
 # Build the application
 - mvn clean install -Dmaven.test.skip=false

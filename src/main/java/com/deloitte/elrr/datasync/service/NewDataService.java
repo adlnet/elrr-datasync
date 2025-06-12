@@ -1,10 +1,13 @@
 package com.deloitte.elrr.datasync.service;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.deloitte.elrr.datasync.KafkaStatusCheck;
 import com.deloitte.elrr.datasync.dto.MessageVO;
 import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
 import com.deloitte.elrr.datasync.entity.Import;
@@ -31,6 +34,9 @@ public class NewDataService {
     @Autowired
     private ImportService importService;
 
+    @Autowired
+    private KafkaStatusCheck kafkaStatusCheck;
+
     @Value("${max.retries}")
     private int maxRetries;
 
@@ -40,31 +46,41 @@ public class NewDataService {
     @Transactional
     public void process(Statement[] statements) {
 
-        log.info("\n ===============Inside NewDataService===============");
+        log.debug("\n ===============Inside NewDataService===============");
 
         try {
 
-            processStatements(statements);
+            if (kafkaStatusCheck.isKafkaRunning()) {
+                processStatements(statements);
+            } else {
+                throw new DatasyncException("Kafka is not running");
+            }
 
         } catch (DatasyncException e) {
 
             // Get number of retries
             Import importRecord = importService.findByName(
                     StatusConstants.LRSNAME);
-            int attempts = importRecord.getRetries();
-            attempts++;
 
-            log.error("processStatements failed on attempt " + Integer.toString(
-                    attempts) + "retrying...");
+            if (importRecord != null) {
 
-            if (attempts >= maxRetries) {
-                log.error("Max retries reached. Giving up.");
-                throw new DatasyncException("Max retries reached. Giving up.",
-                        e);
-            } else {
-                importRecord.setRetries(attempts);
-                importService.update(importRecord);
+                int attempts = importRecord.getRetries();
+                attempts++;
+
+                log.error("processStatements failed on attempt " + Integer
+                        .toString(attempts) + "retrying...");
+
+                if (attempts >= maxRetries) {
+                    log.error("Max retries reached. Giving up.");
+                    throw new DatasyncException(
+                            "Max retries reached. Giving up.", e);
+                } else {
+                    importRecord.setRetries(attempts);
+                    importService.update(importRecord);
+                }
+
             }
+
         }
     }
 
@@ -84,8 +100,9 @@ public class NewDataService {
 
             for (Statement stmnt : statements) {
                 MessageVO kafkaMessage = new MessageVO();
+                UUID id = stmnt.getId();
                 kafkaMessage.setStatement(stmnt);
-                insertAuditLog(kafkaMessage);
+                insertAuditLog(id);
                 kafkaProducer.sendMessage(kafkaMessage);
             }
 
@@ -95,17 +112,16 @@ public class NewDataService {
     }
 
     /**
-     * @param messageVo
+     * @param id
      * @throws DatasyncException
      */
-    private void insertAuditLog(final MessageVO messageVo) {
+    private void insertAuditLog(final UUID id) {
 
         log.info("Creating ELRRAuditLog.");
 
         try {
             ELRRAuditLog auditLog = new ELRRAuditLog();
-            auditLog.setStatement(kafkaProducer.writeValueAsString(messageVo
-                    .getStatement()));
+            auditLog.setStatementId(kafkaProducer.writeValueAsString(id));
             elrrAuditLogService.save(auditLog);
         } catch (JsonProcessingException e) {
             log.error("Error creating ELRRAuditLog record.", e);

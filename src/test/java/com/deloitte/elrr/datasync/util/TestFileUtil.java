@@ -1,31 +1,21 @@
-package com.deloitte.elrr.test.datasync.util;
+package com.deloitte.elrr.datasync.util;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.springframework.core.io.ClassPathResource;
 
-public final class TestFileUtils {
+public final class TestFileUtil {
     /**
      * @param filename
      * @return file
      * @throws IOException
      */
     public static File getJsonTestFile(String filename) throws IOException {
-
-        File file;
-
-        try {
-            file = new ClassPathResource(filename).getFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
-
-        return file;
+        return new ClassPathResource(filename).getFile();
     }
 
-    private TestFileUtils() {
+    private TestFileUtil() {
         throw new UnsupportedOperationException(
                 "This is a utility class and cannot be instantiated");
     }

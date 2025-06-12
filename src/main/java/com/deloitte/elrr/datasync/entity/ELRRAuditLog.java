@@ -28,6 +28,6 @@ public class ELRRAuditLog extends Auditable<String> {
     @Column(name = "ID")
     private UUID id;
 
-    @Column(name = "STATEMENT")
-    private String statement;
+    @Column(name = "STATEMENTID")
+    private String statementId;
 }

@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS staging."import" (
 
 CREATE TABLE IF NOT EXISTS staging.elrrauditlog (
     id UUID         PRIMARY KEY,
-    statement       varchar(2048) NULL,
+    statementid     varchar(50) NULL,
     updatedby       varchar(20) NULL,
     inserteddate    timestamp NULL,
     lastmodified    timestamp NULL

@@ -65,7 +65,7 @@ public class LRSService {
      * @return statements
      * @throws DatasyncException
      */
-    private Statement[] invokeLRS(final Timestamp startDate) {
+    public Statement[] invokeLRS(final Timestamp startDate) {
 
         Statement[] statements = null;
 
@@ -85,7 +85,7 @@ public class LRSService {
             String completeURL = lrsURL + "/api/lrsdata?lastReadDate="
                     + lastReadDate;
 
-            HttpEntity<String> entity = new HttpEntity<>("body", httpHeaders);
+            HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
             ResponseEntity<String> json = restTemplate.exchange(completeURL,
                     HttpMethod.GET, entity, String.class);
 
@@ -96,8 +96,6 @@ public class LRSService {
 
         } catch (DatasyncException | RestClientException
                 | JsonProcessingException e) {
-            log.error("Error calling LRS.", e);
-            e.printStackTrace();
             throw new DatasyncException("Error calling LRS.", e);
         }
 
@@ -109,7 +107,7 @@ public class LRSService {
      * @return lastReadDate
      * @throws DatasyncException
      */
-    private String formatStoredDate(final Timestamp startDate) {
+    public String formatStoredDate(final Timestamp startDate) {
 
         String lastReadDate = null;
 
@@ -130,8 +128,6 @@ public class LRSService {
             log.info("Last read date = " + lastReadDate);
 
         } catch (IllegalArgumentException | NullPointerException e) {
-            log.error("Error formatting last read date.", e);
-            e.printStackTrace();
             throw new DatasyncException("Error formatting last read date.", e);
         }
 

@@ -328,31 +328,31 @@
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
-			 
                       <goals><goal>prepare-agent</goal></goals>
-			  
                     </execution>
                     <execution>
                         <id>report</id>
                         <phase>test</phase>
-			 
                         <goals><goal>report</goal></goals>
-			  
                    </execution>
                </executions>
                <configuration>
 	               <rules>
 					     <rule>
-					     <element>BUNDLE</element>
-					     <limits>
-					     <limit>
-					     <counter>COMPLEXITY</counter>
-					     <value>COVEREDRATIO</value>
-					     <minimum>0.20</minimum>
-					     </limit>
+					       <element>BUNDLE</element>
+					       <limits>
+					           <limit>
+					               <counter>COMPLEXITY</counter>
+					               <value>COVEREDRATIO</value>
+					               <minimum>0.20</minimum>
+					       </limit>
 					     </limits>
 					     </rule>
 				     </rules>
+				     <excludes>
+                        <exclude>**/*KafkaAdminConfig.*</exclude>
+                        <exclude>**/*KafkaProducerConfig.*</exclude>
+                     </excludes>
 			  </configuration>   
           </plugin>
 		  <plugin>
@@ -369,6 +369,7 @@
                     <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
+                    <outputFile>${project.build.directory}/checkstyle/checkstyle-report.xml</outputFile>
                     <linkXRef>false</linkXRef>
                 </configuration>
                 <executions>

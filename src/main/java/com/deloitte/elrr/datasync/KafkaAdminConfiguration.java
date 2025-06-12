@@ -15,12 +15,27 @@ public class KafkaAdminConfiguration {
     @Value("${kafka.replicas}")
     private int kafkaReplicas;
 
+    @Value("${kafka.topic}")
+    private String topic;
+
+    @Value("${kafka.dead.letter.topic}")
+    private String deadLetterTopic;
+
     /**
      * @return NewTopic
      */
     @Bean
     public NewTopic topicExample() {
-        return TopicBuilder.name("test-1").partitions(kafkaPartitions).replicas(
+        return TopicBuilder.name(topic).partitions(kafkaPartitions).replicas(
                 kafkaReplicas).build();
+    }
+
+    /**
+     * @return NewTopic
+     */
+    @Bean
+    public NewTopic topicDeadLetterQueue() {
+        return TopicBuilder.name(deadLetterTopic).partitions(kafkaPartitions)
+                .replicas(kafkaReplicas).build();
     }
 }
