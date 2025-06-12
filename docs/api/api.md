@@ -1,0 +1,76 @@
+# ELRR Data Sync OpenAPI Doc
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ELRR Datasync OpenAPI definition
+  version: v0
+servers:
+  - url: http://127.0.0.1:8080
+    description: Generated server url
+paths:
+  /api/getImports:
+    get:
+      tags:
+        - imports-controller
+      operationId: getImports
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: default response
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ImportDTO'
+  /api/getAllImports:
+    get:
+      tags:
+        - imports-controller
+      operationId: getAllImports
+      responses:
+        '200':
+          description: default response
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImportDTO'
+components:
+  schemas:
+    ImportDTO:
+      type: object
+      properties:
+        importsName:
+          type: string
+        detailsList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportDetailDTO'
+    ImportDetailDTO:
+      type: object
+      properties:
+        importsName:
+          type: string
+        importsEndPoint:
+          type: string
+        importsDate:
+          type: string
+          format: date-time
+        totalRecords:
+          type: integer
+          format: int32
+        failedRecords:
+          type: integer
+          format: int32
+        successRecords:
+          type: integer
+          format: int32
+        status:
+          type: string
+```
