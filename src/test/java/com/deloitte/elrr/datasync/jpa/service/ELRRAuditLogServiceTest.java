@@ -73,7 +73,7 @@ class ELRRAuditLogServiceTest {
                     any());
             elrrAuditLogService.update(elrrAuditLog);
 
-        } catch (ResourceNotFoundException | DatasyncException e) {
+        } catch (ResourceNotFoundException e) {
             assertTrue(e.getMessage().contains("Record to update not found"));
         }
     }
