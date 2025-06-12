@@ -1,0 +1,499 @@
+elrr test xAPI statements
+
+
+1. Run Postman to populate lrs-db
+   a. POST http://localhost:8083/xapi/statements
+   b. Authorization
+      1. Basic Auth
+      2. Username = my_key
+      3. Password = my_secret
+   c. Headers
+         a. key = X-Experience-API-Version
+         b. value = 1.0.3
+   d. Body raw, JSON
+   
+[
+	{
+	    "id": "7a8073a4-2d0c-48da-986d-b82223730ea9",
+	    "actor": {
+	        "name": "Cliff Casey",
+	        "mbox": "mailto:cliff@yetanalytics.com"
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/achieved",
+	        "display": { "en-us": "Achieved" }
+	    },
+	    "object": {
+	        "id": "http://example.edlm/competencies/competency-a",
+	        "definition": {
+	            "name": { "en-us": "Competency A" },
+	            "description": { "en-us": "Object representing Competency A level" },
+	            "type": "https://w3id.org/xapi/tla/activity-types/competency"
+	
+	        }
+	    },
+	    "timestamp": "2025-03-07T09:15:12-05:00"
+	},
+	{
+	    "id": "7a8073a4-230c-48da-986d-b82223730ea9",
+	    "actor": {
+	        "name": "Cindy Leven",
+	        "mbox": "mailto:cindy.leven@gmail.com"
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/achieved",
+	        "display": { "en-us": "Achieved" }
+	    },
+	    "object": {
+	        "id": "http://example.edlm/competencies/competency-a",
+	        "definition": {
+	            "name": { "en-us": "Competency A" },
+	            "description": { "en-us": "Object representing Competency A level" },
+	            "type": "https://w3id.org/xapi/tla/activity-types/competency"
+	
+	        }
+	    },
+	    "timestamp": "2025-03-07T09:15:12-05:00"
+	},
+	{
+	    "id": "4d8073a4-230c-48da-986d-b82223730ea8",
+	    "actor": {
+	        "name": "Cindy Leven",
+	        "account": {
+	      		"name": "1234567d-5948-87ff-b11a-0eec04f384c2",
+	      		"homePage": "http://example23.org"
+	    	}
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/achieved",
+	        "display": { "en-us": "Achieved" }
+	    },
+	    "object": {
+	        "id": "http://example.edlm/competencies/competency-xyz",
+	        "definition": {
+	            "name": { "en-us": "Competency XYZ" },
+	            "description": { "en-us": "Object representing Competency XYZ level" },
+	            "type": "https://w3id.org/xapi/tla/activity-types/competency"
+	
+	        }
+	    },
+	    "timestamp": "2025-03-07T09:15:12-05:00"
+	},
+	{
+	    "id": "7a8073a4-2E0c-48da-986d-b82223730ea9",
+	    "actor": {
+	        "name": "Horatio Nelson",
+	        "mbox": "mailto:horatio@gmail.com"
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/achieved",
+	        "display": { "en-us": "Achieved" }
+	    },
+	    "object": {
+	        "id": "http://example.edlm/competencies/competency-c",
+	        "definition": {
+	            "name": { "en-us": "Competency C" },
+	            "description": { "en-us": "Object representing Competency C level" },
+	            "type": "https://w3id.org/xapi/tla/activity-types/competency"
+	
+	        }
+	    },
+	    "timestamp": "2025-03-07T09:15:12-05:00"
+	},
+	{
+	    "id": "6a8073a4-2d0c-48da-986d-b82223730ea4",
+	    "actor": {
+	        "name": "William Money",
+	        "mbox": "mailto:money@gmail.com"
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/achieved",
+	        "display": { "en-us": "Achieved" }
+	    },
+	    "object": {
+	        "id": "http://example.edlm/competencies/competency-23",
+	        "definition": {
+	            "name": { "en-us": "Competency 23" },
+	            "description": { "en-us": "Object representing Competency 23 level" },
+	            "type": "https://w3id.org/xapi/tla/activity-types/competency"
+	          }
+	    },
+	    "context": {
+	         "extensions": {"https://w3id.org/xapi/comp/contextextensions/expires": "2025-12-05T15:30:00Z"}
+	    },
+		"timestamp": "2025-03-07T09:15:12-05:00"
+	},
+	{
+	    "id": "7a8073a4-2d0c-48da-986d-b82223730ea8",
+	    "actor": {
+	        "name": "Cliff Casey",
+	        "mbox": "mailto:cliff@yetanalytics.com"
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/achieved",
+	        "display": { "en-us": "Achieved" }
+	    },
+	    "object": {
+	        "id": "http://example.edlm/credentials/credential-a",
+	        "definition": {
+	            "name": { "en-us": "Credential A" },
+	            "description": { "en-us": "Object representing Credential A level" },
+	            "type": "https://w3id.org/xapi/tla/activity-types/credential"
+	        }
+	    },
+	    "timestamp": "2025-03-07T09:15:12-05:00"
+	},
+	{
+	    "id": "7c8073a4-2d0c-48da-986d-b82223730ea8",
+	    "actor": {
+	        "name": "Joni Mitchell",
+	        "mbox": "mailto:joni@woodstock.com"
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/achieved",
+	        "display": { "en-us": "Achieved" }
+	    },
+	    "object": {
+	        "id": "http://example.edlm/credentials/credential-a",
+	        "definition": {
+	            "name": { "en-us": "Credential A" },
+	            "description": { "en-us": "Object representing Credential A level" },
+	            "type": "https://w3id.org/xapi/tla/activity-types/credential"
+	        }
+	    },
+	    "timestamp": "2025-03-07T09:15:12-05:00"
+	},
+	{
+	    "id": "7c8073a4-2d0c-48da-986d-b82223730eb5",
+	    "actor": {
+	        "name": "Jethro Tull",
+	        "mbox": "mailto:tull@gmail.com"
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/achieved",
+	        "display": { "en-us": "Achieved" }
+	    },
+	    "object": {
+	        "id": "http://example.edlm/credentials/credential-a",
+	        "definition": {
+	            "name": { "en-us": "Credential A" },
+	            "description": { "en-us": "Object representing Credential A level" },
+	            "type": "https://w3id.org/xapi/tla/activity-types/credential"
+	        }
+	    },
+	    	"context": {
+	    		"extensions": {"https://w3id.org/xapi/comp/contextextensions/expires": "2025-12-05T15:30:00Z"}
+	    },
+	    "timestamp": "2025-03-07T09:15:12-05:00"
+	},
+	{
+	    "id": "7c8073a4-2d0c-48da-986e-b82223730eb5",
+	    "actor": {
+	        "name": "David Mantel",
+	        "mbox": "mailto:mantel@gmail.com"
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/achieved",
+	        "display": { "en-us": "Achieved" }
+	    },
+	    "object": {
+	        "id": "http://example.edlm/credentials/credential-a",
+	        "definition": {
+	            "name": { "en-us": "Credential B" },
+	            "description": { "en-us": "Object representing Credential B level" },
+	            "type": "https://w3id.org/xapi/tla/activity-types/credential"
+	        }
+	    },
+	    	"context": {
+	    		"extensions": {"https://w3id.org/xapi/comp/contextextensions/expires": "2025-12-06T15:30:00Z"}
+	    },
+	    "timestamp": "2025-03-07T09:15:12-05:00"
+	},
+	{
+		"id": "7a8073a4-2d0c-48da-986d-b82223730eb2",
+		"actor": {
+	    	"name": "Cliff Casey",
+	    	"mbox": "mailto:cliff@yetanalytics.com"
+	},
+	"verb": {
+	    "id": "http://adlnet.gov/expapi/verbs/completed",
+	    "display": { "en-us": "Completed" }
+	},
+	"object": {
+	    "id": "http://example.edlm/activities/activity1",
+	    "definition": {
+	        "name": { "en-us": "Activity 1" },
+	        "description": { "en-us": "Example Activity 1" }
+	    }
+	},
+	"result": {
+	    "completion": true
+	},
+	"timestamp": "2025-03-07T09:15:12-05:00"
+	},
+	{"id": "7a8073a4-2d0c-48da-986d-b82223730eb3",
+	    "actor": {
+	        "name": "Cliff Casey",
+	        "mbox": "mailto:cliff@yetanalytics.com"
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/completed",
+	        "display": { "en-us": "Completed" }
+	    },
+	    "object": {
+	        "id": "http://example.edlm/activities/activity2",
+	        "definition": {
+	            "name": { "en-us": "Activity 2" },
+	            "description": { "en-us": "Example Activity 2" }
+	        }
+	    },
+	    "result": {
+	        "completion": true,
+	        "success": true
+	    },
+	    "timestamp": "2025-03-07T09:15:12-05:00"
+	},
+	{"id": "7a8073a4-2d0c-48da-986d-b82223730eb4",
+	    "actor": {
+	        "name": "Cliff Casey",
+	        "mbox": "mailto:cliff@yetanalytics.com"
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/completed",
+	        "display": { "en-us": "Completed" }
+	    },
+	    "object": {
+	        "id": "http://example.edlm/activities/activity3",
+	        "definition": {
+	            "name": { "en-us": "Activity 3" },
+	            "description": { "en-us": "Example Activity 3" }
+	        }
+	    },
+	    "result": {
+	        "completion": true,
+	        "success": false
+	    },
+	    "timestamp": "2025-03-07T09:15:12-05:00"
+	},
+	{
+	"id": "7b8073a4-2d0c-48da-986d-b82223730eb2",
+	    "actor": {
+	        "name": "Phil Leven",
+	        "mbox": "mailto:phleven@deloitte.com"
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/completed",
+	        "display": { "en-us": "Completed" }
+	    },
+	    "object": {
+	        "id": "http://example.edlm/activities/activity4",
+	        "definition": {
+	            "name": { "en-us": "Activity 4" },
+	            "description": { "en-us": "Example Activity 4" }
+	        }
+	    },
+	    "result": {
+	        "completion": true
+	    },
+	    "timestamp": "2025-03-07T09:15:12-05:00"
+	},
+	{
+	"id": "7b8073b4-2d0c-48da-986d-b82223730eb2",
+	    "actor": {
+	        "name": "Phil Simms",
+	        "mbox": "mailto:philSimms@gmail.com"
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/completed",
+	        "display": { "en-us": "Completed" }
+	    },
+	    "object": {
+	        "id": "http://example.edlm/activities/activity5",
+	        "definition": {
+	            "name": { "en-us": "Activity 5" },
+	            "description": { "en-us": "Example Activity 5" }
+	        }
+	    },
+	    "result": {
+	        "completion": true
+	    },
+	    "timestamp": "2025-03-07T09:15:12-05:00"
+	},
+	{
+	    "id": "7ccd3322-e1a5-411a-a67d-6a735c76f119",
+	    "timestamp": "2015-12-18T12:17:00+00:00",
+	    "actor": {
+	      "objectType": "Agent",
+	      "name": "Example Learner",
+	      "mbox": "mailto:example.learner@adlnet.gov"
+	    },
+	    "verb": {
+	      "id": "http://adlnet.gov/expapi/verbs/failed",
+		  "display": { "en-us": "Failed" }	    
+		},
+	    "object": {
+	      "id": "http://example.adlnet.gov/xapi/example/simpleCBT",
+	      "definition": {
+	        "name": {
+	          "en-US": "simple CBT course"
+	        },
+	        "description": {
+	          "en-US": "A fictitious example CBT course."
+	        }
+	      }
+	    },
+	    "result": {
+	      "score": {
+	        "scaled": 0.95
+	      },
+	      "success": true,
+	      "completion": true,
+	      "duration": "PT1234S"
+	    }
+	},
+	{
+	    "id": "7ced3322-e1a5-411a-a67d-6a735c76f119",
+	    "timestamp": "2015-12-18T12:17:00+00:00",
+	    "actor": {
+	      "objectType": "Agent",
+	      "name": "Tom Brady",
+	      "mbox": "mailto:brady.learner@adlnet.gov"
+	    },
+	    "verb": {
+	      "id": "http://adlnet.gov/expapi/verbs/passed",
+		  "display": { "en-us": "Passed" }	    
+		},
+	    "object": {
+	      "id": "http://example.adlnet.gov/xapi/example/simpleCBT2",
+	      "definition": {
+	        "name": {
+	          "en-US": "simple CBT 2 course"
+	        },
+	        "description": {
+	          "en-US": "A fictitious example CBT 2 course."
+	        }
+	      }
+	    },
+	    "result": {
+	      "score": {
+	        "scaled": 0.90
+	      },
+	      "success": true,
+	      "completion": true,
+	      "duration": "PT1234S"
+	    }
+	},
+	{
+	    "id": "9ded3322-e1a5-411a-a67d-6a735c76f119",
+	    "timestamp": "2016-12-18T12:17:00+00:00",
+	    "actor": {
+	      	"objectType": "Agent",
+	      	"name": "Robert Engle",
+	      	"mbox": "mailto:engle.learner@adlnet.gov"
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/initialized",
+	        "display": {
+	            "en-US": "initialized"
+	        }
+	    },
+	    "object": {
+	        "id": "http://adlnet.gov/expapi/activities/example10",
+	        "definition": {
+	            "name": {
+	                "en-US": "Example Activity 10"
+	            },
+	            "description": {
+	                "en-US": "Example activity 10 description"
+	            }
+	        },
+	        "objectType": "Activity"
+	    }
+	},
+	{
+	    "id": "4ced3322-e1a5-411a-a67d-6a735c76f119",
+	    "timestamp": "2015-12-18T12:17:00+00:00",
+	    "actor": {
+	      "objectType": "Agent",
+	      "name": "Tom Brady",
+	      "mbox": "mailto:brady.learner@adlnet.gov"
+	    },
+	    "verb": {
+	      "id": "http://adlnet.gov/expapi/verbs/satisfied",
+	      "display": { "en-us": "Satisfied" }
+	    },
+	    "object": {
+	      "id": "http://example.adlnet.gov/xapi/example/simpleCBT3",
+	      "definition": {
+	        "name": {
+	          "en-US": "simple CBT 3 course"
+	        },
+	        "description": {
+	          "en-US": "A fictitious example CBT 3 course."
+	        }
+	      }
+	    },
+	    "result": {
+	      "score": {
+	        "scaled": 0.2
+	      },
+	      "success": true,
+	      "completion": true,
+	      "duration": "PT1234S"
+	    }
+	},
+	{
+	    "id": "9ded3322-e1a4-311a-a67d-6a735c76f119",
+	    "timestamp": "2016-12-18T12:17:00+00:00",
+	    "actor": {
+	      	"objectType": "Agent",
+	      	"name": "Luke Skywalker",
+	      	"mbox": "mailto:luke@jedi.com"
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/registered",
+	        "display": {
+	            "en-US": "registered"
+	        }
+	    },
+	    "object": {
+	        "id": "http://adlnet.gov/expapi/activities/registeredexample",
+	        "definition": {
+	            "name": {
+	                "en-US": "Example Registered Activity"
+	            },
+	            "description": {
+	                "en-US": "Example Registered Activity Description"
+	            }
+	        },
+	        "objectType": "Activity"
+	    }
+	},
+	{
+	    "id": "9ded3342-e1a4-311a-a67d-6a735c76f119",
+	    "timestamp": "2016-12-18T12:17:00+00:00",
+	    "actor": {
+	        "objectType": "Agent",
+	        "name": "Han Solo",
+	        "mbox": "mailto:han@jedi.com"
+	    },
+	    "verb": {
+	        "id": "http://adlnet.gov/expapi/verbs/scheduled",
+	        "display": {
+	            "en-US": "scheduled"
+	        }
+	    },
+	    "object": {
+	        "id": "http://adlnet.gov/expapi/activities/scheduledexample",
+	        "definition": {
+	            "name": {
+	                "en-US": "Example Scheduled Activity"
+	            },
+	            "description": {
+	                "en-US": "Example Scheduled Activity Description"
+	            }
+	        },
+	        "objectType": "Activity"
+	    }
+	}
+]

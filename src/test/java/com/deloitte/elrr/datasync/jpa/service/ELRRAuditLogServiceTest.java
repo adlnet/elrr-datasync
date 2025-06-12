@@ -1,13 +1,12 @@
 package com.deloitte.elrr.datasync.jpa.service;
 
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Iterator;
-import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -43,10 +42,12 @@ class ELRRAuditLogServiceTest {
             UUID id = UUID.randomUUID();
             elrrAuditLog.setId(id);
             elrrAuditLogService.save(elrrAuditLog);
-            
-            Mockito.doReturn(true).when(elrrAuditLogRepository).existsById(any());
+
+            Mockito.doReturn(true).when(elrrAuditLogRepository).existsById(
+                    any());
             elrrAuditLogService.update(elrrAuditLog);
- 
+
+            elrrAuditLogService.get(id);
             elrrAuditLogService.findAll();
             elrrAuditLog.getId();
             elrrAuditLogService.delete(id);
@@ -59,31 +60,7 @@ class ELRRAuditLogServiceTest {
     }
 
     @Test
-    void testDelete() {
-
-        try {
-
-            ELRRAuditLog elrrAuditLog = new ELRRAuditLog();
-            elrrAuditLog.setId(UUID.randomUUID());
-            elrrAuditLogService.save(elrrAuditLog);
-
-            Mockito.doReturn(true).when(elrrAuditLogRepository).existsById(any());
-            elrrAuditLogService.update(elrrAuditLog);
- 
-            LocalDateTime localDateTime = LocalDateTime.parse(
-                    "2025-12-05T15:30:00Z", DateTimeFormatter.ISO_DATE_TIME);
-
-            Timestamp timestamp = Timestamp.valueOf(localDateTime);
-
-            elrrAuditLogService.deleteByDate(timestamp);
-
-        } catch (DatasyncException e) {
-            fail("Should not have thrown any exception");
-        }
-    }
-
-    @Test
-    void testCommomSvc() {
+    void testResourceNotFound() {
 
         try {
 
@@ -92,19 +69,36 @@ class ELRRAuditLogServiceTest {
             elrrAuditLog.setId(id);
             elrrAuditLogService.save(elrrAuditLog);
 
-            Mockito.doReturn(true).when(elrrAuditLogRepository).existsById(any());
+            Mockito.doReturn(false).when(elrrAuditLogRepository).existsById(
+                    any());
             elrrAuditLogService.update(elrrAuditLog);
- 
-            List<ELRRAuditLog> auditLogs = List.of(elrrAuditLog);
-            elrrAuditLogService.saveAll(auditLogs);
 
-            elrrAuditLogService.findAll();
-            elrrAuditLogService.getId(elrrAuditLog);
-            elrrAuditLogService.delete(id);
-            elrrAuditLogService.deleteAll();
-            elrrAuditLogService.getId(elrrAuditLog);
+        } catch (ResourceNotFoundException | DatasyncException e) {
+            assertTrue(e.getMessage().contains("Record to update not found"));
+        }
+    }
 
-        } catch (ResourceNotFoundException e) {
+    @Test
+    void testDelete() {
+
+        try {
+
+            ELRRAuditLog elrrAuditLog = new ELRRAuditLog();
+            elrrAuditLog.setId(UUID.randomUUID());
+            elrrAuditLogService.save(elrrAuditLog);
+
+            Mockito.doReturn(true).when(elrrAuditLogRepository).existsById(
+                    any());
+            elrrAuditLogService.update(elrrAuditLog);
+
+            LocalDateTime localDateTime = LocalDateTime.parse(
+                    "2025-12-05T15:30:00Z", DateTimeFormatter.ISO_DATE_TIME);
+
+            Timestamp timestamp = Timestamp.valueOf(localDateTime);
+
+            elrrAuditLogService.deleteByDate(timestamp);
+
+        } catch (DatasyncException e) {
             fail("Should not have thrown any exception");
         }
     }

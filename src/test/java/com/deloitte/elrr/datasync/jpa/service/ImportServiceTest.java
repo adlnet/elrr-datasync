@@ -1,11 +1,10 @@
 package com.deloitte.elrr.datasync.jpa.service;
 
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -46,23 +45,24 @@ class ImportServiceTest {
 
             Mockito.doReturn(true).when(importRepository).existsById(any());
             importService.update(imp);
-            
+
             List<Import> imps = List.of(imp);
             importService.saveAll(imps);
 
+            importService.get(id);
             importService.findAll();
             importService.findByName("testName");
             importService.getId(imp);
             importService.delete(id);
             importService.deleteAll();
 
-        } catch (DatasyncException e) {
+        } catch (ResourceNotFoundException | DatasyncException e) {
             fail("Should not have thrown any exception");
         }
     }
 
     @Test
-    void testCommomSvc() {
+    void testResourceNotFound() {
 
         try {
 
@@ -73,20 +73,10 @@ class ImportServiceTest {
             imp.setImportName("testName");
             importService.save(imp);
 
-            Mockito.doReturn(true).when(importRepository).existsById(any());
+            Mockito.doReturn(false).when(importRepository).existsById(any());
             importService.update(imp);
-            
-            List<Import> imps = List.of(imp);
-            importService.saveAll(imps);
-
-            importService.findAll();
-            importService.findByName("testName");
-            importService.getId(imp);
-            importService.delete(id);
-            importService.deleteAll();
-
         } catch (ResourceNotFoundException e) {
-            fail("Should not have thrown any exception");
+            assertTrue(e.getMessage().contains("Record to update not found"));
         }
     }
 }
