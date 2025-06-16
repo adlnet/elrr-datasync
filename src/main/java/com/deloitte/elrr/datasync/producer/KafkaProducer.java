@@ -51,8 +51,8 @@ public class KafkaProducer {
                     + kafkatopic + "\n\n");
 
         } catch (KafkaException | JsonProcessingException e) {
-            throw new DatasyncException("Exception while sending Kafka message",
-                    e);
+            throw new DatasyncException(
+                    "Exception while sending Kafka message");
         }
     }
 
