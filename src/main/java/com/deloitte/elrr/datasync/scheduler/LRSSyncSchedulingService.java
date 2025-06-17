@@ -60,7 +60,7 @@ public class LRSSyncSchedulingService {
             }
 
             Statement[] result = null;
-            // importRecord = updateImportInProcess(importRecord);
+            importRecord = updateImportInProcess(importRecord);
 
             // Make call to LRSService.invokeLRS(final Timestamp startDate)
             result = lrsService.process(importRecord.getImportStartDate());
