@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.deloitte.elrr.datasync.entity.Import;
@@ -49,7 +50,6 @@ public class LRSSyncSchedulingService {
     @Scheduled(cron = "${cronExpression}")
     public void run() {
 
-        log.info("===============inside LRS schedule method.===============\n");
         Import importRecord = importService.findByName(StatusConstants.LRSNAME);
 
         try {
@@ -57,10 +57,11 @@ public class LRSSyncSchedulingService {
             // If no import record
             if (importRecord == null) {
                 importRecord = createImport();
+            } else {
+                importRecord = updateImportInProcess(importRecord);
             }
 
             Statement[] result = null;
-            importRecord = updateImportInProcess(importRecord);
 
             // Make call to LRSService.invokeLRS(final Timestamp startDate)
             result = lrsService.process(importRecord.getImportStartDate());
@@ -86,8 +87,8 @@ public class LRSSyncSchedulingService {
      * @return importRecord
      * @throws ResourceNotFoundException
      */
-    @Transactional
-    private Import updateImportInProcess(Import importRecord) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Import updateImportInProcess(Import importRecord) {
 
         // If the previous run was successful, we will update the dates.
         // If not, we just re run again with same old dates.
@@ -117,6 +118,7 @@ public class LRSSyncSchedulingService {
     /**
      * @return importRecord
      */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Import createImport() {
         log.info("Creating new import.");
         Import importRecord = new Import();
