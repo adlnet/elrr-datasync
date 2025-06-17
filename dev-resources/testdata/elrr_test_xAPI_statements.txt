@@ -2,15 +2,6 @@ elrr test xAPI statements
 
 
 1. Run Postman to populate lrs-db
-   a. POST http://localhost:8083/xapi/statements
-   b. Authorization
-      1. Basic Auth
-      2. Username = my_key
-      3. Password = my_secret
-   c. Headers
-         a. key = X-Experience-API-Version
-         b. value = 1.0.3
-   d. Body raw, JSON
    
 [
 	{

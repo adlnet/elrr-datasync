@@ -46,8 +46,6 @@ public class NewDataService {
     @Transactional
     public void process(Statement[] statements) {
 
-        log.debug("\n ===============Inside NewDataService===============");
-
         try {
 
             if (kafkaStatusCheck.isKafkaRunning()) {
@@ -73,7 +71,7 @@ public class NewDataService {
                 if (attempts >= maxRetries) {
                     log.error("Max retries reached. Giving up.");
                     throw new DatasyncException(
-                            "Max retries reached. Giving up.", e);
+                            "Max retries reached. Giving up.");
                 } else {
                     importRecord.setRetries(attempts);
                     importService.update(importRecord);
@@ -125,8 +123,7 @@ public class NewDataService {
             elrrAuditLogService.save(auditLog);
         } catch (JsonProcessingException e) {
             log.error("Error creating ELRRAuditLog record.", e);
-            throw new DatasyncException("Error creating ELRRAuditLog record.",
-                    e);
+            throw new DatasyncException("Error creating ELRRAuditLog record.");
         }
     }
 }

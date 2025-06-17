@@ -15,8 +15,8 @@ public class DatasyncExceptionTest {
 
     private final Exception e = new NullPointerException();
 
-    private DatasyncException datasyncException = new DatasyncException(message,
-            e);
+    private DatasyncException datasyncException = new DatasyncException(
+            message);
 
     /**
      * @author phleven

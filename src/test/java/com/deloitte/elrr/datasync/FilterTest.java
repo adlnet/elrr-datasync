@@ -34,6 +34,7 @@ public class FilterTest {
         MockFilterChain chain = new MockFilterChain();
         sf.doFilter(http, res, chain);
         assertEquals(res.getStatus(), 400);
+        assertEquals(res.getErrorMessage(), "Malformed request body");
         assertTrue(res.isCommitted());
     }
 
@@ -45,6 +46,7 @@ public class FilterTest {
         MockHttpServletResponse res = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
         sf.doFilter(req, res, chain);
+        assertEquals(res.getErrorMessage(), null);
         assertFalse(res.isCommitted());
     }
 
@@ -57,6 +59,8 @@ public class FilterTest {
         MockHttpServletResponse res = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
         sf.doFilter(http, res, chain);
+        assertTrue(res.getErrorMessage().contains(
+                "Illegal line in request body"));
         assertTrue(res.isCommitted());
     }
 
@@ -70,6 +74,7 @@ public class FilterTest {
         MockFilterChain chain = new MockFilterChain();
         sf.doFilter(http, res, chain);
         assertEquals(res.getStatus(), 400);
+        assertEquals(res.getErrorMessage(), "Illegal Parameter Value");
         assertTrue(res.isCommitted());
     }
 
@@ -113,6 +118,7 @@ public class FilterTest {
         MockHttpServletResponse res = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
         sf.doFilter(http, res, chain);
+        assertEquals(res.getErrorMessage(), null);
         assertFalse(res.isCommitted());
     }
 
@@ -144,6 +150,7 @@ public class FilterTest {
         MockHttpServletResponse res = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
         sl.doFilter(http, res, chain);
+        assertEquals(res.getErrorMessage(), null);
         assertFalse(res.isCommitted());
     }
 
@@ -175,6 +182,7 @@ public class FilterTest {
         MockHttpServletResponse res = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
         hf.doFilter(http, res, chain);
+        assertEquals(res.getErrorMessage(), null);
         assertFalse(res.isCommitted());
     }
 
@@ -208,6 +216,7 @@ public class FilterTest {
         MockHttpServletResponse res = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
         hf.doFilter(http, res, chain);
+        assertEquals(res.getErrorMessage(), "Not a HTTPS request.");
         assertTrue(res.isCommitted());
     }
 
