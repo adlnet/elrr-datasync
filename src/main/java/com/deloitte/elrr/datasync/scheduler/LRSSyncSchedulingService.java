@@ -57,11 +57,10 @@ public class LRSSyncSchedulingService {
             // If no import record
             if (importRecord == null) {
                 importRecord = createImport();
-            } else {
-                importRecord = updateImportInProcess(importRecord);
             }
 
             Statement[] result = null;
+            importRecord = updateImportInProcess(importRecord);
 
             // Make call to LRSService.invokeLRS(final Timestamp startDate)
             result = lrsService.process(importRecord.getImportStartDate());
