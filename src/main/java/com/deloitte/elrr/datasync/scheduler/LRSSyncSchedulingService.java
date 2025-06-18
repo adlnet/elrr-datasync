@@ -76,9 +76,14 @@ public class LRSSyncSchedulingService {
                 | NullPointerException e) {
 
             log.error("LRS Sync failed.");
-            importRecord.setRetries(0);
-            importService.update(importRecord);
+            
+            if (importRecord != null) {
+                importRecord.setRetries(0);
+                importService.update(importRecord);
+            }
+            
         }
+        
     }
 
     /**
