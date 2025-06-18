@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 class KafkaProducerTest {
 
     @Mock
-    ImportService importService;
+    private ImportService importService;
 
     @Mock
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -67,6 +67,7 @@ class KafkaProducerTest {
     }
 
     @Test
+    @SuppressWarnings("checkstyle:linelength")
     void testWriteBadValueAsString() {
 
         try {
