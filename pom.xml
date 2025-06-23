@@ -23,7 +23,8 @@
 		<sonar.dynamicAnalysis>resuseReports</sonar.dynamicAnalysis>
 		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
 		<sona.lauguage>java</sona.lauguage>
-		<spring-security.version>6.2.8</spring-security.version>
+		<spring-security.version>6.3.10</spring-security.version>
+		<spring-framework.version>6.2.8</spring-framework.version>
 	</properties>
 	<dependencies>
         <dependency>
@@ -68,6 +69,17 @@
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
             <version>1.7</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-beanutils</groupId>
+                        <artifactId>commons-beanutils</artifactId>
+                    </exclusion>
+                </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.11.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>																	  
@@ -98,7 +110,29 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-saml2-service-provider</artifactId>
+			     <exclusions>
+                      <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bcpkix-jdk18on</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.velocity</groupId>
+                        <artifactId>velocity-engine-core</artifactId>
+                    </exclusion>
+			     </exclusions>
 		</dependency>
+        <dependency>
+            <!--override for spring-security-saml2-service-provider-->
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-engine-core</artifactId>
+            <version>2.4.1</version>
+        </dependency>
+        <dependency>
+            <!--override for spring-security-saml2-service-provider-->
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>1.80</version>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
@@ -197,7 +231,7 @@
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-clients</artifactId>
-			<version>3.7.1</version>
+			<version>3.9.1</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.xerial.snappy</groupId>
@@ -215,11 +249,6 @@
 					<artifactId>accessors-smart</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>6.1.6</version>				
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -241,17 +270,7 @@
             <artifactId>spring-boot-starter-logging</artifactId>
             <version>3.4.5</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>6.1.21</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>6.1.21</version>
-        </dependency>
-        <dependency>
+       <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-core</artifactId>
             <version>10.1.42</version>
@@ -362,6 +381,18 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+              <groupId>org.owasp</groupId>
+              <artifactId>dependency-check-maven</artifactId>
+              <version>12.1.0</version>
+              <executions>
+                  <execution>
+                      <goals>
+                          <goal>check</goal>
+                      </goals>
+                  </execution>
+              </executions>
             </plugin>
 		</plugins>
 	</build>
