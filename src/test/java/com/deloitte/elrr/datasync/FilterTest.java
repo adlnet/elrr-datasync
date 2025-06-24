@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import jakarta.servlet.ServletException;
@@ -91,6 +92,7 @@ public class FilterTest {
     }
 
     @Test
+    @WithMockUser
     void testSanatizerOk() throws IOException, ServletException {
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
@@ -123,6 +125,7 @@ public class FilterTest {
     }
 
     @Test
+    @WithMockUser
     void testSizeLimitOk() throws IOException, ServletException {
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
@@ -155,6 +158,7 @@ public class FilterTest {
     }
 
     @Test
+    @WithMockUser
     void testHeaderNoCheck() throws IOException, ServletException {
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
@@ -187,6 +191,7 @@ public class FilterTest {
     }
 
     @Test
+    @WithMockUser
     void testHeaderCheck() throws IOException, ServletException {
         ReflectionTestUtils.setField(hf, "checkHttpHeader", true);
 
@@ -221,6 +226,7 @@ public class FilterTest {
     }
 
     @Test
+    @WithMockUser
     void testInputSanitizer() {
 
         try {
