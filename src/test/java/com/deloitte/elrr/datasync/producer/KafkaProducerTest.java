@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -81,7 +82,7 @@ class KafkaProducerTest {
     }
 
     @Test
-    void test() {
+    void testSendMessage() {
 
         try {
 
@@ -91,6 +92,22 @@ class KafkaProducerTest {
                     Statement[].class);
 
             kafkaProducer.sendMessage(stmts[0]);
+
+        } catch (DatasyncException | IOException e) {
+            fail("Should not have thrown any exception");
+        }
+    }
+
+    @Test
+    void testSendMessageString() {
+
+        try {
+
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
+
+            String json = Files.readString(testFile.toPath());
+
+            kafkaProducer.sendMessage(json);
 
         } catch (DatasyncException | IOException e) {
             fail("Should not have thrown any exception");
