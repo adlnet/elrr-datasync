@@ -82,7 +82,7 @@ class KafkaProducerTest {
     }
 
     @Test
-    void test() {
+    void testSendMessage() {
 
         try {
 
@@ -99,7 +99,7 @@ class KafkaProducerTest {
     }
 
     @Test
-    void testString() {
+    void testSendMessageString() {
 
         try {
 
