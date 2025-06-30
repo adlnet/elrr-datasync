@@ -14,9 +14,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 
 public class FilterTest {
@@ -92,12 +92,17 @@ public class FilterTest {
     }
 
     @Test
-    @WithMockUser
     void testSanatizerOk() throws IOException, ServletException {
+
+        ReflectionTestUtils.setField(sl, "maxSizeLimit", 2000000L);
+        ReflectionTestUtils.setField(sl, "checkMediaTypeJson", false);
+
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         req.addParameter("anything", "goes");
-        http = new WrappedHttp(req, "{Unwise: nap}");
+        String requestBody = "{Unwise: napping during work}";
+        req.setContent(requestBody.getBytes());
+        http = new WrappedHttp(req, requestBody);
 
         // next lines are simply to increase coverage of wrappedhttp
         http.getInputStream().available();
@@ -125,12 +130,17 @@ public class FilterTest {
     }
 
     @Test
-    @WithMockUser
     void testSizeLimitOk() throws IOException, ServletException {
+
+        ReflectionTestUtils.setField(sl, "maxSizeLimit", 2000000L);
+        ReflectionTestUtils.setField(sl, "checkMediaTypeJson", false);
+
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         req.addParameter("anything", "goes");
-        http = new WrappedHttp(req, "{Unwise: nap}");
+        String requestBody = "{Unwise: napping during work}";
+        req.setContent(requestBody.getBytes());
+        http = new WrappedHttp(req, requestBody);
 
         // next lines are simply to increase coverage of wrappedhttp
         http.getInputStream().available();
@@ -158,12 +168,17 @@ public class FilterTest {
     }
 
     @Test
-    @WithMockUser
     void testHeaderNoCheck() throws IOException, ServletException {
+
+        ReflectionTestUtils.setField(sl, "maxSizeLimit", 2000000L);
+        ReflectionTestUtils.setField(sl, "checkMediaTypeJson", false);
+
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         req.addParameter("anything", "goes");
-        http = new WrappedHttp(req, "{Unwise: nap}");
+        String requestBody = "{Unwise: napping during work}";
+        req.setContent(requestBody.getBytes());
+        http = new WrappedHttp(req, requestBody);
 
         // next lines are simply to increase coverage of wrappedhttp
         http.getInputStream().available();
@@ -191,14 +206,18 @@ public class FilterTest {
     }
 
     @Test
-    @WithMockUser
     void testHeaderCheck() throws IOException, ServletException {
+
         ReflectionTestUtils.setField(hf, "checkHttpHeader", true);
+        ReflectionTestUtils.setField(sl, "maxSizeLimit", 2000000L);
+        ReflectionTestUtils.setField(sl, "checkMediaTypeJson", false);
 
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
         req.addParameter("anything", "goes");
-        http = new WrappedHttp(req, "{Unwise: nap}");
+        String requestBody = "{Unwise: napping during work}";
+        req.setContent(requestBody.getBytes());
+        http = new WrappedHttp(req, requestBody);
 
         // next lines are simply to increase coverage of wrappedhttp
         http.getInputStream().available();
@@ -226,7 +245,6 @@ public class FilterTest {
     }
 
     @Test
-    @WithMockUser
     void testInputSanitizer() {
 
         try {
@@ -245,4 +263,56 @@ public class FilterTest {
             fail("Should not have thrown any exception");
         }
     }
+
+    @Test
+    void testHeaderFilterHttps() throws IOException, ServletException {
+        // Set the checkHttpHeader to true to enable header checking,
+        ReflectionTestUtils.setField(hf, "checkHttpHeader", true);
+
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        req.addHeader("X-Forwarded-Proto", "https");
+
+        MockHttpServletResponse res = new MockHttpServletResponse();
+        MockFilterChain chain = new MockFilterChain();
+
+        hf.doFilter(req, res, chain);
+
+        assertFalse(res.isCommitted());
+    }
+
+    @Test
+    void testHeaderFilterNotHttps() throws IOException, ServletException {
+        // Set the checkHttpHeader to true to enable header checking,
+        ReflectionTestUtils.setField(hf, "checkHttpHeader", true);
+
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        req.addHeader("X-Forwarded-Proto", "testNotHttps");
+
+        MockHttpServletResponse res = new MockHttpServletResponse();
+        MockFilterChain chain = new MockFilterChain();
+
+        hf.doFilter(req, res, chain);
+
+        assertTrue(res.isCommitted());
+        // Should return Forbidden
+        assertEquals(403, res.getStatus());
+    }
+
+    @Test
+    void testHeaderFilterExceptionHandling() throws IOException,
+            ServletException {
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        req.addHeader("X-Forwarded-Proto", "https");
+
+        MockHttpServletResponse res = new MockHttpServletResponse();
+
+        FilterChain exceptionChain = (requ, resp) -> {
+            throw new IOException("Test the exception handling");
+        };
+
+        hf.doFilter(req, res, exceptionChain);
+
+        assertFalse(res.isCommitted());
+    }
+
 }
