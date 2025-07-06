@@ -92,29 +92,22 @@ public class LRSSyncSchedulingService {
      * @throws ResourceNotFoundException
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Import updateImportInProcess(Import importRecord) {
+    public Import updateImportInProcess(Import importRecord)
+            throws ResourceNotFoundException {
 
         // If the previous run was successful, we will update the dates.
         // If not, we just re run again with same old dates.
 
         log.info("Updating import.");
 
-        try {
-
-            if (importRecord.getRecordStatus().equals(
-                    StatusConstants.SUCCESS)) {
-                importRecord.setImportStartDate(importRecord
-                        .getImportEndDate());
-                importRecord.setImportEndDate(new Timestamp(System
-                        .currentTimeMillis()));
-            }
-
-            importRecord.setRecordStatus(StatusConstants.INPROCESS);
-            importService.update(importRecord);
-
-        } catch (ResourceNotFoundException e) {
-            throw e;
+        if (importRecord.getRecordStatus().equals(StatusConstants.SUCCESS)) {
+            importRecord.setImportStartDate(importRecord.getImportEndDate());
+            importRecord.setImportEndDate(
+                    new Timestamp(System.currentTimeMillis()));
         }
+
+        importRecord.setRecordStatus(StatusConstants.INPROCESS);
+        importService.update(importRecord);
 
         return importRecord;
     }

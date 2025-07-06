@@ -57,16 +57,16 @@ public class NewDataService {
         } catch (DatasyncException e) {
 
             // Get number of retries
-            Import importRecord = importService.findByName(
-                    StatusConstants.LRSNAME);
+            Import importRecord = importService
+                    .findByName(StatusConstants.LRSNAME);
 
             if (importRecord != null) {
 
                 int attempts = importRecord.getRetries();
                 attempts++;
 
-                log.error("processStatements failed on attempt " + Integer
-                        .toString(attempts) + "retrying...");
+                log.error("processStatements failed on attempt "
+                        + Integer.toString(attempts) + "retrying...");
 
                 if (attempts >= maxRetries) {
                     log.error("Max retries reached. Giving up.");
@@ -90,23 +90,19 @@ public class NewDataService {
     // 2. Insert ELRRAuditLog.
     // 3. Create Kafka message.
     @Transactional
-    public void processStatements(Statement[] statements) {
+    public void processStatements(Statement[] statements)
+            throws DatasyncException {
 
         log.info("Process statements.");
 
-        try {
-
-            for (Statement stmnt : statements) {
-                MessageVO kafkaMessage = new MessageVO();
-                UUID id = stmnt.getId();
-                kafkaMessage.setStatement(stmnt);
-                insertAuditLog(id);
-                kafkaProducer.sendMessage(kafkaMessage);
-            }
-
-        } catch (DatasyncException e) {
-            throw e;
+        for (Statement stmnt : statements) {
+            MessageVO kafkaMessage = new MessageVO();
+            UUID id = stmnt.getId();
+            kafkaMessage.setStatement(stmnt);
+            insertAuditLog(id);
+            kafkaProducer.sendMessage(kafkaMessage);
         }
+
     }
 
     /**
@@ -123,7 +119,8 @@ public class NewDataService {
             elrrAuditLogService.save(auditLog);
         } catch (JsonProcessingException e) {
             log.error("Error creating ELRRAuditLog record.", e);
-            throw new DatasyncException("Error creating ELRRAuditLog record.");
+            throw new DatasyncException("Error creating ELRRAuditLog record.",
+                    e);
         }
     }
 }
