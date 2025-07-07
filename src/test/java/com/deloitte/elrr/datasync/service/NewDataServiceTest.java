@@ -23,6 +23,7 @@ import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
 import com.deloitte.elrr.datasync.util.TestFileUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
 
@@ -48,7 +49,7 @@ class NewDataServiceTest {
     private NewDataService newDataService;
 
     @Test
-    void test() {
+    void testBasicStatementProcessing() {
 
         try {
 
@@ -59,6 +60,29 @@ class NewDataServiceTest {
             assertTrue(stmts != null);
 
             Mockito.doReturn(true).when(kafkaStatusCheck).isKafkaRunning();
+
+            newDataService.process(stmts);
+
+        } catch (DatasyncException | IOException e) {
+            fail("Should not have thrown any exception");
+        }
+    }
+
+    @Test
+    void testFailedSerializationAuditLog() {
+
+        try {
+
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
+
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+            assertTrue(stmts != null);
+
+            Mockito.doReturn(true).when(kafkaStatusCheck).isKafkaRunning();
+
+            Mockito.doThrow(new DatasyncException("Test processing ex"))
+                .when(kafkaProducer).writeValueAsString(stmts[0].getId());
 
             newDataService.process(stmts);
 

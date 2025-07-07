@@ -16,7 +16,6 @@ import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
 import com.deloitte.elrr.datasync.scheduler.StatusConstants;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yetanalytics.xapi.model.Statement;
 
 import lombok.extern.slf4j.Slf4j;
@@ -117,7 +116,7 @@ public class NewDataService {
             ELRRAuditLog auditLog = new ELRRAuditLog();
             auditLog.setStatementId(kafkaProducer.writeValueAsString(id));
             elrrAuditLogService.save(auditLog);
-        } catch (JsonProcessingException e) {
+        } catch (DatasyncException e) {
             log.error("Error creating ELRRAuditLog record.", e);
             throw new DatasyncException("Error creating ELRRAuditLog record.",
                     e);
