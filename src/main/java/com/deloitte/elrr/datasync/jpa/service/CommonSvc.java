@@ -10,9 +10,9 @@ import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
 /**
  * @author mnelakurti
  * @param <T>
- * @param <newId>
+ * @param <I>
  */
-public interface CommonSvc<T, newId extends Serializable> {
+public interface CommonSvc<T, I extends Serializable> {
 
     /**
      * @return Iterable<T>
@@ -25,7 +25,7 @@ public interface CommonSvc<T, newId extends Serializable> {
      * @param id
      * @return Optional<T>
      */
-    default Optional<T> get(newId id) {
+    default Optional<T> get(I id) {
         return getRepository().findById(id);
     }
 
@@ -49,17 +49,12 @@ public interface CommonSvc<T, newId extends Serializable> {
      * @param id
      * @throws ResourceNotFoundException
      */
-    default void delete(newId id) throws ResourceNotFoundException {
-        try {
-            if (getRepository().existsById(id)) {
-                getRepository().deleteById(id);
-            } else {
-                throw new ResourceNotFoundException(
-                        " Id not found for delete : " + id);
-            }
-        } catch (IllegalArgumentException e) {
-            throw new ResourceNotFoundException("Record to update not found: "
-                    + id);
+    default void delete(I id) throws ResourceNotFoundException {
+        if (getRepository().existsById(id)) {
+            getRepository().deleteById(id);
+        } else {
+            throw new ResourceNotFoundException(
+                    " Id not found for delete : " + id);
         }
     }
 
@@ -75,29 +70,22 @@ public interface CommonSvc<T, newId extends Serializable> {
      * @throws ResourceNotFoundException
      */
     default void update(T entity) {
-        try {
-
-            if (getRepository().existsById(getId(entity))) {
-                getRepository().save(entity);
-            } else {
-                throw new ResourceNotFoundException(
-                        "Record to update not found: " + entity);
-            }
-
-        } catch (IllegalArgumentException e) {
-            throw new ResourceNotFoundException("Record to update not found: "
-                    + entity);
+        if (getRepository().existsById(getId(entity))) {
+            getRepository().save(entity);
+        } else {
+            throw new ResourceNotFoundException(
+                    "Record to update not found: " + entity);
         }
     }
 
     /**
      * @param entity
-     * @return NewId
+     * @return I
      */
-    newId getId(T entity);
+    I getId(T entity);
 
     /**
-     * @return CrudRepository<T, NewId>
+     * @return CrudRepository<T, I>
      */
-    CrudRepository<T, newId> getRepository();
+    CrudRepository<T, I> getRepository();
 }

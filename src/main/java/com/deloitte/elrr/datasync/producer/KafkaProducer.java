@@ -50,19 +50,19 @@ public class KafkaProducer {
             log.info("\n Kafka message successfully sent to kafka topic "
                     + kafkatopic + "\n\n");
 
-        } catch (KafkaException | JsonProcessingException e) {
+        } catch (KafkaException | DatasyncException e) {
             throw new DatasyncException(
-                    "Exception while sending Kafka message");
+                    "Exception while sending Kafka message", e);
         }
     }
 
     /**
      * @param data
      * @return String
-     * @throws JsonProcessingException
+     * @throws DatasyncException
      */
     public String writeValueAsString(final Object data)
-            throws JsonProcessingException {
+            throws DatasyncException {
 
         String output = "";
 
@@ -70,7 +70,7 @@ public class KafkaProducer {
             mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             output = mapper.writeValueAsString(data);
         } catch (JsonProcessingException e) {
-            throw e;
+            throw new DatasyncException("Unable to convert to json", e);
         }
 
         return output;

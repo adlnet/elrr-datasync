@@ -43,19 +43,13 @@ public class LRSService {
      * @throws DatasyncException
      */
     // Get xAPI statements from LRS
-    public Statement[] process(final Timestamp startDate) {
+    public Statement[] process(final Timestamp startDate)
+            throws DatasyncException {
 
         Statement[] statements = null;
 
-        try {
-
-            // Get new statements from LRS since import.startdate
-            statements = invokeLRS(startDate);
-
-        } catch (DatasyncException e) {
-            log.error("Error getting statements from LRS.", e);
-            throw e;
-        }
+        // Get new statements from LRS since import.startdate
+        statements = invokeLRS(startDate);
 
         return statements;
     }
@@ -96,7 +90,7 @@ public class LRSService {
 
         } catch (DatasyncException | RestClientException
                 | JsonProcessingException e) {
-            throw new DatasyncException("Error calling LRS.");
+            throw new DatasyncException("Error calling LRS.", e);
         }
 
         return statements;
@@ -128,7 +122,7 @@ public class LRSService {
             log.info("Last read date = " + lastReadDate);
 
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new DatasyncException("Error formatting last read date.");
+            throw new DatasyncException("Error formatting last read date.", e);
         }
 
         return lastReadDate;

@@ -18,11 +18,22 @@ public class DatasyncExceptionTest {
     private DatasyncException datasyncException = new DatasyncException(
             message);
 
+    private DatasyncException datasyncExceptionWithException = new DatasyncException(
+            message, e);
+
+    /**
+     * @author phleven
+     */
+    @Test
+    public void testTipExceptionWithoutMessage() {
+        assertEquals(datasyncException.getMessage(), message);
+    }
+
     /**
      * @author phleven
      */
     @Test
     public void testTipExceptionWithMessage() {
-        assertEquals(datasyncException.getMessage(), message);
+        assertEquals(datasyncExceptionWithException.getMessage(), message);
     }
 }
