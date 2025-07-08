@@ -1,6 +1,6 @@
--- Navigate to staging schema
-SET search_path = staging;
+-- Navigate to datasync_schema schema
+SET search_path = datasync_schema;
 
 -- Truncate tables
-TRUNCATE staging."import" cascade;
-TRUNCATE staging.ELRRAuditLog cascade;
+TRUNCATE datasync_schema."import" cascade;
+TRUNCATE datasync_schema.ELRRAuditLog cascade;
