@@ -5,10 +5,10 @@ CREATE schema IF NOT EXISTS datasync_schema;
 SET search_path = datasync_schema;
 
 -- Drop datasync_schema tables
-DROP TABLE IF EXISTS staging."import" CASCADE;
-DROP TABLE IF EXISTS staging.elrrauditlog CASCADE;
+DROP TABLE IF EXISTS datasync_schema."import" CASCADE;
+DROP TABLE IF EXISTS datasync_schema.elrrauditlog CASCADE;
 
-CREATE TABLE IF NOT EXISTS staging."import" (
+CREATE TABLE IF NOT EXISTS datasync_schema."import" (
     id UUID         PRIMARY KEY,
     importname      varchar NULL,
     importstartdate timestamp NULL,
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS staging."import" (
     lastmodified    timestamp NULL
 );
 
-CREATE TABLE IF NOT EXISTS staging.elrrauditlog (
+CREATE TABLE IF NOT EXISTS datasync_schema.elrrauditlog (
     id UUID         PRIMARY KEY,
     statementid     varchar(50) NULL,
     updatedby       varchar(20) NULL,
