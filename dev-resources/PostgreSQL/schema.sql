@@ -1,10 +1,10 @@
 -- Create schema
-CREATE schema IF NOT EXISTS staging;
+CREATE schema IF NOT EXISTS datasync_schema;
 
--- Navigate to staging schema
-SET search_path = staging;
+-- Navigate to datasync_schema schema
+SET search_path = datasync_schema;
 
--- Drop staging tables
+-- Drop datasync_schema tables
 DROP TABLE IF EXISTS staging."import" CASCADE;
 DROP TABLE IF EXISTS staging.elrrauditlog CASCADE;
 
