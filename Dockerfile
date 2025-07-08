@@ -1,14 +1,7 @@
-FROM openjdk:17-oracle
+FROM registry1.dso.mil/ironbank/redhat/openjdk/openjdk21:1.21
 
 WORKDIR /app
 
 COPY ./target/elrrdatasync-0.0.1-SNAPSHOT.jar /app
-#COPY . .
 
-COPY ./target/dependency/BOOT-INF/lib /app/lib
-COPY ./target/dependency/META-INF /app/META-INF
-COPY ./target/dependency/BOOT-INF/classes /app
-
-WORKDIR /
-
-ENTRYPOINT ["java","-cp","app:app/lib/*","-Dcom.redhat.fips=false","-Dspring.profiles.active=${ENV}","-Djasypt.encryptor.algorithm=${ALGORITHM}","com.deloitte.elrr.datasync.DatasyncApplication"]
+ENTRYPOINT ["java","-Dcom.redhat.fips=false","-jar","elrrdatasync-0.0.1-SNAPSHOT.jar"]
