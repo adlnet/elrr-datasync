@@ -1,6 +1,8 @@
 package com.deloitte.elrr.datasync.producer;
 
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 
@@ -18,7 +21,6 @@ import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.util.TestFileUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
 
@@ -44,7 +46,7 @@ class KafkaProducerTest {
 
             kafkaProducer.writeValueAsString("test");
 
-        } catch (DatasyncException | JsonProcessingException e) {
+        } catch (DatasyncException e) {
             fail("Should not have thrown any exception");
         }
     }
@@ -62,7 +64,7 @@ class KafkaProducerTest {
 
             kafkaProducer.writeValueAsString(imp);
 
-        } catch (DatasyncException | JsonProcessingException e) {
+        } catch (DatasyncException e) {
             fail("Should not have thrown any exception");
         }
     }
@@ -76,7 +78,7 @@ class KafkaProducerTest {
             ObjectWithNoToString objectWithNoToString = new ObjectWithNoToString();
             kafkaProducer.writeValueAsString(objectWithNoToString);
 
-        } catch (DatasyncException | JsonProcessingException e) {
+        } catch (DatasyncException e) {
             fail("Should not have thrown any exception");
         }
     }
@@ -95,6 +97,27 @@ class KafkaProducerTest {
 
         } catch (DatasyncException | IOException e) {
             fail("Should not have thrown any exception");
+        }
+    }
+
+    @Test
+    void testSendMessageFail() {
+
+        try {
+
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
+
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+
+            Mockito.doThrow(new DatasyncException("test ex"))
+                .when(kafkaTemplate).send(any(), any());
+            
+            kafkaProducer.sendMessage(stmts[0]);
+
+        } catch (DatasyncException | IOException e) {
+            assertEquals(e.getMessage(), 
+                "Exception while sending Kafka message");
         }
     }
 

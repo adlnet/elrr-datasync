@@ -8,7 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockFilterChain;
@@ -18,7 +20,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.asm.Advice.OffsetMapping.Factory.Illegal;
 
+
+@Slf4j
 public class FilterTest {
 
     private final SanitizingFilter sf = new SanitizingFilter();
@@ -127,6 +133,29 @@ public class FilterTest {
         sf.doFilter(http, res, chain);
         assertEquals(res.getErrorMessage(), null);
         assertFalse(res.isCommitted());
+    }
+
+    @Test
+    void testConfusablesCheck() {
+        try {
+            SanitizingFilter filter = new SanitizingFilter();
+            Class[] cArg = new Class[1];
+            cArg[0] = JSONObject.class;
+            Class c = filter.getClass();
+            Method method = c.getDeclaredMethod("hasHomoGlyphs", cArg);
+            method.setAccessible(true);
+
+            //dirty payload
+            JSONObject innerObj = new JSONObject().put(" ρττ a", " ρττ a");
+            JSONObject outerObj = new JSONObject().put("thing", innerObj);
+            Boolean result  = (boolean) method.invoke(filter, outerObj);
+            assertTrue(result);
+            
+        } catch (InvocationTargetException | IllegalAccessException 
+            | NoSuchMethodException e) {
+            log.warn("failed to process glyphs", e);
+            fail("Could not process homoglyphs");
+        }
     }
 
     @Test
@@ -252,7 +281,7 @@ public class FilterTest {
             Constructor<InputSanitizer> constructor = InputSanitizer.class
                     .getDeclaredConstructor();
             constructor.setAccessible(true);
-            InputSanitizer inputSAnitizer = constructor.newInstance();
+            InputSanitizer inputSanitizer = constructor.newInstance();
 
         } catch (UnsupportedOperationException | InvocationTargetException e) {
             System.out.println(
