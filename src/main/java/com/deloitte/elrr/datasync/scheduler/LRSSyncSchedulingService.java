@@ -66,15 +66,15 @@ public class LRSSyncSchedulingService {
 
             Statement[] result = null;
 
+            // Update import status to INPROCESS
             importRecord = createUpdateImport.updateImportInProcess(
                     importRecord);
 
             // Make call to LRSService.invokeLRS(final Timestamp startDate)
             result = lrsService.process(importRecord.getImportStartDate());
 
-            // Update import status
-            importRecord.setRecordStatus(StatusConstants.SUCCESS);
-            importService.save(importRecord);
+            // Update import status to SUCCESS
+            createUpdateImport.updateImportSuccess(importRecord);
 
             // Process unprocessed
             newDataService.process(result);

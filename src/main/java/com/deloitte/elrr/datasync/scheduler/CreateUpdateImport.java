@@ -74,4 +74,24 @@ public class CreateUpdateImport {
         return importRecord;
     }
 
+    /**
+     * @param importRecord
+     * @return importRecord
+     * @throws ResourceNotFoundException
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Import updateImportSuccess(Import importRecord)
+            throws ResourceNotFoundException {
+
+        // This method uses Propagation.REQUIRES_NEW in a seperate class to
+        // force commit on return.
+
+        log.info("Updating import.");
+
+        importRecord.setRecordStatus(StatusConstants.SUCCESS);
+        importService.update(importRecord);
+
+        return importRecord;
+    }
+
 }
