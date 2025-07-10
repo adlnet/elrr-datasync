@@ -30,9 +30,6 @@ public class LRSSyncSchedulingService {
     @Autowired
     private ImportService importService;
 
-    @Autowired
-    private CreateUpdateImport createUpdateImport;
-
     @Value("${initial.date}")
     private Timestamp initialDate;
 
@@ -57,7 +54,7 @@ public class LRSSyncSchedulingService {
 
             // If no import record
             if (importRecord == null) {
-                importRecord = createUpdateImport.createImport();
+                importRecord = importService.createImport();
             } else if (importRecord.getRecordStatus().equalsIgnoreCase(
                     StatusConstants.INPROCESS)) {
                 log.info("Statements are still being processed.");
@@ -66,9 +63,13 @@ public class LRSSyncSchedulingService {
 
             Statement[] result = null;
 
-            // Update import status to INPROCESS
-            importRecord = createUpdateImport.updateImportInProcess(
+            // Update import start and end dates
+            importRecord = importService.updateImportStartEndDates(
                     importRecord);
+
+            // Update import status to INPROCESS
+            importRecord = importService.updateImportStatus(importRecord,
+                    StatusConstants.INPROCESS);
 
             // Make call to LRSService.invokeLRS(final Timestamp startDate)
             result = lrsService.process(importRecord.getImportStartDate());
@@ -77,7 +78,8 @@ public class LRSSyncSchedulingService {
             newDataService.process(result);
 
             // Update import status to SUCCESS
-            importRecord = createUpdateImport.updateImportSuccess(importRecord);
+            importRecord = importService.updateImportStatus(importRecord,
+                    StatusConstants.SUCCESS);
 
         } catch (DatasyncException | ResourceNotFoundException
                 | NullPointerException e) {

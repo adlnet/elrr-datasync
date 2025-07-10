@@ -3,7 +3,6 @@ package com.deloitte.elrr.datasync.scheduler;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,10 +61,6 @@ class LRSSyncSchedulingServiceTest {
             imp.setRetries(0);
             Mockito.doReturn(imp).when(importService).findByName(any());
 
-            doNothing().when(newDataService).process(any());
-
-            Mockito.doReturn(stmts).when(lrsService).process(any());
-
             lrsSyncSchedulingservice.run();
 
         } catch (DatasyncException | ResourceNotFoundException
@@ -91,10 +86,6 @@ class LRSSyncSchedulingServiceTest {
             imp.setRecordStatus(StatusConstants.SUCCESS);
             imp.setRetries(0);
             Mockito.doReturn(null).when(importService).findByName(any());
-
-            doNothing().when(newDataService).process(any());
-
-            Mockito.doReturn(stmts).when(lrsService).process(any());
 
             lrsSyncSchedulingservice.run();
 
