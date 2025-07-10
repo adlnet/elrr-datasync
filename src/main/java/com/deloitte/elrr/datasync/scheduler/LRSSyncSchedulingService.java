@@ -74,7 +74,7 @@ public class LRSSyncSchedulingService {
             result = lrsService.process(importRecord.getImportStartDate());
 
             // Update import status to SUCCESS
-            createUpdateImport.updateImportSuccess(importRecord);
+            importRecord = createUpdateImport.updateImportSuccess(importRecord);
 
             // Process unprocessed
             newDataService.process(result);
