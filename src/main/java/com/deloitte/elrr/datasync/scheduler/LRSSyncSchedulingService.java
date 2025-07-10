@@ -73,11 +73,11 @@ public class LRSSyncSchedulingService {
             // Make call to LRSService.invokeLRS(final Timestamp startDate)
             result = lrsService.process(importRecord.getImportStartDate());
 
-            // Update import status to SUCCESS
-            importRecord = createUpdateImport.updateImportSuccess(importRecord);
-
             // Process unprocessed
             newDataService.process(result);
+
+            // Update import status to SUCCESS
+            importRecord = createUpdateImport.updateImportSuccess(importRecord);
 
         } catch (DatasyncException | ResourceNotFoundException
                 | NullPointerException e) {
