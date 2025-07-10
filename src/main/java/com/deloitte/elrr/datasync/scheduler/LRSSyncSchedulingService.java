@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
@@ -31,6 +29,9 @@ public class LRSSyncSchedulingService {
 
     @Autowired
     private ImportService importService;
+
+    @Autowired
+    private CreateUpdateImport createUpdateImport;
 
     @Value("${initial.date}")
     private Timestamp initialDate;
@@ -56,11 +57,17 @@ public class LRSSyncSchedulingService {
 
             // If no import record
             if (importRecord == null) {
-                importRecord = createImport();
+                importRecord = createUpdateImport.createImport();
+            } else if (importRecord.getRecordStatus().equalsIgnoreCase(
+                    StatusConstants.INPROCESS)) {
+                log.info("Statements are still being processed.");
+                return;
             }
 
             Statement[] result = null;
-            importRecord = updateImportInProcess(importRecord);
+
+            importRecord = createUpdateImport.updateImportInProcess(
+                    importRecord);
 
             // Make call to LRSService.invokeLRS(final Timestamp startDate)
             result = lrsService.process(importRecord.getImportStartDate());
@@ -86,45 +93,4 @@ public class LRSSyncSchedulingService {
 
     }
 
-    /**
-     * @param importRecord
-     * @return importRecord
-     * @throws ResourceNotFoundException
-     */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Import updateImportInProcess(Import importRecord)
-            throws ResourceNotFoundException {
-
-        // If the previous run was successful, we will update the dates.
-        // If not, we just re run again with same old dates.
-
-        log.info("Updating import.");
-
-        if (importRecord.getRecordStatus().equals(StatusConstants.SUCCESS)) {
-            importRecord.setImportStartDate(importRecord.getImportEndDate());
-            importRecord.setImportEndDate(
-                    new Timestamp(System.currentTimeMillis()));
-        }
-
-        importRecord.setRecordStatus(StatusConstants.INPROCESS);
-        importService.update(importRecord);
-
-        return importRecord;
-    }
-
-    /**
-     * @return importRecord
-     */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Import createImport() {
-        log.info("Creating new import.");
-        Import importRecord = new Import();
-        importRecord.setRecordStatus(StatusConstants.SUCCESS);
-        importRecord.setRetries(0);
-        importRecord.setImportName(StatusConstants.LRSNAME);
-        importRecord.setImportStartDate(initialDate);
-        importRecord.setImportEndDate(initialDate);
-        importService.save(importRecord);
-        return importRecord;
-    }
 }
