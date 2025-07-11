@@ -95,7 +95,6 @@ public class ImportService implements CommonSvc<Import, UUID> {
      * @return importRecord
      * @throws ResourceNotFoundException
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Import updateImportStartEndDates(Import importRecord)
             throws ResourceNotFoundException {
 
