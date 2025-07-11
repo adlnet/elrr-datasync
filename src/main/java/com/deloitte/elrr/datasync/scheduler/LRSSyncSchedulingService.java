@@ -89,7 +89,7 @@ public class LRSSyncSchedulingService {
             log.error("***** ResourceNotFoundException *****");
             log.error("Exception message: " + e.getMessage(), e);
             log.error("Exception cause: " + e.getCause());
-            log.error("LRS Sync failed."); 
+            log.error("LRS Sync failed.");
             log.error("***** ResourceNotFoundException *****");
 
             if (importRecord != null) {
@@ -113,7 +113,7 @@ public class LRSSyncSchedulingService {
             log.error("***** Exception *****");
             log.error("Exception message: " + e.getMessage(), e);
             log.error("Exception cause: " + e.getCause());
-            log.error("LRS Sync failed."); 
+            log.error("LRS Sync failed.");
             log.error("***** Exception *****");
 
             if (importRecord != null) {
