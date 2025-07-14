@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.deloitte.elrr.datasync.entity.Import;
+import com.deloitte.elrr.datasync.entity.types.RecordStatus;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
@@ -55,8 +56,8 @@ public class LRSSyncSchedulingService {
             // If no import record
             if (importRecord == null) {
                 importRecord = importService.createImport();
-            } else if (importRecord.getRecordStatus().equalsIgnoreCase(
-                    StatusConstants.INPROCESS)) {
+            } else if (importRecord.getRecordStatus().equals(
+                    RecordStatus.INPROCESS)) {
                 log.info("Statements are still being processed.");
                 return;
             }
@@ -69,7 +70,7 @@ public class LRSSyncSchedulingService {
 
             // Update import status to INPROCESS
             importRecord = importService.updateImportStatus(importRecord,
-                    StatusConstants.INPROCESS);
+                    RecordStatus.INPROCESS);
 
             // Make call to LRSService.invokeLRS(final Timestamp startDate)
             result = lrsService.process(importRecord.getImportStartDate());
@@ -79,7 +80,7 @@ public class LRSSyncSchedulingService {
 
             // Update import status to SUCCESS
             importRecord = importService.updateImportStatus(importRecord,
-                    StatusConstants.SUCCESS);
+                    RecordStatus.SUCCESS);
 
         } catch (DatasyncException | ResourceNotFoundException
                 | NullPointerException e) {

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.deloitte.elrr.datasync.entity.Import;
+import com.deloitte.elrr.datasync.entity.types.RecordStatus;
 import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
 import com.deloitte.elrr.datasync.repository.ImportRepository;
 import com.deloitte.elrr.datasync.scheduler.StatusConstants;
@@ -63,7 +64,7 @@ public class ImportService implements CommonSvc<Import, UUID> {
     public Import createImport() {
         log.info("Creating new import.");
         Import importRecord = new Import();
-        importRecord.setRecordStatus(StatusConstants.SUCCESS);
+        importRecord.setRecordStatus(RecordStatus.SUCCESS);
         importRecord.setRetries(0);
         importRecord.setImportName(StatusConstants.LRSNAME);
         importRecord.setImportStartDate(initialDate);
@@ -79,7 +80,7 @@ public class ImportService implements CommonSvc<Import, UUID> {
      * @throws ResourceNotFoundException
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Import updateImportStatus(Import importRecord, String status)
+    public Import updateImportStatus(Import importRecord, RecordStatus status)
             throws ResourceNotFoundException {
 
         log.info("Updating import status to " + status);
@@ -100,7 +101,7 @@ public class ImportService implements CommonSvc<Import, UUID> {
 
         log.info("Updating import start and end dates.");
 
-        if (importRecord.getRecordStatus().equals(StatusConstants.SUCCESS)) {
+        if (importRecord.getRecordStatus().equals(RecordStatus.SUCCESS)) {
             importRecord.setImportStartDate(importRecord.getImportEndDate());
             importRecord.setImportEndDate(new Timestamp(System
                     .currentTimeMillis()));
