@@ -72,16 +72,21 @@ public class LRSService {
             httpHeaders.add("Cookie", lrsCookie);
             httpHeaders.add("X-Forwarded-Proto", "https");
             httpHeaders.add("Content-Type", "application/json");
+            log.info("Http headers: " + httpHeaders);
 
             // Call LRS (ELRRStagrController.localdata() in
             // elrrexternalservices)
             // passing import.startdate = stored date
             String completeURL = lrsURL + "/api/lrsdata?lastReadDate="
                     + lastReadDate;
+            log.info("Complete URL: " + completeURL);
 
             HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
             ResponseEntity<String> json = restTemplate.exchange(completeURL,
                     HttpMethod.GET, entity, String.class);
+            log.info("Res status code: " + json.getStatusCode());
+            log.info("Res headers: " + json.getHeaders());
+            log.info("Res body: " + json.getBody());
 
             ObjectMapper mapper = Mapper.getMapper();
             statements = mapper.readValue(json.getBody(), Statement[].class);

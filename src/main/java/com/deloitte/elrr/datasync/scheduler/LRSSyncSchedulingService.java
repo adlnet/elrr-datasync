@@ -84,10 +84,48 @@ public class LRSSyncSchedulingService {
             importRecord = importService.updateImportStatus(importRecord,
                     RecordStatus.SUCCESS);
 
-        } catch (DatasyncException | ResourceNotFoundException
-                | NullPointerException e) {
-
+        } catch (DatasyncException e) {
+            log.error("***** DatasyncException *****");
+            log.error("Exception message: " + e.getMessage(), e);
+            log.error("Exception cause: " + e.getCause());
             log.error("LRS Sync failed.");
+            log.error("***** DatasyncException *****");
+
+            if (importRecord != null) {
+                importRecord.setRetries(0);
+                importService.update(importRecord);
+            }
+
+        } catch (ResourceNotFoundException e) {
+            log.error("***** ResourceNotFoundException *****");
+            log.error("Exception message: " + e.getMessage(), e);
+            log.error("Exception cause: " + e.getCause());
+            log.error("LRS Sync failed.");
+            log.error("***** ResourceNotFoundException *****");
+
+            if (importRecord != null) {
+                importRecord.setRetries(0);
+                importService.update(importRecord);
+            }
+
+        } catch (NullPointerException e) {
+            log.error("***** NullPointerException *****");
+            log.error("Exception message: " + e.getMessage(), e);
+            log.error("Exception cause: " + e.getCause());
+            log.error("LRS Sync failed.");
+            log.error("***** NullPointerException *****");
+
+            if (importRecord != null) {
+                importRecord.setRetries(0);
+                importService.update(importRecord);
+            }
+
+        } catch (Exception e) {
+            log.error("***** Exception *****");
+            log.error("Exception message: " + e.getMessage(), e);
+            log.error("Exception cause: " + e.getCause());
+            log.error("LRS Sync failed.");
+            log.error("***** Exception *****");
 
             if (importRecord != null) {
                 importRecord.setRetries(0);
