@@ -13,7 +13,6 @@ import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.entity.types.RecordStatus;
 import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
 import com.deloitte.elrr.datasync.repository.ImportRepository;
-import com.deloitte.elrr.datasync.scheduler.StatusConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ImportService implements CommonSvc<Import, UUID> {
 
     private final ImportRepository importsRepository;
+    private static final String LRSNAME = "Yet Analytics LRS";
 
     @Value("${initial.date}")
     private Timestamp initialDate;
@@ -66,7 +66,7 @@ public class ImportService implements CommonSvc<Import, UUID> {
         Import importRecord = new Import();
         importRecord.setRecordStatus(RecordStatus.SUCCESS);
         importRecord.setRetries(0);
-        importRecord.setImportName(StatusConstants.LRSNAME);
+        importRecord.setImportName(LRSNAME);
         importRecord.setImportStartDate(initialDate);
         importRecord.setImportEndDate(initialDate);
         save(importRecord);

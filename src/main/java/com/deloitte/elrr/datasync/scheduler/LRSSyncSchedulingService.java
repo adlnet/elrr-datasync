@@ -34,6 +34,8 @@ public class LRSSyncSchedulingService {
     @Value("${initial.date}")
     private Timestamp initialDate;
 
+    private static final String LRSNAME = "Yet Analytics LRS";
+
     /**
      * @author phleven
      *
@@ -49,7 +51,7 @@ public class LRSSyncSchedulingService {
     @Scheduled(cron = "${cronExpression}")
     public void run() {
 
-        Import importRecord = importService.findByName(StatusConstants.LRSNAME);
+        Import importRecord = importService.findByName(LRSNAME);
 
         try {
 

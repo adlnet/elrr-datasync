@@ -44,6 +44,8 @@ class LRSSyncSchedulingServiceTest {
     @InjectMocks
     private LRSSyncSchedulingService lrsSyncSchedulingservice;
 
+    private static final String LRSNAME = "Yet Analytics LRS";
+
     @Test
     void testImportAlreadyExists() {
 
@@ -57,7 +59,7 @@ class LRSSyncSchedulingServiceTest {
 
             Import imp = new Import();
             imp.setId(UUID.randomUUID());
-            imp.setImportName(StatusConstants.LRSNAME);
+            imp.setImportName(LRSNAME);
             imp.setRecordStatus(RecordStatus.SUCCESS);
             imp.setRetries(0);
             Mockito.doReturn(imp).when(importService).findByName(any());
@@ -83,7 +85,7 @@ class LRSSyncSchedulingServiceTest {
 
             Import imp = new Import();
             imp.setId(UUID.randomUUID());
-            imp.setImportName(StatusConstants.LRSNAME);
+            imp.setImportName(LRSNAME);
             imp.setRecordStatus(RecordStatus.SUCCESS);
             imp.setRetries(0);
             Mockito.doReturn(null).when(importService).findByName(any());
