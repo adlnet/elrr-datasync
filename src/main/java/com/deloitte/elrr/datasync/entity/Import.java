@@ -4,9 +4,15 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+
+import com.deloitte.elrr.datasync.entity.types.RecordStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -38,8 +44,10 @@ public class Import extends Auditable<String> {
     @Column(name = "IMPORTENDDATE")
     private Timestamp importEndDate;
 
-    @Column(name = "RECORDSTATUS")
-    private String recordStatus;
+    @Column(name = "RECORDSTATUS", columnDefinition = "record_status")
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    private RecordStatus recordStatus;
 
     @Column(name = "RETRIES")
     private int retries;

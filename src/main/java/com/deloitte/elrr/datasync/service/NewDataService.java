@@ -15,7 +15,6 @@ import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
-import com.deloitte.elrr.datasync.scheduler.StatusConstants;
 import com.yetanalytics.xapi.model.Statement;
 
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +38,8 @@ public class NewDataService {
     @Value("${max.retries}")
     private int maxRetries;
 
+    private static final String LRSNAME = "Yet Analytics LRS";
+
     /**
      * @param statements
      */
@@ -56,16 +57,15 @@ public class NewDataService {
         } catch (DatasyncException e) {
 
             // Get number of retries
-            Import importRecord = importService
-                    .findByName(StatusConstants.LRSNAME);
+            Import importRecord = importService.findByName(LRSNAME);
 
             if (importRecord != null) {
 
                 int attempts = importRecord.getRetries();
                 attempts++;
 
-                log.error("processStatements failed on attempt "
-                        + Integer.toString(attempts) + "retrying...");
+                log.error("processStatements failed on attempt " + Integer
+                        .toString(attempts) + "retrying...");
 
                 if (attempts >= maxRetries) {
                     log.error("Max retries reached. Giving up.");

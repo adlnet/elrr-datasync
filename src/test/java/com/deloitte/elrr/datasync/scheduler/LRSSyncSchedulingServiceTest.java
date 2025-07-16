@@ -3,7 +3,6 @@ package com.deloitte.elrr.datasync.scheduler;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.deloitte.elrr.datasync.entity.Import;
+import com.deloitte.elrr.datasync.entity.types.RecordStatus;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
@@ -44,6 +44,8 @@ class LRSSyncSchedulingServiceTest {
     @InjectMocks
     private LRSSyncSchedulingService lrsSyncSchedulingservice;
 
+    private static final String LRSNAME = "Yet Analytics LRS";
+
     @Test
     void testImportAlreadyExists() {
 
@@ -57,14 +59,10 @@ class LRSSyncSchedulingServiceTest {
 
             Import imp = new Import();
             imp.setId(UUID.randomUUID());
-            imp.setImportName(StatusConstants.LRSNAME);
-            imp.setRecordStatus(StatusConstants.SUCCESS);
+            imp.setImportName(LRSNAME);
+            imp.setRecordStatus(RecordStatus.SUCCESS);
             imp.setRetries(0);
             Mockito.doReturn(imp).when(importService).findByName(any());
-
-            doNothing().when(newDataService).process(any());
-
-            Mockito.doReturn(stmts).when(lrsService).process(any());
 
             lrsSyncSchedulingservice.run();
 
@@ -87,14 +85,10 @@ class LRSSyncSchedulingServiceTest {
 
             Import imp = new Import();
             imp.setId(UUID.randomUUID());
-            imp.setImportName(StatusConstants.LRSNAME);
-            imp.setRecordStatus(StatusConstants.SUCCESS);
+            imp.setImportName(LRSNAME);
+            imp.setRecordStatus(RecordStatus.SUCCESS);
             imp.setRetries(0);
             Mockito.doReturn(null).when(importService).findByName(any());
-
-            doNothing().when(newDataService).process(any());
-
-            Mockito.doReturn(stmts).when(lrsService).process(any());
 
             lrsSyncSchedulingservice.run();
 

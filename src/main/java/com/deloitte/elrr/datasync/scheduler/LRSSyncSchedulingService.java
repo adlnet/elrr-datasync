@@ -6,10 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.deloitte.elrr.datasync.entity.Import;
+import com.deloitte.elrr.datasync.entity.types.RecordStatus;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.exception.ResourceNotFoundException;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
@@ -35,6 +34,8 @@ public class LRSSyncSchedulingService {
     @Value("${initial.date}")
     private Timestamp initialDate;
 
+    private static final String LRSNAME = "Yet Analytics LRS";
+
     /**
      * @author phleven
      *
@@ -50,28 +51,38 @@ public class LRSSyncSchedulingService {
     @Scheduled(cron = "${cronExpression}")
     public void run() {
 
-        Import importRecord = importService.findByName(StatusConstants.LRSNAME);
+        Import importRecord = importService.findByName(LRSNAME);
 
         try {
 
             // If no import record
             if (importRecord == null) {
-                importRecord = createImport();
+                importRecord = importService.createImport();
+            } else if (importRecord.getRecordStatus().equals(
+                    RecordStatus.INPROCESS)) {
+                log.info("Statements are still being processed.");
+                return;
             }
 
             Statement[] result = null;
-            importRecord = updateImportInProcess(importRecord);
-            log.info("Import record updated: " + importRecord);
+
+            // Update import start and end dates
+            importRecord = importService.updateImportStartEndDates(
+                    importRecord);
+
+            // Update import status to INPROCESS
+            importRecord = importService.updateImportStatus(importRecord,
+                    RecordStatus.INPROCESS);
 
             // Make call to LRSService.invokeLRS(final Timestamp startDate)
             result = lrsService.process(importRecord.getImportStartDate());
 
-            // Update import status
-            importRecord.setRecordStatus(StatusConstants.SUCCESS);
-            importService.save(importRecord);
-
             // Process unprocessed
             newDataService.process(result);
+
+            // Update import status to SUCCESS
+            importRecord = importService.updateImportStatus(importRecord,
+                    RecordStatus.SUCCESS);
 
         } catch (DatasyncException e) {
             log.error("***** DatasyncException *****");
@@ -125,45 +136,4 @@ public class LRSSyncSchedulingService {
 
     }
 
-    /**
-     * @param importRecord
-     * @return importRecord
-     * @throws ResourceNotFoundException
-     */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Import updateImportInProcess(Import importRecord)
-            throws ResourceNotFoundException {
-
-        // If the previous run was successful, we will update the dates.
-        // If not, we just re run again with same old dates.
-
-        log.info("Updating import.");
-
-        if (importRecord.getRecordStatus().equals(StatusConstants.SUCCESS)) {
-            importRecord.setImportStartDate(importRecord.getImportEndDate());
-            importRecord.setImportEndDate(
-                    new Timestamp(System.currentTimeMillis()));
-        }
-
-        importRecord.setRecordStatus(StatusConstants.INPROCESS);
-        importService.update(importRecord);
-
-        return importRecord;
-    }
-
-    /**
-     * @return importRecord
-     */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Import createImport() {
-        log.info("Creating new import.");
-        Import importRecord = new Import();
-        importRecord.setRecordStatus(StatusConstants.SUCCESS);
-        importRecord.setRetries(0);
-        importRecord.setImportName(StatusConstants.LRSNAME);
-        importRecord.setImportStartDate(initialDate);
-        importRecord.setImportEndDate(initialDate);
-        importService.save(importRecord);
-        return importRecord;
-    }
 }
