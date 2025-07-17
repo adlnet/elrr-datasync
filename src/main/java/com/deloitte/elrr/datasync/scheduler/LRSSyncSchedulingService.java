@@ -35,6 +35,10 @@ public class LRSSyncSchedulingService {
     private Timestamp initialDate;
 
     private static final String LRSNAME = "Yet Analytics LRS";
+    private static final String EXCEPTION_MESSAGE = "Exception message: ";
+    private static final String EXCEPTION_CAUSE = "Exception cause: ";
+    private static final String LRS_SYNC_FAILED = "LRS Sync failed.";
+
 
     /**
      * @author phleven
@@ -85,55 +89,38 @@ public class LRSSyncSchedulingService {
                     RecordStatus.SUCCESS);
 
         } catch (DatasyncException e) {
-            log.error("***** DatasyncException *****");
-            log.error("Exception message: " + e.getMessage(), e);
-            log.error("Exception cause: " + e.getCause());
-            log.error("LRS Sync failed.");
-            log.error("***** DatasyncException *****");
 
-            if (importRecord != null) {
-                importRecord.setRetries(0);
-                importService.update(importRecord);
-            }
-
+            handleDifferentExceptions(importRecord,
+                    e, "DatasyncException");
         } catch (ResourceNotFoundException e) {
-            log.error("***** ResourceNotFoundException *****");
-            log.error("Exception message: " + e.getMessage(), e);
-            log.error("Exception cause: " + e.getCause());
-            log.error("LRS Sync failed.");
-            log.error("***** ResourceNotFoundException *****");
 
-            if (importRecord != null) {
-                importRecord.setRetries(0);
-                importService.update(importRecord);
-            }
-
+            handleDifferentExceptions(importRecord,
+                    e, "ResourceNotFoundException");
         } catch (NullPointerException e) {
-            log.error("***** NullPointerException *****");
-            log.error("Exception message: " + e.getMessage(), e);
-            log.error("Exception cause: " + e.getCause());
-            log.error("LRS Sync failed.");
-            log.error("***** NullPointerException *****");
 
-            if (importRecord != null) {
-                importRecord.setRetries(0);
-                importService.update(importRecord);
-            }
-
+            handleDifferentExceptions(importRecord,
+                    e, "NullPointerException");
         } catch (Exception e) {
-            log.error("***** Exception *****");
-            log.error("Exception message: " + e.getMessage(), e);
-            log.error("Exception cause: " + e.getCause());
-            log.error("LRS Sync failed.");
-            log.error("***** Exception *****");
 
-            if (importRecord != null) {
-                importRecord.setRetries(0);
-                importService.update(importRecord);
-            }
-
+            handleDifferentExceptions(importRecord,
+                    e, "Exception");
         }
 
+    }
+
+    private void handleDifferentExceptions(Import importRecord,
+            Exception e, String exceptionType) {
+
+        log.error("***** " + exceptionType + " *****");
+        log.error(EXCEPTION_MESSAGE + e.getMessage(), e);
+        log.error(EXCEPTION_CAUSE + e.getCause());
+        log.error(LRS_SYNC_FAILED);
+        log.error("***** " + exceptionType + " *****");
+
+        if (importRecord != null) {
+            importRecord.setRetries(0);
+            importService.update(importRecord);
+        }
     }
 
 }
