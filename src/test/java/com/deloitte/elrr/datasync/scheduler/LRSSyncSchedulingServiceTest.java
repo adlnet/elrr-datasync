@@ -73,6 +73,32 @@ class LRSSyncSchedulingServiceTest {
     }
 
     @Test
+    void testImportInProcess() {
+
+        try {
+
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
+
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+            assertTrue(stmts != null);
+
+            Import imp = new Import();
+            imp.setId(UUID.randomUUID());
+            imp.setImportName(LRSNAME);
+            imp.setRecordStatus(RecordStatus.INPROCESS);
+            imp.setRetries(0);
+            Mockito.doReturn(imp).when(importService).findByName(any());
+
+            lrsSyncSchedulingservice.run();
+
+        } catch (DatasyncException | ResourceNotFoundException
+                | IOException e) {
+            fail("Should not have thrown any exception");
+        }
+    }
+
+    @Test
     void testImportDoesNotExists() {
 
         try {
@@ -96,6 +122,145 @@ class LRSSyncSchedulingServiceTest {
                 | IOException e) {
             fail("Should not have thrown any exception");
         }
+    }
+
+    @Test
+    void testSuccessfulExecution() {
+
+        try {
+
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
+
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+            assertTrue(stmts != null);
+
+            Import imp = new Import();
+            imp.setId(UUID.randomUUID());
+            imp.setImportName(LRSNAME);
+            imp.setRecordStatus(RecordStatus.SUCCESS);
+            imp.setRetries(0);
+            Mockito.doReturn(imp).when(importService).findByName(any());
+            Mockito.doReturn(imp).when(importService).updateImportStartEndDates(any());
+            Mockito.doReturn(imp).when(importService).updateImportStatus(any(), any());
+            Mockito.doReturn(stmts).when(lrsService).process(any());
+
+            lrsSyncSchedulingservice.run();
+
+        } catch (DatasyncException | ResourceNotFoundException
+                | IOException e) {
+            fail("Should not have thrown any exception");
+        }
+    }
+    
+    /**
+     *
+     * @throws IOException
+     */
+    @Test
+    void testDatasyncException() throws IOException {
+
+        File testFile = TestFileUtil.getJsonTestFile("completed.json");
+
+        Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                Statement[].class);
+        assertTrue(stmts != null);
+
+        Import imp = new Import();
+        imp.setId(UUID.randomUUID());
+        imp.setImportName(LRSNAME);
+        imp.setRecordStatus(RecordStatus.SUCCESS);
+        imp.setRetries(0);
+        Mockito.doReturn(imp).when(importService).findByName(any());
+        Mockito.doReturn(imp).when(importService).updateImportStartEndDates(any());
+        Mockito.doReturn(imp).when(importService).updateImportStatus(any(), any());
+        Mockito.doThrow(new DatasyncException("Test Error"))
+                .when(lrsService).process(any());
+
+        lrsSyncSchedulingservice.run();
+    }
+
+    /**
+     *
+     * @throws IOException
+     */
+    @Test
+    void testResourceNotFoundException() throws IOException {
+
+        File testFile = TestFileUtil.getJsonTestFile("completed.json");
+
+        Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                Statement[].class);
+        assertTrue(stmts != null);
+
+        Import imp = new Import();
+        imp.setId(UUID.randomUUID());
+        imp.setImportName(LRSNAME);
+        imp.setRecordStatus(RecordStatus.SUCCESS);
+        imp.setRetries(0);
+        Mockito.doReturn(imp).when(importService).findByName(any());
+        Mockito.doReturn(imp).when(importService).updateImportStartEndDates(any());
+        Mockito.doReturn(imp).when(importService).updateImportStatus(any(), any());
+        Mockito.doThrow(new ResourceNotFoundException("Test Error"))
+                .when(lrsService).process(any());
+
+        lrsSyncSchedulingservice.run();
+
+    }
+
+    /**
+     *
+     * @throws IOException
+     */
+    @Test
+    void testNullPointerException() throws IOException {
+
+        File testFile = TestFileUtil.getJsonTestFile("completed.json");
+
+        Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                Statement[].class);
+        assertTrue(stmts != null);
+
+        Import imp = new Import();
+        imp.setId(UUID.randomUUID());
+        imp.setImportName(LRSNAME);
+        imp.setRecordStatus(RecordStatus.SUCCESS);
+        imp.setRetries(0);
+        Mockito.doReturn(imp).when(importService).findByName(any());
+        Mockito.doReturn(imp).when(importService).updateImportStartEndDates(any());
+        Mockito.doReturn(imp).when(importService).updateImportStatus(any(), any());
+        Mockito.doThrow(new NullPointerException("Test Error"))
+                .when(lrsService).process(any());
+
+        lrsSyncSchedulingservice.run();
+
+    }
+    
+    /**
+     *
+     * @throws IOException
+     */
+    @Test
+    void testGenericException() throws IOException {
+
+        File testFile = TestFileUtil.getJsonTestFile("completed.json");
+
+        Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                Statement[].class);
+        assertTrue(stmts != null);
+
+        Import imp = new Import();
+        imp.setId(UUID.randomUUID());
+        imp.setImportName(LRSNAME);
+        imp.setRecordStatus(RecordStatus.SUCCESS);
+        imp.setRetries(0);
+        Mockito.doReturn(imp).when(importService).findByName(any());
+        Mockito.doReturn(imp).when(importService).updateImportStartEndDates(any());
+        Mockito.doReturn(imp).when(importService).updateImportStatus(any(), any());
+        Mockito.doThrow(new RuntimeException("Test Error"))
+                .when(lrsService).process(any());
+
+        lrsSyncSchedulingservice.run();
     }
 
 }
