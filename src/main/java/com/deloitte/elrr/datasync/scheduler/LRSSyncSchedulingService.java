@@ -1,6 +1,7 @@
 package com.deloitte.elrr.datasync.scheduler;
 
 import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +39,6 @@ public class LRSSyncSchedulingService {
     private static final String EXCEPTION_MESSAGE = "Exception message: ";
     private static final String EXCEPTION_CAUSE = "Exception cause: ";
     private static final String LRS_SYNC_FAILED = "LRS Sync failed.";
-
 
     /**
      * @author phleven
@@ -84,6 +84,30 @@ public class LRSSyncSchedulingService {
             // Process unprocessed
             newDataService.process(result);
 
+            int x = 1;
+
+            // Iterate over LRS response batches
+            do {
+
+                if (result == null || result.length == 0) {
+                    log.info("No result.");
+                    break;
+                }
+
+                // Get stored from last Statement in response
+                ZonedDateTime stored = result[result.length - 1].getStored();
+                Timestamp lastStored = Timestamp
+                        .valueOf(stored.toLocalDateTime());
+
+                // Make call to LRSService.invokeLRS(final Timestamp startDate)
+                result = lrsService.process(lastStored);
+
+                // Process unprocessed
+                log.info("Processing LRS batch " + x++);
+                newDataService.process(result);
+
+            } while (result.length > 0);
+
             // Update import status to SUCCESS
             importRecord = importService.updateImportStatus(importRecord,
                     RecordStatus.SUCCESS);
@@ -92,24 +116,30 @@ public class LRSSyncSchedulingService {
 
             handleDifferentExceptions(importRecord,
                     e, "DatasyncException");
+
         } catch (ResourceNotFoundException e) {
 
             handleDifferentExceptions(importRecord,
                     e, "ResourceNotFoundException");
+
         } catch (NullPointerException e) {
 
             handleDifferentExceptions(importRecord,
                     e, "NullPointerException");
+
         } catch (Exception e) {
 
             handleDifferentExceptions(importRecord,
                     e, "Exception");
+
         }
 
     }
 
-    private void handleDifferentExceptions(Import importRecord,
-            Exception e, String exceptionType) {
+    private void handleDifferentExceptions(
+            Import importRecord,
+            Exception e,
+            String exceptionType) {
 
         log.error("***** " + exceptionType + " *****");
         log.error(EXCEPTION_MESSAGE + e.getMessage(), e);
