@@ -91,15 +91,15 @@ public class LRSSyncSchedulingService {
 
                 importRecord = importService.updateImportEndDate(importRecord);
 
-                // Update import status to SUCCESS
-                importRecord = importService.updateImportStatus(importRecord,
-                        RecordStatus.SUCCESS);
-
             } else {
 
                 log.info("No statements returned from LRS.");
 
             }
+
+            // Update import status to SUCCESS
+            importRecord = importService.updateImportStatus(importRecord,
+                    RecordStatus.SUCCESS);
 
         } catch (DatasyncException e) {
 
