@@ -141,8 +141,8 @@ class LRSSyncSchedulingServiceTest {
             imp.setRecordStatus(RecordStatus.SUCCESS);
             imp.setRetries(0);
             Mockito.doReturn(imp).when(importService).findByName(any());
-            Mockito.doReturn(imp).when(importService).updateImportStartEndDates(any());
-            Mockito.doReturn(imp).when(importService).updateImportStatus(any(), any());
+            Mockito.doReturn(imp).when(importService).updateImportStatus(any(),
+                    any());
             Mockito.doReturn(stmts).when(lrsService).process(any());
 
             lrsSyncSchedulingservice.run();
@@ -152,7 +152,7 @@ class LRSSyncSchedulingServiceTest {
             fail("Should not have thrown any exception");
         }
     }
-    
+
     /**
      *
      * @throws IOException
@@ -172,10 +172,10 @@ class LRSSyncSchedulingServiceTest {
         imp.setRecordStatus(RecordStatus.SUCCESS);
         imp.setRetries(0);
         Mockito.doReturn(imp).when(importService).findByName(any());
-        Mockito.doReturn(imp).when(importService).updateImportStartEndDates(any());
-        Mockito.doReturn(imp).when(importService).updateImportStatus(any(), any());
-        Mockito.doThrow(new DatasyncException("Test Error"))
-                .when(lrsService).process(any());
+        Mockito.doReturn(imp).when(importService).updateImportStatus(any(),
+                any());
+        Mockito.doThrow(new DatasyncException("Test Error")).when(lrsService)
+                .process(any());
 
         lrsSyncSchedulingservice.run();
     }
@@ -199,8 +199,8 @@ class LRSSyncSchedulingServiceTest {
         imp.setRecordStatus(RecordStatus.SUCCESS);
         imp.setRetries(0);
         Mockito.doReturn(imp).when(importService).findByName(any());
-        Mockito.doReturn(imp).when(importService).updateImportStartEndDates(any());
-        Mockito.doReturn(imp).when(importService).updateImportStatus(any(), any());
+        Mockito.doReturn(imp).when(importService).updateImportStatus(any(),
+                any());
         Mockito.doThrow(new ResourceNotFoundException("Test Error"))
                 .when(lrsService).process(any());
 
@@ -227,15 +227,15 @@ class LRSSyncSchedulingServiceTest {
         imp.setRecordStatus(RecordStatus.SUCCESS);
         imp.setRetries(0);
         Mockito.doReturn(imp).when(importService).findByName(any());
-        Mockito.doReturn(imp).when(importService).updateImportStartEndDates(any());
-        Mockito.doReturn(imp).when(importService).updateImportStatus(any(), any());
-        Mockito.doThrow(new NullPointerException("Test Error"))
-                .when(lrsService).process(any());
+        Mockito.doReturn(imp).when(importService).updateImportStatus(any(),
+                any());
+        Mockito.doThrow(new NullPointerException("Test Error")).when(lrsService)
+                .process(any());
 
         lrsSyncSchedulingservice.run();
 
     }
-    
+
     /**
      *
      * @throws IOException
@@ -255,10 +255,10 @@ class LRSSyncSchedulingServiceTest {
         imp.setRecordStatus(RecordStatus.SUCCESS);
         imp.setRetries(0);
         Mockito.doReturn(imp).when(importService).findByName(any());
-        Mockito.doReturn(imp).when(importService).updateImportStartEndDates(any());
-        Mockito.doReturn(imp).when(importService).updateImportStatus(any(), any());
-        Mockito.doThrow(new RuntimeException("Test Error"))
-                .when(lrsService).process(any());
+        Mockito.doReturn(imp).when(importService).updateImportStatus(any(),
+                any());
+        Mockito.doThrow(new RuntimeException("Test Error")).when(lrsService)
+                .process(any());
 
         lrsSyncSchedulingservice.run();
     }

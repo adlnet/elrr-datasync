@@ -1,6 +1,6 @@
 package com.deloitte.elrr.datasync.entity;
 
-import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -29,26 +29,26 @@ import lombok.Setter;
 @Setter
 public class Import extends Auditable<String> {
 
-    @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    @Column(name = "ID")
-    private UUID id;
+  @Id
+  @GeneratedValue(generator = "uuid2")
+  @GenericGenerator(name = "uuid", strategy = "uuid2")
+  @Column(name = "ID")
+  private UUID id;
 
-    @Column(name = "IMPORTNAME")
-    private String importName;
+  @Column(name = "IMPORTNAME")
+  private String importName;
 
-    @Column(name = "IMPORTSTARTDATE")
-    private Timestamp importStartDate;
+  @Column(name = "IMPORTSTARTDATE")
+  private ZonedDateTime importStartDate;
 
-    @Column(name = "IMPORTENDDATE")
-    private Timestamp importEndDate;
+  @Column(name = "IMPORTENDDATE")
+  private ZonedDateTime importEndDate;
 
-    @Column(name = "RECORDSTATUS", columnDefinition = "record_status")
-    @Enumerated(EnumType.STRING)
-    @JdbcType(PostgreSQLEnumJdbcType.class)
-    private RecordStatus recordStatus;
+  @Column(name = "RECORDSTATUS", columnDefinition = "record_status")
+  @Enumerated(EnumType.STRING)
+  @JdbcType(PostgreSQLEnumJdbcType.class)
+  private RecordStatus recordStatus;
 
-    @Column(name = "RETRIES")
-    private int retries;
+  @Column(name = "RETRIES")
+  private int retries;
 }

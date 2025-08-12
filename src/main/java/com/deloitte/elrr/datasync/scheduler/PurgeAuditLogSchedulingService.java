@@ -1,7 +1,6 @@
 package com.deloitte.elrr.datasync.scheduler;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,10 +37,7 @@ public class PurgeAuditLogSchedulingService {
      */
     private void purgeAuditLog(int purgeDays) {
         // Purge ELRRAuditLog rows created <= purgeDays days before today.
-        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-        LocalDateTime localDateTime = currentTimestamp.toLocalDateTime()
-                .minusDays(purgeDays);
-        Timestamp purgeDate = Timestamp.valueOf(localDateTime);
+        ZonedDateTime purgeDate = ZonedDateTime.now().minusDays(purgeDays);
         log.info("Purge date = " + purgeDate);
         elrrAuditLogService.deleteByDate(purgeDate);
     }

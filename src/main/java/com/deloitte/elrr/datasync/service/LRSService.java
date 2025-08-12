@@ -1,10 +1,6 @@
 package com.deloitte.elrr.datasync.service;
 
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
+import java.time.ZonedDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +39,8 @@ public class LRSService {
      * @throws DatasyncException
      */
     // Get xAPI statements from LRS
-    public Statement[] process(final Timestamp startDate)
+    public Statement[] process(
+            final ZonedDateTime startDate)
             throws DatasyncException {
 
         Statement[] statements = null;
@@ -59,14 +56,12 @@ public class LRSService {
      * @return statements
      * @throws DatasyncException
      */
-    public Statement[] invokeLRS(final Timestamp startDate) {
+    public Statement[] invokeLRS(
+            final ZonedDateTime startDate) {
 
         Statement[] statements = null;
 
         try {
-
-            // Format import.startdate date (yyyy-MM-DDThh:mm:ssZ)
-            String lastReadDate = formatStoredDate(startDate);
 
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add("Cookie", lrsCookie);
@@ -74,11 +69,10 @@ public class LRSService {
             httpHeaders.add("Content-Type", "application/json");
             log.info("Http headers: " + httpHeaders);
 
-            // Call LRS (ELRRStagrController.localdata() in
-            // elrrexternalservices)
+            // Call LRS
             // passing import.startdate = stored date
             String completeURL = lrsURL + "/api/lrsdata?lastReadDate="
-                    + lastReadDate;
+                    + startDate;
             log.info("Complete URL: " + completeURL);
 
             HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
@@ -95,41 +89,11 @@ public class LRSService {
 
         } catch (DatasyncException | RestClientException
                 | JsonProcessingException e) {
+            e.printStackTrace();
             throw new DatasyncException("Error calling LRS.", e);
         }
 
         return statements;
     }
 
-    /**
-     * @param startDate
-     * @return lastReadDate
-     * @throws DatasyncException
-     */
-    public String formatStoredDate(final Timestamp startDate) {
-
-        String lastReadDate = null;
-
-        try {
-
-            DateFormat formatter = new SimpleDateFormat(
-                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-            // Convert Timestamp to Long (ms)
-            long startDateLong = startDate.getTime();
-
-            // Convert Long to Date
-            Date date = new Date(startDateLong);
-
-            // Convert to GMT
-            formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-            lastReadDate = formatter.format(date);
-            log.info("Last read date = " + lastReadDate);
-
-        } catch (IllegalArgumentException | NullPointerException e) {
-            throw new DatasyncException("Error formatting last read date.", e);
-        }
-
-        return lastReadDate;
-    }
 }

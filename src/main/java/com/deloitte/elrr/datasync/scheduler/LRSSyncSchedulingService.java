@@ -1,6 +1,5 @@
 package com.deloitte.elrr.datasync.scheduler;
 
-import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ public class LRSSyncSchedulingService {
     private ImportService importService;
 
     @Value("${initial.date}")
-    private Timestamp initialDate;
+    private ZonedDateTime initialDate;
 
     private static final String LRSNAME = "Yet Analytics LRS";
     private static final String EXCEPTION_MESSAGE = "Exception message: ";
@@ -62,83 +61,68 @@ public class LRSSyncSchedulingService {
             // If no import record
             if (importRecord == null) {
                 importRecord = importService.createImport();
-            } else if (importRecord.getRecordStatus().equals(
-                    RecordStatus.INPROCESS)) {
+            } else if (importRecord.getRecordStatus()
+                    .equals(RecordStatus.INPROCESS)) {
                 log.info("Statements are still being processed.");
                 return;
             }
 
             Statement[] result = null;
 
-            // Update import start and end dates
-            importRecord = importService.updateImportStartEndDates(
-                    importRecord);
-
             // Update import status to INPROCESS
             importRecord = importService.updateImportStatus(importRecord,
                     RecordStatus.INPROCESS);
 
-            // Make call to LRSService.invokeLRS(final Timestamp startDate)
+            // Make call to LRSService.invokeLRS(final ZonedDateTime startDate)
             result = lrsService.process(importRecord.getImportStartDate());
 
-            // Process unprocessed
-            newDataService.process(result);
-
-            int x = 1;
-
-            // Iterate over LRS response batches
-            do {
-
-                if (result == null || result.length == 0) {
-                    log.info("No result.");
-                    break;
-                }
-
-                // Get stored from last Statement in response
-                ZonedDateTime stored = result[result.length - 1].getStored();
-                Timestamp lastStored = Timestamp
-                        .valueOf(stored.toLocalDateTime());
-
-                // Make call to LRSService.invokeLRS(final Timestamp startDate)
-                result = lrsService.process(lastStored);
+            if (result != null && result.length > 0) {
 
                 // Process unprocessed
-                log.info("Processing LRS batch " + x++);
                 newDataService.process(result);
 
-            } while (result.length > 0);
+                // Get stored
+                ZonedDateTime stored = result[result.length - 1].getStored();
+                log.info("stored = " + stored);
 
-            // Update import status to SUCCESS
-            importRecord = importService.updateImportStatus(importRecord,
-                    RecordStatus.SUCCESS);
+                // Update import startDate
+                importRecord = importService.updateImportStartDate(importRecord,
+                        stored);
+
+                importRecord = importService.updateImportEndDate(importRecord);
+
+                // Update import status to SUCCESS
+                importRecord = importService.updateImportStatus(importRecord,
+                        RecordStatus.SUCCESS);
+
+            } else {
+
+                log.info("No statements returned from LRS.");
+
+            }
 
         } catch (DatasyncException e) {
 
-            handleDifferentExceptions(importRecord,
-                    e, "DatasyncException");
+            handleDifferentExceptions(importRecord, e, "DatasyncException");
 
         } catch (ResourceNotFoundException e) {
 
-            handleDifferentExceptions(importRecord,
-                    e, "ResourceNotFoundException");
+            handleDifferentExceptions(importRecord, e,
+                    "ResourceNotFoundException");
 
         } catch (NullPointerException e) {
 
-            handleDifferentExceptions(importRecord,
-                    e, "NullPointerException");
+            handleDifferentExceptions(importRecord, e, "NullPointerException");
 
         } catch (Exception e) {
 
-            handleDifferentExceptions(importRecord,
-                    e, "Exception");
+            handleDifferentExceptions(importRecord, e, "Exception");
 
         }
 
     }
 
-    private void handleDifferentExceptions(
-            Import importRecord,
-            Exception e,
+    private void handleDifferentExceptions(Import importRecord, Exception e,
             String exceptionType) {
 
         log.error("***** " + exceptionType + " *****");
