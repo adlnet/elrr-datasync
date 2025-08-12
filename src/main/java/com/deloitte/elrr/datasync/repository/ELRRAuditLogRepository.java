@@ -12,7 +12,8 @@ import org.springframework.stereotype.Repository;
 import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
 
 @Repository
-public interface ELRRAuditLogRepository extends JpaRepository<ELRRAuditLog, UUID> {
+public interface ELRRAuditLogRepository
+        extends JpaRepository<ELRRAuditLog, UUID> {
 
     /**
      * @param purgeDate
