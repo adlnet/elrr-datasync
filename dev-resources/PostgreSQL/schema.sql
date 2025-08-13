@@ -20,7 +20,6 @@ CREATE TABLE IF NOT EXISTS datasync_schema."import" (
     id UUID         PRIMARY KEY,
     importname      varchar NULL,
     importstartdate TIMESTAMP WITH TIME ZONE NULL,
-    importenddate   TIMESTAMP WITH TIME ZONE NULL,
     recordstatus    record_status,
     retries         int4    NULL,
     updatedby       varchar NULL,

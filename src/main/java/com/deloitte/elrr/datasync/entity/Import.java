@@ -41,9 +41,6 @@ public class Import extends Auditable<String> {
     @Column(name = "IMPORTSTARTDATE")
     private ZonedDateTime importStartDate;
 
-    @Column(name = "IMPORTENDDATE")
-    private ZonedDateTime importEndDate;
-
     @Column(name = "RECORDSTATUS", columnDefinition = "record_status")
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)

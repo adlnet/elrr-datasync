@@ -89,8 +89,6 @@ public class LRSSyncSchedulingService {
                 importRecord = importService.updateImportStartDate(importRecord,
                         stored);
 
-                importRecord = importService.updateImportEndDate(importRecord);
-
             } else {
 
                 log.info("No statements returned from LRS.");

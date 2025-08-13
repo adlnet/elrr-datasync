@@ -68,7 +68,6 @@ public class ImportService implements CommonSvc<Import, UUID> {
         importRecord.setRetries(0);
         importRecord.setImportName(LRSNAME);
         importRecord.setImportStartDate(initialDate);
-        importRecord.setImportEndDate(initialDate);
         save(importRecord);
         return importRecord;
     }
@@ -103,22 +102,6 @@ public class ImportService implements CommonSvc<Import, UUID> {
         log.info("Updating import start date.");
 
         importRecord.setImportStartDate(startDate);
-        update(importRecord);
-
-        return importRecord;
-    }
-
-    /**
-     * @param importRecord
-     * @return importRecord
-     * @throws ResourceNotFoundException
-     */
-    public Import updateImportEndDate(Import importRecord)
-            throws ResourceNotFoundException {
-
-        log.info("Updating import end date.");
-
-        importRecord.setImportEndDate(ZonedDateTime.now());
         update(importRecord);
 
         return importRecord;
