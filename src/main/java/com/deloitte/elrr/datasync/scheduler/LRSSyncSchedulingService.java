@@ -61,8 +61,8 @@ public class LRSSyncSchedulingService {
             // If no import record
             if (importRecord == null) {
                 importRecord = importService.createImport();
-            } else if (importRecord.getRecordStatus()
-                    .equals(RecordStatus.INPROCESS)) {
+            } else if (importRecord.getRecordStatus().equals(
+                    RecordStatus.INPROCESS)) {
                 log.info("Statements are still being processed.");
                 return;
             }

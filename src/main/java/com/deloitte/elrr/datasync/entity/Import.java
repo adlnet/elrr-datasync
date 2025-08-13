@@ -29,26 +29,26 @@ import lombok.Setter;
 @Setter
 public class Import extends Auditable<String> {
 
-  @Id
-  @GeneratedValue(generator = "uuid2")
-  @GenericGenerator(name = "uuid", strategy = "uuid2")
-  @Column(name = "ID")
-  private UUID id;
+    @Id
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "ID")
+    private UUID id;
 
-  @Column(name = "IMPORTNAME")
-  private String importName;
+    @Column(name = "IMPORTNAME")
+    private String importName;
 
-  @Column(name = "IMPORTSTARTDATE")
-  private ZonedDateTime importStartDate;
+    @Column(name = "IMPORTSTARTDATE")
+    private ZonedDateTime importStartDate;
 
-  @Column(name = "IMPORTENDDATE")
-  private ZonedDateTime importEndDate;
+    @Column(name = "IMPORTENDDATE")
+    private ZonedDateTime importEndDate;
 
-  @Column(name = "RECORDSTATUS", columnDefinition = "record_status")
-  @Enumerated(EnumType.STRING)
-  @JdbcType(PostgreSQLEnumJdbcType.class)
-  private RecordStatus recordStatus;
+    @Column(name = "RECORDSTATUS", columnDefinition = "record_status")
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    private RecordStatus recordStatus;
 
-  @Column(name = "RETRIES")
-  private int retries;
+    @Column(name = "RETRIES")
+    private int retries;
 }
