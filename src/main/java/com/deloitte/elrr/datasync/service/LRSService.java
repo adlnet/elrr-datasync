@@ -39,8 +39,7 @@ public class LRSService {
      * @throws DatasyncException
      */
     // Get xAPI statements from LRS
-    public Statement[] process(
-            final ZonedDateTime startDate)
+    public Statement[] process(final ZonedDateTime startDate)
             throws DatasyncException {
 
         Statement[] statements = null;
@@ -56,8 +55,7 @@ public class LRSService {
      * @return statements
      * @throws DatasyncException
      */
-    public Statement[] invokeLRS(
-            final ZonedDateTime startDate) {
+    public Statement[] invokeLRS(final ZonedDateTime startDate) {
 
         Statement[] statements = null;
 
