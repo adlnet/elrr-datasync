@@ -69,25 +69,39 @@ public class LRSSyncSchedulingService {
 
             Statement[] result = null;
 
-            // Update import status to INPROCESS
-            importRecord = importService.updateImportStatus(importRecord,
-                    RecordStatus.INPROCESS);
-
-            // Make call to LRSService.invokeLRS(final ZonedDateTime startDate)
+            // Make call to LRSService.invokeLRS()
             result = lrsService.process(importRecord.getImportStartDate());
+
+            int x = 1;
 
             if (result != null && result.length > 0) {
 
-                // Process unprocessed
-                newDataService.process(result);
+                // Update import status to INPROCESS
+                importRecord = importService.updateImportStatus(importRecord,
+                        RecordStatus.INPROCESS);
 
-                // Get stored
-                ZonedDateTime stored = result[result.length - 1].getStored();
-                log.info("stored = " + stored);
+                while (result.length > 0) {
 
-                // Update import startDate
-                importRecord = importService.updateImportStartDate(importRecord,
-                        stored);
+                    log.info("Processing LRS batch " + x);
+
+                    // Process unprocessed
+                    newDataService.process(result);
+
+                    // Get stored
+                    ZonedDateTime stored = result[result.length - 1]
+                            .getStored();
+
+                    // Update import startDate
+                    importRecord = importService.updateImportStartDate(
+                            importRecord, stored);
+
+                    // Make call to LRSService.invokeLRS()
+                    result = lrsService.process(importRecord
+                            .getImportStartDate());
+
+                    x++;
+
+                }
 
             } else {
 
@@ -95,9 +109,13 @@ public class LRSSyncSchedulingService {
 
             }
 
+            RecordStatus importStatus = importService.getStatus(importRecord);
+
             // Update import status to SUCCESS
-            importRecord = importService.updateImportStatus(importRecord,
-                    RecordStatus.SUCCESS);
+            if (importStatus.equals(RecordStatus.INPROCESS)) {
+                importRecord = importService.updateImportStatus(importRecord,
+                        RecordStatus.SUCCESS);
+            }
 
         } catch (DatasyncException e) {
 

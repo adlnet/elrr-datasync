@@ -32,88 +32,88 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class NewDataServiceTest {
 
-  @Mock
-  private KafkaProducer kafkaProducer;
+    @Mock
+    private KafkaProducer kafkaProducer;
 
-  @Mock
-  private ELRRAuditLogService elrrAuditLogService;
+    @Mock
+    private ELRRAuditLogService elrrAuditLogService;
 
-  @Mock
-  private ImportService importService;
+    @Mock
+    private ImportService importService;
 
-  @Mock
-  private KafkaStatusCheck kafkaStatusCheck;
+    @Mock
+    private KafkaStatusCheck kafkaStatusCheck;
 
-  @InjectMocks
-  private NewDataService newDataService;
+    @InjectMocks
+    private NewDataService newDataService;
 
-  @Test
-  void testBasicStatementProcessing() {
+    @Test
+    void testBasicStatementProcessing() {
 
-    try {
+        try {
 
-      File testFile = TestFileUtil.getJsonTestFile("completed.json");
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
 
-      Statement[] stmts = Mapper.getMapper().readValue(testFile,
-          Statement[].class);
-      assertTrue(stmts != null);
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+            assertTrue(stmts != null);
 
-      Mockito.doReturn(true).when(kafkaStatusCheck).isKafkaRunning();
+            Mockito.doReturn(true).when(kafkaStatusCheck).isKafkaRunning();
 
-      newDataService.process(stmts);
+            newDataService.process(stmts);
 
-    } catch (DatasyncException | IOException e) {
-      fail("Should not have thrown any exception");
+        } catch (DatasyncException | IOException e) {
+            fail("Should not have thrown any exception");
+        }
     }
-  }
 
-  @Test
-  void testFailedSerializationAuditLog() {
+    @Test
+    void testFailedSerializationAuditLog() {
 
-    try {
+        try {
 
-      File testFile = TestFileUtil.getJsonTestFile("completed.json");
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
 
-      Statement[] stmts = Mapper.getMapper().readValue(testFile,
-          Statement[].class);
-      assertTrue(stmts != null);
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+            assertTrue(stmts != null);
 
-      Mockito.doReturn(true).when(kafkaStatusCheck).isKafkaRunning();
+            Mockito.doReturn(true).when(kafkaStatusCheck).isKafkaRunning();
 
-      Mockito.doThrow(new DatasyncException("Test processing ex"))
-          .when(kafkaProducer).writeValueAsString(stmts[0].getId());
+            Mockito.doThrow(new DatasyncException("Test processing ex")).when(
+                    kafkaProducer).writeValueAsString(stmts[0].getId());
 
-      newDataService.process(stmts);
+            newDataService.process(stmts);
 
-    } catch (DatasyncException | IOException e) {
-      fail("Should not have thrown any exception");
+        } catch (DatasyncException | IOException e) {
+            assertEquals("Test processing ex", e.getMessage());
+        }
     }
-  }
 
-  @Test
-  void testNoKafka() {
+    @Test
+    void testNoKafka() {
 
-    try {
+        try {
 
-      File testFile = TestFileUtil.getJsonTestFile("completed.json");
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
 
-      Statement[] stmts = Mapper.getMapper().readValue(testFile,
-          Statement[].class);
-      assertTrue(stmts != null);
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+            assertTrue(stmts != null);
 
-      Import imp = new Import();
-      imp.setId(UUID.randomUUID());
-      imp.setImportName("name");
-      imp.setRetries(0);
-      importService.save(imp);
+            Import imp = new Import();
+            imp.setId(UUID.randomUUID());
+            imp.setImportName("name");
+            imp.setRetries(0);
+            importService.save(imp);
 
-      Mockito.doReturn(imp).when(importService).findByName(any());
+            Mockito.doReturn(imp).when(importService).findByName(any());
 
-      newDataService.process(stmts);
+            newDataService.process(stmts);
 
-    } catch (DatasyncException | IOException e) {
-      assertEquals(e.getMessage(), "Max retries reached. Giving up.");
+        } catch (DatasyncException | IOException e) {
+            assertEquals(e.getMessage(), "Max retries reached. Giving up.");
+        }
     }
-  }
 
 }

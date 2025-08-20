@@ -107,4 +107,11 @@ public class ImportService implements CommonSvc<Import, UUID> {
         return importRecord;
     }
 
+    /**
+     * @param importRecord
+     * @return recordStatus
+     */
+    public RecordStatus getStatus(Import importRecord) {
+        return importRecord.getRecordStatus();
+    }
 }

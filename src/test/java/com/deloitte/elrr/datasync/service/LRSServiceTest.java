@@ -37,86 +37,89 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class LRSServiceTest {
 
-  @Mock
-  private RestTemplate restTemplate;
+    @Mock
+    private RestTemplate restTemplate;
 
-  @InjectMocks
-  private LRSService lrsService;
+    @InjectMocks
+    private LRSService lrsService;
 
-  @Test
-  void testProcessSuccess() {
+    @Test
+    void testProcessSuccess() {
 
-    try {
+        try {
 
-      File testFile = TestFileUtil.getJsonTestFile("completed.json");
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
 
-      Statement[] stmts = Mapper.getMapper().readValue(testFile,
-          Statement[].class);
-      assertTrue(stmts != null);
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+            assertTrue(stmts != null);
 
-      ZonedDateTime zonedDateTime = ZonedDateTime.parse("2025-12-05T15:30:00Z",
-          DateTimeFormatter.ISO_DATE_TIME);
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(
+                    "2025-12-05T15:30:00Z", DateTimeFormatter.ISO_DATE_TIME);
 
-      HttpHeaders httpHeaders = new HttpHeaders();
-      httpHeaders.add("Cookie", "null");
-      httpHeaders.add("X-Forwarded-Proto", "https");
-      httpHeaders.add("Content-Type", "application/json");
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add("Cookie", "null");
+            httpHeaders.add("X-Forwarded-Proto", "https");
+            httpHeaders.add("Content-Type", "application/json");
 
-      String completeURL = "null/api/lrsdata?lastReadDate=" + zonedDateTime;
+            String completeURL = "null/api/lrsdata?lastReadDate="
+                    + zonedDateTime + "&lrsLimit=0";
 
-      HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+            HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 
-      ResponseEntity<String> json = new ResponseEntity<String>(
-          Mapper.getMapper().writeValueAsString(stmts), HttpStatus.OK);
-      assertNotNull(json);
+            ResponseEntity<String> json = new ResponseEntity<String>(Mapper
+                    .getMapper().writeValueAsString(stmts), HttpStatus.OK);
+            assertNotNull(json);
 
-      Mockito.doReturn(json).when(restTemplate).exchange(eq(completeURL),
-          eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class));
+            Mockito.doReturn(json).when(restTemplate).exchange(eq(completeURL),
+                    eq(HttpMethod.GET), any(HttpEntity.class), eq(
+                            String.class));
 
-      Statement[] returnStmts = lrsService.process(zonedDateTime);
+            Statement[] returnStmts = lrsService.process(zonedDateTime);
 
-    } catch (DatasyncException | NullPointerException | IOException
-        | RestClientException e) {
-      fail("Should not have thrown any exception");
+        } catch (DatasyncException | NullPointerException | IOException
+                | RestClientException e) {
+            fail("Should not have thrown any exception");
+        }
     }
-  }
 
-  @Test
-  void testProcessError() {
+    @Test
+    void testProcessError() {
 
-    try {
+        try {
 
-      File testFile = TestFileUtil.getJsonTestFile("completed.json");
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
 
-      Statement[] stmts = Mapper.getMapper().readValue(testFile,
-          Statement[].class);
-      assertTrue(stmts != null);
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+            assertTrue(stmts != null);
 
-      ZonedDateTime zonedDateTime = ZonedDateTime.parse("2025-12-05T15:30:00Z",
-          DateTimeFormatter.ISO_DATE_TIME);
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(
+                    "2025-12-05T15:30:00Z", DateTimeFormatter.ISO_DATE_TIME);
 
-      HttpHeaders httpHeaders = new HttpHeaders();
-      httpHeaders.add("Cookie", "null");
-      httpHeaders.add("X-Forwarded-Proto", "https");
-      httpHeaders.add("Content-Type", "application/json");
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add("Cookie", "null");
+            httpHeaders.add("X-Forwarded-Proto", "https");
+            httpHeaders.add("Content-Type", "application/json");
 
-      String completeURL = "null/api/lrsdata?lastReadDate=" + zonedDateTime;
+            String completeURL = "null/api/lrsdata?lastReadDate="
+                    + zonedDateTime + "&lrsLimit=0";
 
-      HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+            HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 
-      ResponseEntity<String> json = new ResponseEntity<String>(
-          Mapper.getMapper().writeValueAsString(stmts), HttpStatus.OK);
-      assertNotNull(json);
+            ResponseEntity<String> json = new ResponseEntity<String>(Mapper
+                    .getMapper().writeValueAsString(stmts), HttpStatus.OK);
+            assertNotNull(json);
 
-      Mockito.doThrow(new DatasyncException("Test Error")).when(restTemplate)
-          .exchange(eq(completeURL), eq(HttpMethod.GET), any(HttpEntity.class),
-              eq(String.class));
+            Mockito.doThrow(new DatasyncException("Test Error")).when(
+                    restTemplate).exchange(eq(completeURL), eq(HttpMethod.GET),
+                            any(HttpEntity.class), eq(String.class));
 
-      Statement[] returnStmts = lrsService.process(zonedDateTime);
+            Statement[] returnStmts = lrsService.process(zonedDateTime);
 
-    } catch (DatasyncException | IOException e) {
-      assertEquals("Error calling LRS.", e.getMessage());
+        } catch (DatasyncException | IOException e) {
+            assertEquals("Error calling LRS.", e.getMessage());
+        }
     }
-  }
 
 }

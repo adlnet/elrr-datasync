@@ -33,6 +33,9 @@ public class LRSService {
     @Value("${lrsservice.cookie}")
     private String lrsCookie;
 
+    @Value("${lrs.limit}")
+    private int lrsLimit;
+
     /**
      * @param startDate
      * @return Statement[]
@@ -42,10 +45,8 @@ public class LRSService {
     public Statement[] process(final ZonedDateTime startDate)
             throws DatasyncException {
 
-        Statement[] statements = null;
-
         // Get new statements from LRS since import.startdate
-        statements = invokeLRS(startDate);
+        Statement[] statements = invokeLRS(startDate);
 
         return statements;
     }
@@ -68,9 +69,8 @@ public class LRSService {
             log.info("Http headers: " + httpHeaders);
 
             // Call LRS
-            // passing import.startdate = stored date
             String completeURL = lrsURL + "/api/lrsdata?lastReadDate="
-                    + startDate;
+                    + startDate + "&lrsLimit=" + lrsLimit;
             log.info("Complete URL: " + completeURL);
 
             HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
