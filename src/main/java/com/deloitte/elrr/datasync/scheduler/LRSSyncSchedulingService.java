@@ -35,9 +35,6 @@ public class LRSSyncSchedulingService {
     private ZonedDateTime initialDate;
 
     private static final String LRSNAME = "Yet Analytics LRS";
-    private static final String EXCEPTION_MESSAGE = "Exception message: ";
-    private static final String EXCEPTION_CAUSE = "Exception cause: ";
-    private static final String LRS_SYNC_FAILED = "LRS Sync failed.";
 
     /**
      * @author phleven
@@ -123,7 +120,7 @@ public class LRSSyncSchedulingService {
                 importService.update(importRecord);
             }
 
-            throw new DatasyncException("Error calling LRS.", e);
+            throw new DatasyncException("Error LRS sync failed.", e);
 
         } catch (Exception e) {
 
@@ -132,7 +129,7 @@ public class LRSSyncSchedulingService {
                 importService.update(importRecord);
             }
 
-            throw new DatasyncException("Error calling LRS.", e);
+            throw new DatasyncException("Error LRS sync failed.", e);
 
         }
 
