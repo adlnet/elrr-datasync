@@ -33,8 +33,8 @@ public class LRSService {
     @Value("${lrsservice.cookie}")
     private String lrsCookie;
 
-    @Value("${lrs.limit}")
-    private int lrsLimit;
+    @Value("${max.statements}")
+    private int maxStatements;
 
     /**
      * @param startDate
@@ -70,7 +70,7 @@ public class LRSService {
 
             // Call LRS
             String completeURL = lrsURL + "/api/lrsdata?lastReadDate="
-                    + startDate + "&lrsLimit=" + lrsLimit;
+                    + startDate + "&maxStatements=" + maxStatements;
             log.info("Complete URL: " + completeURL);
 
             HttpEntity<String> entity = new HttpEntity<>(httpHeaders);

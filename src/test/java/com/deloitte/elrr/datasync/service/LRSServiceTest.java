@@ -63,7 +63,7 @@ class LRSServiceTest {
             httpHeaders.add("Content-Type", "application/json");
 
             String completeURL = "null/api/lrsdata?lastReadDate="
-                    + zonedDateTime + "&lrsLimit=0";
+                    + zonedDateTime + "&maxStatements=0";
 
             HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 
@@ -103,7 +103,7 @@ class LRSServiceTest {
             httpHeaders.add("Content-Type", "application/json");
 
             String completeURL = "null/api/lrsdata?lastReadDate="
-                    + zonedDateTime + "&lrsLimit=0";
+                    + zonedDateTime + "&maxStatements=0";
 
             HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 
