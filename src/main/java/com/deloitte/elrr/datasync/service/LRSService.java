@@ -87,7 +87,6 @@ public class LRSService {
 
         } catch (DatasyncException | RestClientException
                 | JsonProcessingException e) {
-            e.printStackTrace();
             throw new DatasyncException("Error calling LRS.", e);
         }
 

@@ -115,40 +115,27 @@ public class LRSSyncSchedulingService {
                         RecordStatus.SUCCESS);
             }
 
-        } catch (DatasyncException e) {
+        } catch (DatasyncException | ResourceNotFoundException
+                | NullPointerException e) {
 
-            handleDifferentExceptions(importRecord, e, "DatasyncException");
+            if (importRecord != null) {
+                importRecord.setRetries(0);
+                importService.update(importRecord);
+            }
 
-        } catch (ResourceNotFoundException e) {
-
-            handleDifferentExceptions(importRecord, e,
-                    "ResourceNotFoundException");
-
-        } catch (NullPointerException e) {
-
-            handleDifferentExceptions(importRecord, e, "NullPointerException");
+            throw new DatasyncException("Error calling LRS.", e);
 
         } catch (Exception e) {
 
-            handleDifferentExceptions(importRecord, e, "Exception");
+            if (importRecord != null) {
+                importRecord.setRetries(0);
+                importService.update(importRecord);
+            }
+
+            throw new DatasyncException("Error calling LRS.", e);
 
         }
 
-    }
-
-    private void handleDifferentExceptions(Import importRecord, Exception e,
-            String exceptionType) {
-
-        log.error("***** " + exceptionType + " *****");
-        log.error(EXCEPTION_MESSAGE + e.getMessage(), e);
-        log.error(EXCEPTION_CAUSE + e.getCause());
-        log.error(LRS_SYNC_FAILED);
-        log.error("***** " + exceptionType + " *****");
-
-        if (importRecord != null) {
-            importRecord.setRetries(0);
-            importService.update(importRecord);
-        }
     }
 
 }
