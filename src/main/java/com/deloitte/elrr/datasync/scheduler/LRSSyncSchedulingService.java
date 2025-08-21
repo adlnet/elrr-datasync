@@ -109,10 +109,8 @@ public class LRSSyncSchedulingService {
 
             }
 
-            RecordStatus importStatus = importService.getStatus(importRecord);
-
             // Update import status to SUCCESS
-            if (importStatus.equals(RecordStatus.INPROCESS)) {
+            if (importRecord.getRecordStatus().equals(RecordStatus.INPROCESS)) {
                 importRecord = importService.updateImportStatus(importRecord,
                         RecordStatus.SUCCESS);
             }
