@@ -69,17 +69,13 @@ public class LRSSyncSchedulingService {
             // Make call to LRSService.invokeLRS()
             result = lrsService.process(importRecord.getImportStartDate());
 
-            int x = 1;
-
             if (result != null && result.length > 0) {
 
                 // Update import status to INPROCESS
                 importRecord = importService.updateImportStatus(importRecord,
                         RecordStatus.INPROCESS);
 
-                while (result.length > 0) {
-
-                    log.info("Processing LRS batch " + x);
+                for (int x = 1; result.length > 0; x++) {
 
                     // Process unprocessed
                     newDataService.process(result);
@@ -96,7 +92,7 @@ public class LRSSyncSchedulingService {
                     result = lrsService.process(importRecord
                             .getImportStartDate());
 
-                    x++;
+                    log.debug("Processing LRS batch " + x + " sucessful.");
 
                 }
 
