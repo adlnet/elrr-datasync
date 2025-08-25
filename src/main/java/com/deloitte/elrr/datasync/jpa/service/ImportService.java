@@ -107,4 +107,16 @@ public class ImportService implements CommonSvc<Import, UUID> {
         return importRecord;
     }
 
+    /**
+     * @param importRecord
+     * @return importRecord
+     */
+    public Import resetRetries(Import importRecord)
+            throws ResourceNotFoundException {
+
+        importRecord.setRetries(0);
+        update(importRecord);
+
+        return importRecord;
+    }
 }

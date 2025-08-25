@@ -116,17 +116,7 @@ public class LRSSyncSchedulingService {
                 | NullPointerException e) {
 
             if (importRecord != null) {
-                importRecord.setRetries(0);
-                importService.update(importRecord);
-            }
-
-            throw new DatasyncException("Error LRS sync failed.", e);
-
-        } catch (Exception e) {
-
-            if (importRecord != null) {
-                importRecord.setRetries(0);
-                importService.update(importRecord);
+                importService.resetRetries(importRecord);
             }
 
             throw new DatasyncException("Error LRS sync failed.", e);

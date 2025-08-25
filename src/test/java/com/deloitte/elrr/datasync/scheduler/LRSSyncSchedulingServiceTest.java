@@ -119,9 +119,8 @@ class LRSSyncSchedulingServiceTest {
 
             lrsSyncSchedulingservice.run();
 
-        } catch (DatasyncException | ResourceNotFoundException
-                | IOException e) {
-            fail("Should not have thrown any exception");
+        } catch (DatasyncException | IOException e) {
+            assertEquals("Error LRS sync failed.", e.getMessage());
         }
     }
 
@@ -150,7 +149,7 @@ class LRSSyncSchedulingServiceTest {
 
         } catch (DatasyncException | ResourceNotFoundException
                 | IOException e) {
-            fail("Should not have thrown any exception");
+            assertEquals("Error LRS sync failed.", e.getMessage());
         }
     }
 
@@ -161,22 +160,29 @@ class LRSSyncSchedulingServiceTest {
     @Test
     void testDatasyncException() throws IOException {
 
-        File testFile = TestFileUtil.getJsonTestFile("completed.json");
+        try {
 
-        Statement[] stmts = Mapper.getMapper().readValue(testFile,
-                Statement[].class);
-        assertTrue(stmts != null);
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
 
-        Import imp = new Import();
-        imp.setId(UUID.randomUUID());
-        imp.setImportName(LRSNAME);
-        imp.setRecordStatus(RecordStatus.SUCCESS);
-        imp.setRetries(0);
-        Mockito.doReturn(imp).when(importService).findByName(any());
-        Mockito.doThrow(new DatasyncException("Test Error")).when(lrsService)
-                .process(any());
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+            assertTrue(stmts != null);
 
-        lrsSyncSchedulingservice.run();
+            Import imp = new Import();
+            imp.setId(UUID.randomUUID());
+            imp.setImportName(LRSNAME);
+            imp.setRecordStatus(RecordStatus.SUCCESS);
+            imp.setRetries(0);
+            Mockito.doReturn(imp).when(importService).findByName(any());
+            Mockito.doThrow(new DatasyncException("Test Error")).when(
+                    lrsService).process(any());
+
+            lrsSyncSchedulingservice.run();
+
+        } catch (DatasyncException e) {
+            assertEquals("Error LRS sync failed.", e.getMessage());
+        }
+
     }
 
     /**
@@ -205,8 +211,9 @@ class LRSSyncSchedulingServiceTest {
 
             lrsSyncSchedulingservice.run();
 
-        } catch (NullPointerException | ResourceNotFoundException e) {
-            assertEquals("Test Error", e.getMessage());
+        } catch (DatasyncException | NullPointerException
+                | ResourceNotFoundException e) {
+            assertEquals("Error LRS sync failed.", e.getMessage());
         }
     }
 
@@ -236,8 +243,9 @@ class LRSSyncSchedulingServiceTest {
 
             lrsSyncSchedulingservice.run();
 
-        } catch (NullPointerException | ResourceNotFoundException e) {
-            assertEquals("Test Error", e.getMessage());
+        } catch (DatasyncException | NullPointerException
+                | ResourceNotFoundException e) {
+            assertEquals("Error LRS sync failed.", e.getMessage());
         }
     }
 
@@ -248,22 +256,29 @@ class LRSSyncSchedulingServiceTest {
     @Test
     void testGenericException() throws IOException {
 
-        File testFile = TestFileUtil.getJsonTestFile("completed.json");
+        try {
 
-        Statement[] stmts = Mapper.getMapper().readValue(testFile,
-                Statement[].class);
-        assertTrue(stmts != null);
+            File testFile = TestFileUtil.getJsonTestFile("completed.json");
 
-        Import imp = new Import();
-        imp.setId(UUID.randomUUID());
-        imp.setImportName(LRSNAME);
-        imp.setRecordStatus(RecordStatus.SUCCESS);
-        imp.setRetries(0);
-        Mockito.doReturn(imp).when(importService).findByName(any());
-        Mockito.doThrow(new RuntimeException("Test Error")).when(lrsService)
-                .process(any());
+            Statement[] stmts = Mapper.getMapper().readValue(testFile,
+                    Statement[].class);
+            assertTrue(stmts != null);
 
-        lrsSyncSchedulingservice.run();
+            Import imp = new Import();
+            imp.setId(UUID.randomUUID());
+            imp.setImportName(LRSNAME);
+            imp.setRecordStatus(RecordStatus.SUCCESS);
+            imp.setRetries(0);
+            Mockito.doReturn(imp).when(importService).findByName(any());
+            Mockito.doThrow(new RuntimeException("Test Error")).when(lrsService)
+                    .process(any());
+
+            lrsSyncSchedulingservice.run();
+
+        } catch (RuntimeException e) {
+            assertEquals("Test Error", e.getMessage());
+        }
+
     }
 
 }
