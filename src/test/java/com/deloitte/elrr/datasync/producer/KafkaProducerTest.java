@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 
@@ -21,6 +22,7 @@ import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.util.TestFileUtil;
+import com.deloitte.elrr.datasync.util.Utils;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
 
@@ -35,6 +37,9 @@ class KafkaProducerTest {
 
     @Mock
     private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Spy
+    private Utils utils;
 
     @InjectMocks
     private KafkaProducer kafkaProducer;
@@ -110,14 +115,14 @@ class KafkaProducerTest {
             Statement[] stmts = Mapper.getMapper().readValue(testFile,
                     Statement[].class);
 
-            Mockito.doThrow(new DatasyncException("test ex"))
-                .when(kafkaTemplate).send(any(), any());
-            
+            Mockito.doThrow(new DatasyncException("test ex")).when(
+                    kafkaTemplate).send(any(), any());
+
             kafkaProducer.sendMessage(stmts[0]);
 
         } catch (DatasyncException | IOException e) {
-            assertEquals(e.getMessage(), 
-                "Exception while sending Kafka message");
+            assertEquals(e.getMessage(),
+                    "Exception while sending Kafka message");
         }
     }
 

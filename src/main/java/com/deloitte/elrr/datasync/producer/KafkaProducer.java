@@ -7,6 +7,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
+import com.deloitte.elrr.datasync.util.Utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -24,6 +25,12 @@ public class KafkaProducer {
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Autowired
+    private Utils utils;
+
+    @Value("${pretty.json}")
+    private boolean makePretty;
 
     private ObjectMapper mapper = Mapper.getMapper();
 
@@ -43,9 +50,16 @@ public class KafkaProducer {
                 payload = writeValueAsString(msg);
             }
 
-            log.info(
-                    "\n\n ===============sent messsage to Kafka=============== \n"
-                            + payload);
+            if (makePretty) {
+                log.info(
+                        "\n\n ===============sent messsage to Kafka=============== \n"
+                                + utils.prettyJson(payload));
+            } else {
+                log.info(
+                        "\n\n ===============sent messsage to Kafka=============== \n"
+                                + payload);
+            }
+
             kafkaTemplate.send(kafkatopic, payload);
 
             log.info("\n Kafka message successfully sent to kafka topic "

@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.deloitte.elrr.datasync.KafkaStatusCheck;
+import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
 import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
@@ -60,6 +61,11 @@ class NewDataServiceTest {
 
             Mockito.doReturn(true).when(kafkaStatusCheck).isKafkaRunning();
 
+            ELRRAuditLog auditLog = new ELRRAuditLog();
+            auditLog.setStatementId(UUID.randomUUID().toString());
+
+            Mockito.doReturn(auditLog).when(elrrAuditLogService).save(any());
+
             newDataService.process(stmts);
 
         } catch (DatasyncException | IOException e) {
@@ -80,8 +86,13 @@ class NewDataServiceTest {
 
             Mockito.doReturn(true).when(kafkaStatusCheck).isKafkaRunning();
 
-            Mockito.doThrow(new DatasyncException("Test processing ex")).when(
-                    kafkaProducer).writeValueAsString(stmts[0].getId());
+            Mockito.doReturn("Test Kafka message.").when(kafkaProducer)
+                    .writeValueAsString(stmts[0].getId());
+
+            ELRRAuditLog auditLog = new ELRRAuditLog();
+            auditLog.setStatementId(UUID.randomUUID().toString());
+
+            Mockito.doReturn(auditLog).when(elrrAuditLogService).save(any());
 
             newDataService.process(stmts);
 
