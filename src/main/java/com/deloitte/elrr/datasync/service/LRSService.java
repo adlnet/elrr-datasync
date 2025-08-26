@@ -13,7 +13,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
-import com.deloitte.elrr.datasync.util.Utils;
+import com.deloitte.elrr.datasync.util.PrettyJson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yetanalytics.xapi.model.Statement;
@@ -27,9 +27,6 @@ public class LRSService {
 
     @Autowired
     private RestTemplate restTemplate;
-
-    @Autowired
-    private Utils utils;
 
     @Value("${lrsservice.url}")
     private String lrsURL;
@@ -87,7 +84,7 @@ public class LRSService {
             log.info("Res headers: " + json.getHeaders());
 
             if (makePretty) {
-                log.info("Res body: " + utils.prettyJson(json.getBody()));
+                log.info("Res body: " + PrettyJson.prettyJson(json.getBody()));
             } else {
                 log.info("Res body: " + json.getBody());
             }

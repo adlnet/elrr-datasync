@@ -24,12 +24,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
+import com.deloitte.elrr.datasync.util.PrettyJson;
 import com.deloitte.elrr.datasync.util.TestFileUtil;
-import com.deloitte.elrr.datasync.util.Utils;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
 
@@ -43,13 +44,15 @@ class LRSServiceTest {
     private RestTemplate restTemplate;
 
     @Spy
-    private Utils utils;
+    private PrettyJson prettyJson;
 
     @InjectMocks
     private LRSService lrsService;
 
     @Test
     void testProcessSuccess() {
+
+        ReflectionTestUtils.setField(lrsService, "makePretty", true);
 
         try {
 
@@ -90,6 +93,8 @@ class LRSServiceTest {
 
     @Test
     void testProcessError() {
+
+        ReflectionTestUtils.setField(lrsService, "makePretty", true);
 
         try {
 

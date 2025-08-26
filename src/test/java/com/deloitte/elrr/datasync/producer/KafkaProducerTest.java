@@ -17,12 +17,13 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
+import com.deloitte.elrr.datasync.util.PrettyJson;
 import com.deloitte.elrr.datasync.util.TestFileUtil;
-import com.deloitte.elrr.datasync.util.Utils;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
 
@@ -39,13 +40,15 @@ class KafkaProducerTest {
     private KafkaTemplate<String, String> kafkaTemplate;
 
     @Spy
-    private Utils utils;
+    private PrettyJson prettyJson;
 
     @InjectMocks
     private KafkaProducer kafkaProducer;
 
     @Test
     void testWriteValueAsString() {
+
+        ReflectionTestUtils.setField(kafkaProducer, "makePretty", true);
 
         try {
 
@@ -58,6 +61,8 @@ class KafkaProducerTest {
 
     @Test
     void testImportWriteValueAsString() {
+
+        ReflectionTestUtils.setField(kafkaProducer, "makePretty", true);
 
         try {
 
@@ -78,6 +83,8 @@ class KafkaProducerTest {
     @SuppressWarnings("checkstyle:linelength")
     void testWriteBadValueAsString() {
 
+        ReflectionTestUtils.setField(kafkaProducer, "makePretty", true);
+
         try {
 
             ObjectWithNoToString objectWithNoToString = new ObjectWithNoToString();
@@ -90,6 +97,8 @@ class KafkaProducerTest {
 
     @Test
     void testSendMessage() {
+
+        ReflectionTestUtils.setField(kafkaProducer, "makePretty", true);
 
         try {
 
@@ -107,6 +116,8 @@ class KafkaProducerTest {
 
     @Test
     void testSendMessageFail() {
+
+        ReflectionTestUtils.setField(kafkaProducer, "makePretty", true);
 
         try {
 
@@ -128,6 +139,8 @@ class KafkaProducerTest {
 
     @Test
     void testSendMessageString() {
+
+        ReflectionTestUtils.setField(kafkaProducer, "makePretty", true);
 
         try {
 

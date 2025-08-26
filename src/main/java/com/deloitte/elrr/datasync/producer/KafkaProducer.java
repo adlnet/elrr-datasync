@@ -7,7 +7,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
-import com.deloitte.elrr.datasync.util.Utils;
+import com.deloitte.elrr.datasync.util.PrettyJson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -25,9 +25,6 @@ public class KafkaProducer {
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
-
-    @Autowired
-    private Utils utils;
 
     @Value("${pretty.json}")
     private boolean makePretty;
@@ -53,7 +50,7 @@ public class KafkaProducer {
             if (makePretty) {
                 log.info(
                         "\n\n ===============sent messsage to Kafka=============== \n"
-                                + utils.prettyJson(payload));
+                                + PrettyJson.prettyJson(payload));
             } else {
                 log.info(
                         "\n\n ===============sent messsage to Kafka=============== \n"
