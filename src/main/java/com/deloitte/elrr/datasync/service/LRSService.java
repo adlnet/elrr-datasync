@@ -70,8 +70,10 @@ public class LRSService {
             log.info("Http headers: " + httpHeaders);
 
             // Call LRS
-            String completeURL = lrsURL + "/api/lrsdata?lastReadDate="
-                    + startDate + "&maxStatements=" + maxStatements;
+            String completeURL = String.format(
+                    "%s/api/lrsdata?lastReadDate=%s&maxStatements=%d", lrsURL,
+                    startDate, maxStatements);
+
             log.info("Complete URL: " + completeURL);
 
             HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
