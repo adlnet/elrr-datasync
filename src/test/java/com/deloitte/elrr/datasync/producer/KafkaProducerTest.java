@@ -17,7 +17,6 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
@@ -48,8 +47,6 @@ class KafkaProducerTest {
     @Test
     void testWriteValueAsString() {
 
-        ReflectionTestUtils.setField(kafkaProducer, "makePretty", true);
-
         try {
 
             kafkaProducer.writeValueAsString("test");
@@ -61,8 +58,6 @@ class KafkaProducerTest {
 
     @Test
     void testImportWriteValueAsString() {
-
-        ReflectionTestUtils.setField(kafkaProducer, "makePretty", true);
 
         try {
 
@@ -83,8 +78,6 @@ class KafkaProducerTest {
     @SuppressWarnings("checkstyle:linelength")
     void testWriteBadValueAsString() {
 
-        ReflectionTestUtils.setField(kafkaProducer, "makePretty", true);
-
         try {
 
             ObjectWithNoToString objectWithNoToString = new ObjectWithNoToString();
@@ -97,8 +90,6 @@ class KafkaProducerTest {
 
     @Test
     void testSendMessage() {
-
-        ReflectionTestUtils.setField(kafkaProducer, "makePretty", true);
 
         try {
 
@@ -116,8 +107,6 @@ class KafkaProducerTest {
 
     @Test
     void testSendMessageFail() {
-
-        ReflectionTestUtils.setField(kafkaProducer, "makePretty", true);
 
         try {
 
@@ -139,8 +128,6 @@ class KafkaProducerTest {
 
     @Test
     void testSendMessageString() {
-
-        ReflectionTestUtils.setField(kafkaProducer, "makePretty", true);
 
         try {
 

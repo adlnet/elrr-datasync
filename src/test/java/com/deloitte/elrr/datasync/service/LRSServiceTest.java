@@ -24,7 +24,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -51,8 +50,6 @@ class LRSServiceTest {
 
     @Test
     void testProcessSuccess() {
-
-        ReflectionTestUtils.setField(lrsService, "makePretty", true);
 
         try {
 
@@ -93,8 +90,6 @@ class LRSServiceTest {
 
     @Test
     void testProcessError() {
-
-        ReflectionTestUtils.setField(lrsService, "makePretty", true);
 
         try {
 

@@ -26,9 +26,6 @@ public class KafkaProducer {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    @Value("${pretty.json}")
-    private boolean makePretty;
-
     private ObjectMapper mapper = Mapper.getMapper();
 
     /**
@@ -47,16 +44,9 @@ public class KafkaProducer {
                 payload = writeValueAsString(msg);
             }
 
-            if (makePretty) {
-                log.info(
-                        "\n\n ===============sent messsage to Kafka=============== \n"
-                                + PrettyJson.prettyJson(payload));
-            } else {
-                log.info(
-                        "\n\n ===============sent messsage to Kafka=============== \n"
-                                + payload);
-            }
-
+            log.debug(
+                    "\n\n ===============sent messsage to Kafka=============== \n"
+                            + PrettyJson.prettyJson(payload));
             kafkaTemplate.send(kafkatopic, payload);
 
             log.info("\n Kafka message successfully sent to kafka topic "

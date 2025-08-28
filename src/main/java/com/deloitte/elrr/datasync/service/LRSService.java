@@ -37,9 +37,6 @@ public class LRSService {
     @Value("${max.statements}")
     private int maxStatements;
 
-    @Value("${pretty.json}")
-    private boolean makePretty;
-
     /**
      * @param startDate
      * @return Statement[]
@@ -82,12 +79,7 @@ public class LRSService {
                     HttpMethod.GET, entity, String.class);
             log.info("Res status code: " + json.getStatusCode());
             log.info("Res headers: " + json.getHeaders());
-
-            if (makePretty) {
-                log.info("Res body: " + PrettyJson.prettyJson(json.getBody()));
-            } else {
-                log.info("Res body: " + json.getBody());
-            }
+            log.info("Res body: " + PrettyJson.prettyJson(json.getBody()));
 
             ObjectMapper mapper = Mapper.getMapper();
             statements = mapper.readValue(json.getBody(), Statement[].class);
