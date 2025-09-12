@@ -13,7 +13,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
-import com.deloitte.elrr.datasync.util.PrettyJson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yetanalytics.xapi.model.Statement;
@@ -79,9 +78,6 @@ public class LRSService {
             HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
             ResponseEntity<String> json = restTemplate.exchange(completeURL,
                     HttpMethod.GET, entity, String.class);
-            log.info("Res status code: " + json.getStatusCode());
-            log.info("Res headers: " + json.getHeaders());
-            log.info("Res body: " + PrettyJson.prettyJson(json.getBody()));
 
             ObjectMapper mapper = Mapper.getMapper();
             statements = mapper.readValue(json.getBody(), Statement[].class);
