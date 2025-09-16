@@ -1,6 +1,6 @@
 package com.deloitte.elrr.datasync.scheduler;
 
-import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,13 +32,9 @@ public class LRSSyncSchedulingService {
     private ImportService importService;
 
     @Value("${initial.date}")
-    private Timestamp initialDate;
+    private ZonedDateTime initialDate;
 
     private static final String LRSNAME = "Yet Analytics LRS";
-    private static final String EXCEPTION_MESSAGE = "Exception message: ";
-    private static final String EXCEPTION_CAUSE = "Exception cause: ";
-    private static final String LRS_SYNC_FAILED = "LRS Sync failed.";
-
 
     /**
      * @author phleven
@@ -70,57 +66,59 @@ public class LRSSyncSchedulingService {
 
             Statement[] result = null;
 
-            // Update import start and end dates
-            importRecord = importService.updateImportStartEndDates(
-                    importRecord);
-
-            // Update import status to INPROCESS
-            importRecord = importService.updateImportStatus(importRecord,
-                    RecordStatus.INPROCESS);
-
-            // Make call to LRSService.invokeLRS(final Timestamp startDate)
+            // Make call to LRSService.invokeLRS()
             result = lrsService.process(importRecord.getImportStartDate());
 
-            // Process unprocessed
-            newDataService.process(result);
+            if (result != null && result.length > 0) {
+
+                // Update import status to INPROCESS
+                importRecord = importService.updateImportStatus(importRecord,
+                        RecordStatus.INPROCESS);
+
+                for (int x = 1; result.length > 0; x++) {
+
+                    // Process unprocessed
+                    newDataService.process(result);
+
+                    // Get stored
+                    ZonedDateTime stored = result[result.length - 1]
+                            .getStored();
+
+                    // Update import startDate
+                    importRecord = importService.updateImportStartDate(
+                            importRecord, stored);
+
+                    // Make call to LRSService.invokeLRS()
+                    result = lrsService.process(importRecord
+                            .getImportStartDate());
+
+                    log.debug("Processing LRS batch " + x + " sucessful.");
+
+                }
+
+            } else {
+
+                log.info("No statements returned from LRS.");
+
+            }
 
             // Update import status to SUCCESS
-            importRecord = importService.updateImportStatus(importRecord,
-                    RecordStatus.SUCCESS);
+            if (importRecord.getRecordStatus().equals(RecordStatus.INPROCESS)) {
+                importRecord = importService.updateImportStatus(importRecord,
+                        RecordStatus.SUCCESS);
+            }
 
-        } catch (DatasyncException e) {
+        } catch (DatasyncException | ResourceNotFoundException
+                | NullPointerException e) {
 
-            handleDifferentExceptions(importRecord,
-                    e, "DatasyncException");
-        } catch (ResourceNotFoundException e) {
+            if (importRecord != null) {
+                importService.resetRetries(importRecord);
+            }
 
-            handleDifferentExceptions(importRecord,
-                    e, "ResourceNotFoundException");
-        } catch (NullPointerException e) {
+            throw new DatasyncException("Error LRS sync failed.", e);
 
-            handleDifferentExceptions(importRecord,
-                    e, "NullPointerException");
-        } catch (Exception e) {
-
-            handleDifferentExceptions(importRecord,
-                    e, "Exception");
         }
 
-    }
-
-    private void handleDifferentExceptions(Import importRecord,
-            Exception e, String exceptionType) {
-
-        log.error("***** " + exceptionType + " *****");
-        log.error(EXCEPTION_MESSAGE + e.getMessage(), e);
-        log.error(EXCEPTION_CAUSE + e.getCause());
-        log.error(LRS_SYNC_FAILED);
-        log.error("***** " + exceptionType + " *****");
-
-        if (importRecord != null) {
-            importRecord.setRetries(0);
-            importService.update(importRecord);
-        }
     }
 
 }

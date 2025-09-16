@@ -7,9 +7,11 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
+import com.deloitte.elrr.datasync.util.PrettyJson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.yetanalytics.xapi.util.Mapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +26,7 @@ public class KafkaProducer {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = Mapper.getMapper();
 
     /**
      * @param msg
@@ -42,17 +44,17 @@ public class KafkaProducer {
                 payload = writeValueAsString(msg);
             }
 
-            log.info(
+            log.debug(
                     "\n\n ===============sent messsage to Kafka=============== \n"
-                            + payload);
+                            + PrettyJson.prettyJson(payload));
             kafkaTemplate.send(kafkatopic, payload);
 
             log.info("\n Kafka message successfully sent to kafka topic "
                     + kafkatopic + "\n\n");
 
         } catch (KafkaException | DatasyncException e) {
-            throw new DatasyncException(
-                    "Exception while sending Kafka message", e);
+            throw new DatasyncException("Exception while sending Kafka message",
+                    e);
         }
     }
 

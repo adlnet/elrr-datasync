@@ -1,6 +1,6 @@
 package com.deloitte.elrr.datasync.entity;
 
-import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -25,7 +25,7 @@ public abstract class Auditable<U> {
 
     @Column(name = "inserteddate", updatable = false)
     @CreationTimestamp
-    private Timestamp inserteddate;
+    private ZonedDateTime inserteddate;
 
     @Column(name = "updatedby")
     @LastModifiedBy
@@ -33,5 +33,5 @@ public abstract class Auditable<U> {
 
     @Column(name = "lastmodified")
     @UpdateTimestamp
-    private Timestamp lastmodified;
+    private ZonedDateTime lastmodified;
 }

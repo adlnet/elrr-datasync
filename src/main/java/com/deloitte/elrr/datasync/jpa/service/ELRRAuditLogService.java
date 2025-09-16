@@ -1,6 +1,6 @@
 package com.deloitte.elrr.datasync.jpa.service;
 
-import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class ELRRAuditLogService implements CommonSvc<ELRRAuditLog, UUID> {
      * @param purgeDate
      */
     @Transactional
-    public void deleteByDate(final Timestamp purgeDate) {
+    public void deleteByDate(final ZonedDateTime purgeDate) {
         elrrAuditLogRepository.deleteByDate(purgeDate);
     }
 

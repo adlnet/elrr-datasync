@@ -17,13 +17,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.deloitte.elrr.datasync.KafkaStatusCheck;
+import com.deloitte.elrr.datasync.entity.ELRRAuditLog;
 import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.jpa.service.ELRRAuditLogService;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
 import com.deloitte.elrr.datasync.producer.KafkaProducer;
 import com.deloitte.elrr.datasync.util.TestFileUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
 
@@ -61,6 +61,11 @@ class NewDataServiceTest {
 
             Mockito.doReturn(true).when(kafkaStatusCheck).isKafkaRunning();
 
+            ELRRAuditLog auditLog = new ELRRAuditLog();
+            auditLog.setStatementId(UUID.randomUUID().toString());
+
+            Mockito.doReturn(auditLog).when(elrrAuditLogService).save(any());
+
             newDataService.process(stmts);
 
         } catch (DatasyncException | IOException e) {
@@ -81,13 +86,18 @@ class NewDataServiceTest {
 
             Mockito.doReturn(true).when(kafkaStatusCheck).isKafkaRunning();
 
-            Mockito.doThrow(new DatasyncException("Test processing ex"))
-                .when(kafkaProducer).writeValueAsString(stmts[0].getId());
+            Mockito.doReturn("Test Kafka message.").when(kafkaProducer)
+                    .writeValueAsString(stmts[0].getId());
+
+            ELRRAuditLog auditLog = new ELRRAuditLog();
+            auditLog.setStatementId(UUID.randomUUID().toString());
+
+            Mockito.doReturn(auditLog).when(elrrAuditLogService).save(any());
 
             newDataService.process(stmts);
 
         } catch (DatasyncException | IOException e) {
-            fail("Should not have thrown any exception");
+            assertEquals("Test processing ex", e.getMessage());
         }
     }
 

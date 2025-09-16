@@ -1,6 +1,6 @@
 package com.deloitte.elrr.datasync.jpa.service;
 
-import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +24,7 @@ public class ImportService implements CommonSvc<Import, UUID> {
     private static final String LRSNAME = "Yet Analytics LRS";
 
     @Value("${initial.date}")
-    private Timestamp initialDate;
+    private ZonedDateTime initialDate;
 
     /**
      * @param newimportsRepository
@@ -68,7 +68,6 @@ public class ImportService implements CommonSvc<Import, UUID> {
         importRecord.setRetries(0);
         importRecord.setImportName(LRSNAME);
         importRecord.setImportStartDate(initialDate);
-        importRecord.setImportEndDate(initialDate);
         save(importRecord);
         return importRecord;
     }
@@ -93,23 +92,31 @@ public class ImportService implements CommonSvc<Import, UUID> {
 
     /**
      * @param importRecord
+     * @param startDate
      * @return importRecord
      * @throws ResourceNotFoundException
      */
-    public Import updateImportStartEndDates(Import importRecord)
-            throws ResourceNotFoundException {
+    public Import updateImportStartDate(Import importRecord,
+            ZonedDateTime startDate) throws ResourceNotFoundException {
 
-        log.info("Updating import start and end dates.");
+        log.info("Updating import start date.");
 
-        if (importRecord.getRecordStatus().equals(RecordStatus.SUCCESS)) {
-            importRecord.setImportStartDate(importRecord.getImportEndDate());
-            importRecord.setImportEndDate(new Timestamp(System
-                    .currentTimeMillis()));
-        }
-
+        importRecord.setImportStartDate(startDate);
         update(importRecord);
 
         return importRecord;
     }
 
+    /**
+     * @param importRecord
+     * @return importRecord
+     */
+    public Import resetRetries(Import importRecord)
+            throws ResourceNotFoundException {
+
+        importRecord.setRetries(0);
+        update(importRecord);
+
+        return importRecord;
+    }
 }

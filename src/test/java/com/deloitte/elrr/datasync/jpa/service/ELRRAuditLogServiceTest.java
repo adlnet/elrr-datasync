@@ -4,9 +4,7 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -43,8 +41,8 @@ class ELRRAuditLogServiceTest {
             elrrAuditLog.setId(id);
             elrrAuditLogService.save(elrrAuditLog);
 
-            Mockito.doReturn(true).when(elrrAuditLogRepository).existsById(
-                    any());
+            Mockito.doReturn(true).when(elrrAuditLogRepository)
+                    .existsById(any());
             elrrAuditLogService.update(elrrAuditLog);
 
             elrrAuditLogService.get(id);
@@ -69,8 +67,8 @@ class ELRRAuditLogServiceTest {
             elrrAuditLog.setId(id);
             elrrAuditLogService.save(elrrAuditLog);
 
-            Mockito.doReturn(false).when(elrrAuditLogRepository).existsById(
-                    any());
+            Mockito.doReturn(false).when(elrrAuditLogRepository)
+                    .existsById(any());
             elrrAuditLogService.update(elrrAuditLog);
 
         } catch (ResourceNotFoundException e) {
@@ -87,16 +85,12 @@ class ELRRAuditLogServiceTest {
             elrrAuditLog.setId(UUID.randomUUID());
             elrrAuditLogService.save(elrrAuditLog);
 
-            Mockito.doReturn(true).when(elrrAuditLogRepository).existsById(
-                    any());
+            Mockito.doReturn(true).when(elrrAuditLogRepository)
+                    .existsById(any());
             elrrAuditLogService.update(elrrAuditLog);
 
-            LocalDateTime localDateTime = LocalDateTime.parse(
-                    "2025-12-05T15:30:00Z", DateTimeFormatter.ISO_DATE_TIME);
-
-            Timestamp timestamp = Timestamp.valueOf(localDateTime);
-
-            elrrAuditLogService.deleteByDate(timestamp);
+            ZonedDateTime purgeDate = ZonedDateTime.now().minusDays(10);
+            elrrAuditLogService.deleteByDate(purgeDate);
 
         } catch (DatasyncException e) {
             fail("Should not have thrown any exception");

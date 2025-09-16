@@ -9,8 +9,7 @@ import static org.mockito.ArgumentMatchers.eq;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +28,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.deloitte.elrr.datasync.exception.DatasyncException;
+import com.deloitte.elrr.datasync.util.PrettyJson;
 import com.deloitte.elrr.datasync.util.TestFileUtil;
 import com.yetanalytics.xapi.model.Statement;
 import com.yetanalytics.xapi.util.Mapper;
@@ -40,6 +41,9 @@ class LRSServiceTest {
 
     @Mock
     private RestTemplate restTemplate;
+
+    @Spy
+    private PrettyJson prettyJson;
 
     @InjectMocks
     private LRSService lrsService;
@@ -55,12 +59,8 @@ class LRSServiceTest {
                     Statement[].class);
             assertTrue(stmts != null);
 
-            LocalDateTime localDateTime = LocalDateTime.parse(
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(
                     "2025-12-05T15:30:00Z", DateTimeFormatter.ISO_DATE_TIME);
-
-            Timestamp timestamp = Timestamp.valueOf(localDateTime);
-            String lastReadDate = lrsService.formatStoredDate(timestamp);
-            assertNotNull(lastReadDate);
 
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add("Cookie", "null");
@@ -68,7 +68,7 @@ class LRSServiceTest {
             httpHeaders.add("Content-Type", "application/json");
 
             String completeURL = "null/api/lrsdata?lastReadDate="
-                    + lastReadDate;
+                    + zonedDateTime + "&maxStatements=0";
 
             HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 
@@ -80,7 +80,7 @@ class LRSServiceTest {
                     eq(HttpMethod.GET), any(HttpEntity.class), eq(
                             String.class));
 
-            Statement[] returnStmts = lrsService.process(timestamp);
+            Statement[] returnStmts = lrsService.process(zonedDateTime);
 
         } catch (DatasyncException | NullPointerException | IOException
                 | RestClientException e) {
@@ -99,12 +99,8 @@ class LRSServiceTest {
                     Statement[].class);
             assertTrue(stmts != null);
 
-            LocalDateTime localDateTime = LocalDateTime.parse(
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(
                     "2025-12-05T15:30:00Z", DateTimeFormatter.ISO_DATE_TIME);
-
-            Timestamp timestamp = Timestamp.valueOf(localDateTime);
-            String lastReadDate = lrsService.formatStoredDate(timestamp);
-            assertNotNull(lastReadDate);
 
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add("Cookie", "null");
@@ -112,7 +108,7 @@ class LRSServiceTest {
             httpHeaders.add("Content-Type", "application/json");
 
             String completeURL = "null/api/lrsdata?lastReadDate="
-                    + lastReadDate;
+                    + zonedDateTime + "&maxStatements=0";
 
             HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 
@@ -120,27 +116,14 @@ class LRSServiceTest {
                     .getMapper().writeValueAsString(stmts), HttpStatus.OK);
             assertNotNull(json);
 
-            Mockito.doThrow(new DatasyncException("Test Error"))
-                .when(restTemplate).exchange(eq(
-                    completeURL),
-                    eq(HttpMethod.GET), 
-                    any(HttpEntity.class), 
-                    eq(String.class));
+            Mockito.doThrow(new DatasyncException("Test Error")).when(
+                    restTemplate).exchange(eq(completeURL), eq(HttpMethod.GET),
+                            any(HttpEntity.class), eq(String.class));
 
-            Statement[] returnStmts = lrsService.process(timestamp);
+            Statement[] returnStmts = lrsService.process(zonedDateTime);
 
         } catch (DatasyncException | IOException e) {
             assertEquals("Error calling LRS.", e.getMessage());
-        }
-    }
-
-    @Test
-    void testBadDate() {
-        try {
-            lrsService.formatStoredDate(null);
-        } catch (DatasyncException e) {
-            assertEquals("Error formatting last read date.", 
-                e.getMessage());
         }
     }
 

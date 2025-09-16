@@ -1,6 +1,6 @@
 package com.deloitte.elrr.datasync.entity;
 
-import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -39,10 +39,7 @@ public class Import extends Auditable<String> {
     private String importName;
 
     @Column(name = "IMPORTSTARTDATE")
-    private Timestamp importStartDate;
-
-    @Column(name = "IMPORTENDDATE")
-    private Timestamp importEndDate;
+    private ZonedDateTime importStartDate;
 
     @Column(name = "RECORDSTATUS", columnDefinition = "record_status")
     @Enumerated(EnumType.STRING)
