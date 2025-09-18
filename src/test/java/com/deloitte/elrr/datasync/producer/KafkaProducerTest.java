@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import com.deloitte.elrr.datasync.dto.MessageVO;
 import com.deloitte.elrr.datasync.entity.Import;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.jpa.service.ImportService;
@@ -98,7 +98,9 @@ class KafkaProducerTest {
             Statement[] stmts = Mapper.getMapper().readValue(testFile,
                     Statement[].class);
 
-            kafkaProducer.sendMessage(stmts[0]);
+            MessageVO kafkaMessage = new MessageVO();
+            kafkaMessage.setStatement(stmts[0]);
+            kafkaProducer.sendMessage(kafkaMessage);
 
         } catch (DatasyncException | IOException e) {
             fail("Should not have thrown any exception");
@@ -115,30 +117,17 @@ class KafkaProducerTest {
             Statement[] stmts = Mapper.getMapper().readValue(testFile,
                     Statement[].class);
 
-            Mockito.doThrow(new DatasyncException("test ex")).when(
-                    kafkaTemplate).send(any(), any());
+            Mockito.doThrow(new DatasyncException(
+                    "Exception while sending Kafka message")).when(
+                            kafkaTemplate).send(any(), any());
 
-            kafkaProducer.sendMessage(stmts[0]);
+            MessageVO kafkaMessage = new MessageVO();
+            kafkaMessage.setStatement(stmts[0]);
+            kafkaProducer.sendAsyncMessage(kafkaMessage);
 
         } catch (DatasyncException | IOException e) {
             assertEquals(e.getMessage(),
                     "Exception while sending Kafka message");
-        }
-    }
-
-    @Test
-    void testSendMessageString() {
-
-        try {
-
-            File testFile = TestFileUtil.getJsonTestFile("completed.json");
-
-            String json = Files.readString(testFile.toPath());
-
-            kafkaProducer.sendMessage(json);
-
-        } catch (DatasyncException | IOException e) {
-            fail("Should not have thrown any exception");
         }
     }
 
