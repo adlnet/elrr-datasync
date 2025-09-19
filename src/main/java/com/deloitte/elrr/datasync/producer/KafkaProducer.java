@@ -54,7 +54,7 @@ public class KafkaProducer {
     }
 
     /**
-     * NOT USED - for possible future optimization
+     * NOT USED - for future optimization.
      * @param msg
      */
     public void sendAsyncMessage(final MessageVO msg) {
