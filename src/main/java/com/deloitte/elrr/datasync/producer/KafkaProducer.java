@@ -1,11 +1,15 @@
 package com.deloitte.elrr.datasync.producer;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
+import com.deloitte.elrr.datasync.dto.MessageVO;
 import com.deloitte.elrr.datasync.exception.DatasyncException;
 import com.deloitte.elrr.datasync.util.PrettyJson;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-@SuppressWarnings("checkstyle:linelength")
 public class KafkaProducer {
 
     @Value("${kafka.topic}")
@@ -32,30 +35,45 @@ public class KafkaProducer {
      * @param msg
      * @throws DataSyncException
      */
-    public void sendMessage(final Object msg) {
-
-        String payload = "";
+    public void sendMessage(final MessageVO msg) {
 
         try {
 
-            if (msg instanceof String) {
-                payload = (String) msg;
-            } else {
-                payload = writeValueAsString(msg);
-            }
+            log.debug("\n\n ==========sent messsage to Kafka========== \n"
+                    + PrettyJson.prettyJson(writeValueAsString(msg)));
 
-            log.debug(
-                    "\n\n ===============sent messsage to Kafka=============== \n"
-                            + PrettyJson.prettyJson(payload));
-            kafkaTemplate.send(kafkatopic, payload);
+            kafkaTemplate.send(kafkatopic, writeValueAsString(msg));
 
-            log.info("\n Kafka message successfully sent to kafka topic "
+            log.debug("\n Kafka message successfully sent to kafka topic "
                     + kafkatopic + "\n\n");
 
         } catch (KafkaException | DatasyncException e) {
             throw new DatasyncException("Exception while sending Kafka message",
                     e);
         }
+    }
+
+    /**
+     * NOT USED - for future optimization.
+     * @param msg
+     */
+    public void sendAsyncMessage(final MessageVO msg) {
+
+        CompletableFuture<SendResult<String, String>> future = kafkaTemplate
+                .send(kafkatopic, writeValueAsString(msg));
+
+        future.whenComplete((result, throwable) -> {
+            if (throwable != null) {
+                // handle failure
+                log.info("Unable to send message=[" + PrettyJson.prettyJson(
+                        writeValueAsString(msg)) + "] due to : " + throwable
+                                .getMessage());
+            } else {
+                // handle success
+                log.debug("\n\n ==========sent messsage to Kafka========== \n"
+                        + PrettyJson.prettyJson(writeValueAsString(msg)));
+            }
+        });
     }
 
     /**

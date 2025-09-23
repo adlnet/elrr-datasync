@@ -21,6 +21,12 @@ public class KafkaProducerConfig {
     @Value("${brokerUrl}")
     private String brokerUrl;
 
+    @Value("${kafka.batch.size}")
+    private int batchSize;
+
+    @Value("${kafka.linger}")
+    private int linger;
+
     /**
      * @return ProducerFactory<String, String>
      */
@@ -33,6 +39,14 @@ public class KafkaProducerConfig {
                 StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                 StringSerializer.class);
+
+        // Increase batch size and linger
+        configProps.put(ProducerConfig.BATCH_SIZE_CONFIG, batchSize);
+        configProps.put(ProducerConfig.LINGER_MS_CONFIG, linger);
+
+        // Enable compression
+        configProps.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "gzip");
+
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 

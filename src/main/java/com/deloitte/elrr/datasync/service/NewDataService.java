@@ -100,6 +100,8 @@ public class NewDataService {
             kafkaMessage.setStatement(stmnt);
             insertAuditLog(id);
             kafkaProducer.sendMessage(kafkaMessage);
+            // Future optimization
+            // kafkaProducer.sendAsyncMessage(kafkaMessage);
         }
 
     }
