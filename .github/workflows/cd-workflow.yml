@@ -23,7 +23,7 @@ jobs:
     # ARCHIVE BUNDLE - LABEL WITH COMMIT SHA OR TAG NAME
     - name: Compress Bundle
       run: | # Need to cd so that the zip file doesn't contain the parent dirs
-        cd target/bundle
+        cd target
         zip -r ../../elrr-datasync.zip ./
 
     - name: Archive Bundle (Tag Pushes)
