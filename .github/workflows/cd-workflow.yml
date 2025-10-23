@@ -3,7 +3,7 @@ name: CD
 on:
   push:
     tags:
-      - 'v*.*.*' # Enforce Semantic Versioning
+      - 'v*.*.*'
 
 jobs:
   build:
@@ -20,9 +20,8 @@ jobs:
     - name: Build Bundle
       run: mvn clean install -Dmaven.test.skip=true
 
-    # ARCHIVE BUNDLE - LABEL WITH COMMIT SHA OR TAG NAME
     - name: Compress Bundle
-      run: | # Need to cd so that the zip file doesn't contain the parent dirs
+      run: | # Get only the correct jar into the bundle
         cd target
         find . -type f -regex ".*[0-9]\.jar$" -print0 | xargs -0 zip ../elrr-datasync.zip
 
