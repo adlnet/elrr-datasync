@@ -47,6 +47,8 @@ jobs:
     - name: Craft Draft Release
       uses: softprops/action-gh-release@v2
       with:
+        name: Release ${{github.ref_name}}
+        tag_name: github.ref_name
         body: "## Release Notes"
         draft: true
         files: elrr-datasync.zip
