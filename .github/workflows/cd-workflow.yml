@@ -24,7 +24,7 @@ jobs:
     - name: Compress Bundle
       run: | # Need to cd so that the zip file doesn't contain the parent dirs
         cd target
-        zip -r ../../elrr-datasync.zip ./
+        find . -type f -regex ".*[0-9]\.jar$" -print0 | xargs -0 zip ../elrr-datasync.zip
 
     - name: Archive Bundle (Tag Pushes)
       uses: actions/upload-artifact@v4
