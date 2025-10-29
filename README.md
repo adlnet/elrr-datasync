@@ -45,5 +45,29 @@ There are several ways to run a Spring Boot application on your local machine. O
 - mvn spring-boot:run -D spring-boot.run.profiles=local -e  (Linux)
 - Ctrl+C to end --> Terminate batch job = Y
 
+# Environment Variables
+Configuration variables for running the application
+
+## Required
+- PGHOST: PostgreSQL Server Host
+- PGPORT: PostgreSQL Server Port
+- PG_DATABASE: PostgreSQL Database Name
+- PG_RW_USER: PostgreSQL User
+- PG_RW_PASSWORD: PostgreSQL Password
+
+## Optional (has defaults)
+- PG_SCHEMA: Default PostgreSQL Schema
+- EXTERNAL_SERVICES_URL: URL of External Services installation
+- RUN_FREQUENCY: Frequency to run sync process
+- AUDIT_PURGE_FREQUENCY: Frequency to purge cache
+- AUDIT_PURGE_RETENTION: How many days to retain in audit logs
+- BROKER_HOST: Kafka Broker Host
+- BROKER_PORT: Kafka Broker Port
+- BROKER_TOPIC: Kafka Topic
+- BROKER_DLQ: Kafka Dead Letter Queue
+- BROKER_GROUPID: Kafka Group ID
+- BROKER_PARTITIONS: Kafka Partitions Count
+- BROKER_REPLICAS: Kafka Replicas Count
+
 # Optional step 
 - docker push <docker_hub>/test:elrrdatasync-dck-img
