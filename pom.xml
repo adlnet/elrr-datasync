@@ -102,6 +102,10 @@
 					<groupId>ch.qos.logback</groupId>
 					<artifactId>logback-core</artifactId>
 				</exclusion>
+                <exclusion>
+					<groupId>org.apache.tomcat.embed</groupId>
+					<artifactId>tomcat-embed-el</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
